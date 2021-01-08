@@ -1,5 +1,4 @@
 package java.model;
 
-public class Game {
-
+public class Player {
 }
