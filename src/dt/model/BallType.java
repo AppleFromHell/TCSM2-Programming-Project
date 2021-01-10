@@ -1,4 +1,4 @@
-package java.model;
+package dt.model;
 
 public enum BallType {
 

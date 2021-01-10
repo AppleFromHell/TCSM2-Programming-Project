@@ -1,4 +1,4 @@
-package java.model.board;
+package dt.model.board;
 
 import java.util.List;
 

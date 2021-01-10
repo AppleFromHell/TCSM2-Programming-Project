@@ -1,4 +1,4 @@
-package java.server;
+package dt.server;
 
 public class ClientHandler {
 }

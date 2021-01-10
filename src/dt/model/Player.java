@@ -1,6 +1,6 @@
-package java.model;
+package dt.model;
 
-import java.server.ClientHandler;
+import dt.server.ClientHandler;
 import java.util.Map;
 
 public class Player {

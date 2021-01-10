@@ -1,6 +1,7 @@
-package java.model.board;
+package dt.model.board;
 
-import java.model.BallType;
+import dt.model.BallType;
+
 import java.util.List;
 
 public interface Sequence {
