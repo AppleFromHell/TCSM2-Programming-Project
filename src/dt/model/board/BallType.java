@@ -1,9 +1,9 @@
-package dt.model;
+package dt.model.board;
 
 public enum BallType {
 
 //            | Integer | Color   |
-//            | ---     |  ------ |
+//            |  0      | Empty   |
 //            |  1      | Blue    |
 //            |  2      | Orange  |
 //            |  3      | Red     |
