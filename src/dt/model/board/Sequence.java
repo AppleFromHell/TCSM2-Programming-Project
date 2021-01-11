@@ -1,16 +1,19 @@
 package dt.model.board;
 
-import dt.model.BallType;
-
+import java.util.ArrayList;
 import java.util.List;
 
-class Sequence {
+public class Sequence {
     private List<BallType> balls;
     int sequence;
 
-    public Sequence(List<BallType> balls, int sequenceCount){
+    public Sequence(List<BallType> balls){
+        this.balls = new ArrayList<>();
         this.balls = balls;
-        this.sequence = sequenceCount;
+    }
+
+    public List<BallType> getBalls(){
+        return this.balls;
     }
 
     public void shiftRightOrUp(){

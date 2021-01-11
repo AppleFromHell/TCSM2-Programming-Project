@@ -1,5 +1,6 @@
 package dt.model;
 
+import dt.model.board.BallType;
 import dt.server.ClientHandler;
 import java.util.Map;
 
