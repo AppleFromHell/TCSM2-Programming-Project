@@ -7,8 +7,9 @@ import java.net.ProtocolException;
 public interface ClientProtocol {
 
     String doHello() throws ServerUnavailableException, ProtocolException;
-    String doLogin(String username);
-    String doGetList();
-    String doMove(int move);
-    String doEnterQueue();
+    boolean doLogin(String username) throws ServerUnavailableException, ProtocolException;
+    String doGetList() throws ServerUnavailableException, ProtocolException;
+    String doMove(int move) throws ServerUnavailableException, ProtocolException;
+    String doMove(int move, int move2) throws ServerUnavailableException, ProtocolException;
+    String doEnterQueue() throws ServerUnavailableException, ProtocolException;
 }

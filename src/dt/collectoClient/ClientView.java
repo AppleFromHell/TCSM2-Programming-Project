@@ -10,7 +10,4 @@ public interface ClientView extends Runnable {
     void start();
     void run();
     void showMessage(String msg);
-    void setIp(InetAddress ip);
-    void setUsername(String username);
-    void setPort(Integer port);
 }

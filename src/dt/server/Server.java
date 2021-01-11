@@ -1,11 +1,13 @@
 
 package dt.server;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import dt.exceptions.ServerUnavailableException;
+import dt.protocol.ClientMessages;
+import dt.protocol.ProtocolMessages;
+import dt.protocol.ServerMessages;
+
+import java.io.*;
+import java.net.*;
 
 /**
  * Server.
@@ -13,33 +15,25 @@ import java.net.UnknownHostException;
  * @version 2005.02.21
  */
 public class Server {
-    private static final String USAGE
-            = "usage: " + Server.class.getName() + " <name> <port>";
+    private BufferedReader in;
+    private BufferedWriter out;
+    private Integer port;
 
     /** Starts a Server-application. */
-    public static void main(String[] args) {
-        if (args.length != 2) {
-            System.out.println(USAGE);
-            System.exit(0);
-        }
+    public static void main(String[] args) throws IOException, ServerUnavailableException {
+        Server serverr = new Server();
+        ServerTUI view = new ServerTUI(serverr);
+        view.start();
+
+
 
         String name = args[0];
         InetAddress addr = null;
-        int port = 0;
         Socket sock = null;
 
-        // parse args[1] - the port
-        try {
-            port = Integer.parseInt(args[1]);
-        } catch (NumberFormatException e) {
-            System.out.println(USAGE);
-            System.out.println("ERROR: port " + args[1]
-                    + " is not an integer");
-            System.exit(0);
-        }
         ServerSocket serverSocket = null;
         try {
-            serverSocket = new ServerSocket(port);
+            serverSocket = new ServerSocket(serverr.port);
         } catch (IOException e) {
 //            e.printStackTrace();
 
@@ -53,16 +47,64 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        serverr.in = new BufferedReader(new InputStreamReader(
+                sock.getInputStream()));
+        serverr.out = new BufferedWriter(new OutputStreamWriter(
+                sock.getOutputStream()));
 
-        try {
-            Peer server = new Peer(name, sock);
-            Thread streamInputHandler = new Thread(server);
-            streamInputHandler.start();
-            server.handleTerminalInput();
-            server.shutDown();
-        } catch (IOException e) {
-            e.printStackTrace();
+        serverr.doHello();
+        while(true);
+    }
+
+    private synchronized void write(String input) throws ServerUnavailableException {
+        if(out != null) {
+            try {
+                out.write(input);
+                out.newLine();
+                out.flush();
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+                throw new ServerUnavailableException("Could not write to server");
+            }
+        } else {
+            throw new ServerUnavailableException("Socket is not available");
+        }
+    }
+    public void doHello() throws ServerUnavailableException, ProtocolException {
+        String rawResponse = readLineFromServer();
+        String[] response = rawResponse.split(ProtocolMessages.delimiter);
+        if(!response[0].equals(ClientMessages.HELLO.toString())) {
+            throw new ProtocolException("SHIT BROKE");
+        }
+        System.out.println("[CLIENT]" + response[1]);
+        write(ServerMessages.HELLO.constructMessage("Server by yo fat mama"));
+    }
+
+    private String readLineFromServer() throws ServerUnavailableException {
+        if (in != null) {
+            try {
+                // Read and return answer from Server
+                String answer = in.readLine();
+                if (answer == null) {
+                    throw new ServerUnavailableException("Could not read "
+                            + "from server.");
+                }
+                return answer;
+            } catch (IOException e) {
+                throw new ServerUnavailableException("Could not read "
+                        + "from server.");
+            }
+        } else {
+            throw new ServerUnavailableException("Could not read "
+                    + "from server.");
         }
     }
 
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
+    public Integer getPort() {
+        return this.port;
+    }
 } // end of class Server
