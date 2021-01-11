@@ -6,7 +6,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 public class CollectoClient {
-    private static final int BOARDSIZE = 7;
+
 
     private Socket serverSocket;
     private BufferedReader in;
@@ -19,7 +19,7 @@ public class CollectoClient {
 
     public CollectoClient() {
         this.clientView = new ClientTUI(this);
-        this.board = new ClientBoard(BOARDSIZE);
+        this.board = new ClientBoard();
         this.userName = null;
         this.port = null;
     }
@@ -27,7 +27,8 @@ public class CollectoClient {
     public void start() {
         new Thread(clientView).start();
     }
-    public void write(String input) throws IOException {
+    
+    public synchronized void write(String input) throws IOException {
         out.write(input);
         out.newLine();
         out.flush();

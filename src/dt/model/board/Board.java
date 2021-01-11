@@ -5,11 +5,12 @@ import dt.model.BallType;
 import java.util.List;
 
 public class Board {
+    private static final int BOARDSIZE = 7;
 
     private List<Row> rows;
     private List<Column> columns;
     private final int boardSize;
-
+    public Board() {this.boardSize = BOARDSIZE;}
     public Board(int boardSize){
         this.boardSize = boardSize;
     }

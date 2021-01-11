@@ -7,6 +7,9 @@ public class ClientBoard extends Board {
         super(boardSize);
     }
 
+    public ClientBoard() {
+        super();
+    }
     public List<Integer> getValidMoves(){
         return null;
     }
