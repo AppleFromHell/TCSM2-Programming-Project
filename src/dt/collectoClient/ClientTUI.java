@@ -46,7 +46,7 @@ public class ClientTUI implements ClientView, Runnable {
 
 
     private void handleUserInput(String input) throws IOException {
-        collectoClient.write(input);
+
     }
 
 
