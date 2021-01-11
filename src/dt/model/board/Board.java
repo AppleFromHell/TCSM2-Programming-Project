@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Board {
+    private static final int BOARDSIZE = 7;
 
     private List<Sequence> rows;
     private List<Sequence> columns;
     private final int boardSize;
-
+    public Board() {this.boardSize = BOARDSIZE;}
     public Board(int boardSize){
         this.boardSize = boardSize;
         rows = new ArrayList<>();
