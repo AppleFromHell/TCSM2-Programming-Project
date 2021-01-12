@@ -190,6 +190,9 @@ public abstract class Board {
     public List<Sequence> getBoardState(){
         return null;
     }
+    public String getPrettyBoardState (){
+        return null;
+    }
 
     public boolean isGameOver(){
         return false;

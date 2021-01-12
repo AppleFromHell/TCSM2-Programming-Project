@@ -2,6 +2,7 @@ package dt.collectoClient;
 
 import java.io.*;
 
+import dt.exceptions.InvalidMoveException;
 import dt.exceptions.ServerUnavailableException;
 import dt.model.board.ClientBoard;
 import dt.protocol.ClientMessages;
@@ -103,7 +104,7 @@ public class CollectoClient implements ClientProtocol {
     }
 
     @Override
-    public String doMove(int move) throws ServerUnavailableException, ProtocolException {
+    public String doMove(int move) throws ServerUnavailableException, ProtocolException, InvalidMoveException {
         board.makeMove(move);
         String ourMove = ClientMessages.MOVE.constructMessage(String.valueOf(move));
         return writeAndMakeResponseMove(ourMove);
@@ -111,13 +112,13 @@ public class CollectoClient implements ClientProtocol {
 
 
     @Override
-    public String doMove(int move, int move2) throws ServerUnavailableException, ProtocolException {
+    public String doMove(int move, int move2) throws ServerUnavailableException, ProtocolException, InvalidMoveException {
         board.makeMove(move, move2);
         String ourMove = ClientMessages.MOVE.constructMessage(String.valueOf(move), String.valueOf(move2));
         return writeAndMakeResponseMove(ourMove);
     }
 
-    private String writeAndMakeResponseMove(String move) throws ServerUnavailableException, ProtocolException {
+    private String writeAndMakeResponseMove(String move) throws ServerUnavailableException, ProtocolException, InvalidMoveException {
         write(move);
         String rawOurMoveResponse = readLineFromServer();
         String[] ourMoveResponse = splitResponse(rawOurMoveResponse);
@@ -152,7 +153,7 @@ public class CollectoClient implements ClientProtocol {
         } else {
             board.makeMove(theirMove1, theirMove2);
         }
-        return board.getBoardState();
+        return board.getPrettyBoardState();
     }
 
     @Override
