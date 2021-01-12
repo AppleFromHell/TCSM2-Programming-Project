@@ -14,7 +14,4 @@ public class ClientBoard extends Board {
         return null;
     }
 
-    public Board deepCopy(){
-        return null;
-    }
 }

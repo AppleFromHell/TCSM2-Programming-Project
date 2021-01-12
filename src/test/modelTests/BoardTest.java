@@ -1,5 +1,6 @@
 package modelTests;
 
+import dt.exceptions.InvalidMoveException;
 import dt.model.board.BallType;
 import dt.model.board.Board;
 import dt.model.board.ServerBoard;
@@ -9,6 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static dt.model.board.Board.BOARDSIZE;
@@ -16,19 +19,35 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BoardTest {
 
-    Board board;
+    ServerBoard board;
+    int boardSize;
 
     @BeforeEach
     void setup(){
         board = new ServerBoard();
+        board.fillBoard(board.createBoard());
+        boardSize = board.getBoardsize();
     }
 
     @Test
-    void fillBoard() {
+    void testSetup() {
+        int middle = (boardSize * boardSize - 1) / 2;
+        ServerBoard copyBoard = new ServerBoard();
+
+        copyBoard.fillBoard(board.getBoardState());
+        int[] boardState = board.getBoardState();
+        assertTrue(Arrays.equals(board.getBoardState(), copyBoard.getBoardState()));
+
+        assertEquals(0, boardState[middle]);
+        HashMap<BallType, Integer> yield = board.getYield();
+        assertEquals(0, yield.values().stream().reduce(0, Integer::sum));
     }
 
     @Test
-    void makeMove() {
+    void testSetupForConsistency() {
+        for(int i = 0; i < 2000; i++){
+            testSetup();
+        }
     }
 
     @Test
@@ -52,6 +71,18 @@ class BoardTest {
     }
 
     @Test
+    void testDeepCopy() {
+        ServerBoard original = new ServerBoard();
+        original.fillBoard(original.createBoard());
+        ServerBoard copy = new ServerBoard();
+        copy.fillBoard(original.getBoardState());
+        assertFalse(original.equals(copy));
+        int[] oBoardState = original.getBoardState();
+        int[] cBoardState = copy.getBoardState();
+        assertTrue(Arrays.equals(original.getBoardState(), copy.getBoardState()));
+    }
+
+    @Test
     void sameBallsInSequenceWithNoScore() {
         List<BallType> balls = new ArrayList<>();
         balls.add(BallType.BLUE);
@@ -69,13 +100,13 @@ class BoardTest {
     @Test
     void sameBallsInSequenceWithPositiveScore() {
         List<BallType> balls = new ArrayList<>();
-        balls.add(BallType.ORANGE);
-        balls.add(BallType.BLUE);
-        balls.add(BallType.BLUE);
-        balls.add(BallType.BLUE);
-        balls.add(BallType.PURPLE);
-        balls.add(BallType.GREEN);
-        balls.add(BallType.EMPTY);
+        balls.add(BallType.ORANGE); //0
+        balls.add(BallType.BLUE);   //1
+        balls.add(BallType.BLUE);   //2
+        balls.add(BallType.BLUE);   //3
+        balls.add(BallType.PURPLE); //4
+        balls.add(BallType.GREEN);  //5
+        balls.add(BallType.EMPTY);  //6
         Sequence sequence = new Sequence(balls);
         int score = 0;
         for(int i = 0; i < BOARDSIZE; i++){
