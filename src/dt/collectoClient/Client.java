@@ -28,6 +28,8 @@ public class Client implements ClientProtocol, NetworkEntity {
     private final String CLIENTDESCRIPTION = "Client By: Emiel";
     private boolean chatEnabled;
     private boolean rankEnabled;
+    private boolean cryptEnabled;
+    private boolean authEnabled;
     private ClientStates state;
     private int[] ourLastMove;
 
@@ -39,6 +41,8 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.port = null;
         this.chatEnabled = false;
         this.rankEnabled = false;
+        this.cryptEnabled = false;
+        this.authEnabled = false;
     }
     public static void main(String[] args) {
         Client client = new Client();
@@ -102,7 +106,10 @@ public class Client implements ClientProtocol, NetworkEntity {
                     break;
                 case LIST:
                     if (this.state == ClientStates.WAITINGONLIST) {
-                        this.clientView.showMessage(parseListResponse(arguments));
+                        this.clientView.displayList(parseListResponse(arguments));
+                    }
+                    synchronized (clientView) {
+                        this.clientView.notify();
                     }
                     break;
                 case NEWGAME:
@@ -113,20 +120,26 @@ public class Client implements ClientProtocol, NetworkEntity {
                     }
                     break;
                 case MOVE:
+                    this.makeTheirMove(arguments);
+
                     if (this.state == ClientStates.AWAITMOVERESPONSE) {
                         this.checkMoveResponse(arguments);
-                    }
-                    if (this.state == ClientStates.AWAITNGTHEIRMOVE) {
+                    } else if (this.state == ClientStates.AWAITNGTHEIRMOVE) {
                         try {
                             this.makeTheirMove(arguments);
                         } catch (InvalidMoveException e) {
                             throw new InvalidMoveException("The server move was invalid");
                         }
+                    } else {
+                        throw new UnexpectedResponseException();
                     }
+                    break;
                 case GAMEOVER:
                     this.clientView.showMessage(this.handleGameOver(arguments));
                     break;
                 case ERROR:
+                    clientView.showMessage("Server threw error: " + msg);
+                    break;
 
             }
         }catch (UnexpectedResponseException e) {
@@ -157,6 +170,11 @@ public class Client implements ClientProtocol, NetworkEntity {
     public void doGetList() {
         connection.write(ClientMessages.LIST.constructMessage());
         this.state = ClientStates.WAITINGONLIST;
+        try {
+            clientView.wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -185,36 +203,28 @@ public class Client implements ClientProtocol, NetworkEntity {
 
     //Parsing response
     //HELLO
-    private void handleHello(String[] aguments) throws ProtocolException {
-        switch (aguments.length) {
-            case 1:
-                throw new ProtocolException("No server name given");
-            case 2:
-                this.chatEnabled = aguments[1].equals(ProtocolMessages.Messages.CHAT.toString());
-                this.rankEnabled = aguments[1].equals(ProtocolMessages.Messages.RANK.toString());
-                break;
-            case 3:
-                this.chatEnabled = aguments[1].equals(ProtocolMessages.Messages.CHAT.toString()) ||
-                        aguments[2].equals(ProtocolMessages.Messages.CHAT.toString());
-                this.rankEnabled = aguments[1].equals(ProtocolMessages.Messages.RANK.toString()) ||
-                        aguments[2].equals(ProtocolMessages.Messages.RANK.toString());
-                break;
-            default:
-                throw new ProtocolException("Too many arguments");
+    private void handleHello(String[] arguments)  {
+
+        for(int i = 1; i < arguments.length; i++) {
+            String arg = arguments[i];
+            chatEnabled = arg.equals(ProtocolMessages.Messages.CHAT.toString());
+            rankEnabled = arg.equals(ProtocolMessages.Messages.RANK.toString());
+            cryptEnabled = arg.equals(ProtocolMessages.Messages.CRYPT.toString());
+            authEnabled = arg.equals(ProtocolMessages.Messages.AUTH.toString());
         }
     }
 
     //LIST
-    private String parseListResponse(String[] arguments) throws ProtocolException {
-        String ret = "List of logged in users: \n";
+    private String[] parseListResponse(String[] arguments) {
+        String[] ret = new String[arguments.length-1];
         for(int i = 1; i < arguments.length; i++) {
-            ret = ret.concat(arguments[i] + '\n');
+            ret[i-1] =arguments[i];
         }
         return ret;
     }
 
     //NEWGAME
-    private void createNewBoard(String[] arguments) throws NumberFormatException{
+    private void createNewBoard(String[] arguments) throws NumberFormatException {
         int[] boardState = new int[arguments.length-1]; //TODO add check on valid number of squares
         for(int i = 1; i < arguments.length; i++) {
             boardState[i-1] = Integer.parseInt(arguments[i]);

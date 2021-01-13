@@ -1,17 +1,16 @@
 package dt.collectoClient;
 
-import dt.protocol.ClientMessages;
+import dt.exceptions.CommandException;
+import dt.exceptions.InvalidMoveException;
 import dt.server.SimpleTUI;
 
 import java.io.*;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
 
     private Client client;
-    private boolean autoStartup = true;
 
     ClientTUI(Client client) {
         this.client = client;
@@ -40,7 +39,6 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
         while(!exit) {
             try{
                 this.wait();
-
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -54,33 +52,50 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
             try {
                 String input = getString("What would you like to do?");
                 handleUserInput(input);
-            } catch (IOException e) {
-                showMessage("Shit broke");
-            }
+            } catch (CommandException e) {
+                this.showMessage(e.getMessage());
+        }
         }
     }
 
 
 
-
-    private void handleUserInput(String input) throws IOException {
+    private void handleUserInput(String input) throws CommandException {
         try {
-            switch (ClientMessages.valueOf(input)) {
+            String[] arguments = input.split(" ");
+            UserCmds cmd = UserCmds.getUserCmd(arguments[0]);
+            if(cmd == null) throw new CommandException("Unkown command: " + arguments[0]+ "For a list of valid commands type h");
+            switch (cmd) {
                 case LIST:
-                    client.doGetList();
+                    this.client.doGetList();
                     break;
-                default:
-                    client.writeMessage(input);
+                case QUEUE:
+                    this.client.doEnterQueue();
                     break;
+                case MOVE:
+                    if(arguments.length == 2) {
+                        this.client.doMove(Integer.parseInt(arguments[1]));
+                    }
             }
-            ;
-        } catch (IllegalArgumentException e) {
-            client.writeMessage(input);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new CommandException("Invalid number of arguments give");
+        } catch (NumberFormatException e) {
+            throw new CommandException("Move was not an integer");
+        } catch (InvalidMoveException e) {
+            throw new CommandException("Move was not valid");
         }
+
     }
 
     public String getUsername() {
         return getString("What username would you like to have?");
+    }
+
+    public synchronized void displayList(String[] list) { //TODO checken wat synchronized moet zijn
+        this.showMessage("List of logged in users");
+        for(int i = 0; i < list.length; i++) {
+            this.showMessage(list[i]);
+        }
     }
 
     public InetAddress getIp() {
