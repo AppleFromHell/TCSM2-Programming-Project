@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import static dt.model.board.Board.BOARDSIZE;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BoardTest {
@@ -73,7 +72,7 @@ class BoardTest {
     @Test
     void testDeepCopy() {
         ServerBoard original = new ServerBoard();
-        original.fillBoard(original.createBoard());
+        original.setupBoard();
         ServerBoard copy = new ServerBoard();
         copy.fillBoard(original.getBoardState());
         assertFalse(original.equals(copy));
@@ -109,7 +108,7 @@ class BoardTest {
         balls.add(BallType.EMPTY);  //6
         Sequence sequence = new Sequence(balls);
         int score = 0;
-        for(int i = 0; i < BOARDSIZE; i++){
+        for(int i = 0; i < boardSize; i++){
             int sameBalls = board.sameBallsInSequence(sequence, i, 1);
             if(sameBalls > 1){
                 i += sameBalls - 1;
@@ -133,7 +132,7 @@ class BoardTest {
         Sequence sequence = new Sequence(balls);
 
         int score = 0;
-        for(int i = 0; i < BOARDSIZE; i++){
+        for(int i = 0; i < boardSize; i++){
             int sameBalls = board.sameBallsInSequence(sequence, i, 1);
             if(sameBalls > 1){
                 i += sameBalls - 1;
