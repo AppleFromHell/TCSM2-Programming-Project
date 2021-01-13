@@ -46,7 +46,13 @@ public class Peer implements Runnable {
                     System.out.println("\n" + reader.readLine());
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("CLIENT DISCONNECTED");
+                try {
+                    this.shutDown();
+                } catch (Exception ex) {
+                    System.exit(1);
+                }
+
             }
 
         }
@@ -61,20 +67,12 @@ public class Peer implements Runnable {
     public void handleTerminalInput() throws IOException {
         BufferedWriter writer = new BufferedWriter(new PrintWriter(this.sock.getOutputStream()));
 
-//      THIS WORKS WHAT
-//        PrintWriter printer = new PrintWriter(sock.getOutputStream());
-//        BufferedWriter writer; // = new BufferedWriter(printer);
-//        for(int i = 0; i < 100; i++){
-//            writer = new BufferedWriter(printer);
-//            printer = new PrintWriter(writer);
-//        }
-
         while(true) {
-            String input = String.format("[%s]: %s",name, readString(""));
+            String input = String.format(readString(""));
             if(input.toLowerCase().contains("exit")) {
                 break;
             }
-            System.out.println(input);
+            System.out.println("[SERVER]:" + input);
             writer.write(input);
             writer.newLine();
             writer.flush();

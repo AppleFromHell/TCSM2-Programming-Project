@@ -1,39 +1,54 @@
 package dt.collectoClient;
 
-import dt.server.ServerTUI;
+import dt.protocol.ClientMessages;
 import dt.server.SimpleTUI;
 
 import java.io.*;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
 
-    private CollectoClient collectoClient;
+    private Client client;
     private boolean autoStartup = true;
 
-    ClientTUI(CollectoClient collectoClient) {
-        this.collectoClient = collectoClient;
+    ClientTUI(Client client) {
+        this.client = client;
     }
 
     @Override
-    public void start() {
-        if(!autoStartup) {
-            while (collectoClient.getIp() == null) {
-                this.collectoClient.setIp(getIp());
-            }
-            while (collectoClient.getPort() == null) {
-                this.collectoClient.setPort(getPort());
-            }
-        } else {
-            this.collectoClient.setPort(6969);
+    public synchronized void start() {
+        while (client.getIp() == null) {
+            this.client.setIp(getIp());
+        }
+        while (client.getPort() == null) {
+            this.client.setPort(getPort());
+        }
+
+        while(!exit) {
             try {
-                this.collectoClient.setIp(InetAddress.getByName("localhost"));
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
+                client.createConnection();
+                break;
+            } catch (Exception e) {
+                showMessage("Server not availabe. Reason: " + e.getMessage());
+                exit = !getBoolean("Try again? (y/n)");
             }
         }
-        collectoClient.createConnection();
+
+        String username = "Somethin wong";
+        while(!exit) {
+            try{
+                this.wait();
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if(client.getState() == ClientStates.LOGGEDIN) break;
+            username = getUsername();
+            client.doLogin(username);
+        }
+        this.client.setUsername(username);
 
         while(!exit) {
             try {
@@ -49,7 +64,19 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
 
 
     private void handleUserInput(String input) throws IOException {
-
+        try {
+            switch (ClientMessages.valueOf(input)) {
+                case LIST:
+                    client.doGetList();
+                    break;
+                default:
+                    client.writeMessage(input);
+                    break;
+            }
+            ;
+        } catch (IllegalArgumentException e) {
+            client.writeMessage(input);
+        }
     }
 
     public String getUsername() {

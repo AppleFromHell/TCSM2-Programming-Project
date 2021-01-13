@@ -22,6 +22,8 @@ public class Server {
     /** Starts a Server-application. */
     public static void main(String[] args) throws IOException, ServerUnavailableException {
         Server serverr = new Server();
+        if(args.length > 0 ) serverr.port = Integer.parseInt(args[0]);
+
         ServerTUI view = new ServerTUI(serverr);
         view.start();
 
@@ -53,7 +55,11 @@ public class Server {
                 sock.getOutputStream()));
 
         serverr.doHello();
-        while(true);
+        Peer peer = new Peer("Emiel", sock);
+        new Thread(peer).start();
+        System.out.println("Thread shutdown");
+        peer.handleTerminalInput();
+        System.out.println("Server shutdown");
     }
 
     private synchronized void write(String input) throws ServerUnavailableException {

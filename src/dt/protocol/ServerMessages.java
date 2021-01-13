@@ -13,6 +13,11 @@ public enum ServerMessages implements ProtocolMessages {
     ERROR (Messages.ERROR)
     ;
 
+    public enum GameOverReasons {
+        DRAW,
+        DISCONNECT,
+        VICTORY
+    }
     private String msg = "";
 
     ServerMessages(ProtocolMessages.Messages msg) {

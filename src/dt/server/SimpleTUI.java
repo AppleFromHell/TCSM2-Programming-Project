@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 public class SimpleTUI {
 
     private final String EXITSTATEMENT = "exit";
-    protected boolean exit;
+    protected boolean exit = false;
     protected SimpleTUI(){}
     private final BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
     private final PrintWriter stdOut = new PrintWriter(System.out, true);
@@ -28,7 +28,7 @@ public class SimpleTUI {
         if (answer == null || answer.equals("\n")) {
             return "Invalid Input";
         } else {
-            return answer;
+            return answer.replace("\n", "");
         }
     }
     public void start(){}

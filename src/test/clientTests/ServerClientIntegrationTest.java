@@ -1,6 +1,6 @@
 package clientTests;
 
-import dt.collectoClient.CollectoClient;
+import dt.collectoClient.Client;
 import dt.exceptions.ServerUnavailableException;
 import dt.server.Server;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,10 +11,8 @@ import java.net.InetAddress;
 import java.net.ProtocolException;
 import java.net.UnknownHostException;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class ServerClientIntegrationTest {
-    CollectoClient client = new CollectoClient();
+    Client client = new Client();
 
     static class ServerRunner implements Runnable {
         public void run() {
@@ -34,7 +32,7 @@ public class ServerClientIntegrationTest {
     }
 
     @Test
-    void startup() throws UnknownHostException {
+    void startup() throws IOException, ServerUnavailableException {
         client.setIp(InetAddress.getByName("localhost"));
         client.setPort(888);
         client.setUsername("TestClient");

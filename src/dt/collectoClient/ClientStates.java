@@ -3,7 +3,17 @@ package dt.collectoClient;
 
 enum ClientStates {
     STARTINGUP,
+    PENDINGHELLO,
+    HELLOED,
+    PENDINGLOGIN,
     LOGGEDIN,
     INQUEUE,
-    WAITINGFORMOVE;
+    WAITINGONLIST,
+    INGAME,
+    AWAITNGTHEIRMOVE,
+    AWAITMOVERESPONSE,
+    IDLE,
+
+
+
 }

@@ -7,10 +7,10 @@ import java.net.ProtocolException;
 
 public interface ClientProtocol {
 
-    String doHello() throws ServerUnavailableException, ProtocolException;
-    boolean doLogin(String username) throws ServerUnavailableException, ProtocolException;
-    String doGetList() throws ServerUnavailableException, ProtocolException;
-    String doMove(int move) throws ServerUnavailableException, ProtocolException, InvalidMoveException;
-    String doMove(int move, int move2) throws ServerUnavailableException, ProtocolException, InvalidMoveException;
-    String doEnterQueue() throws ServerUnavailableException, ProtocolException;
+    void doHello();
+    void doLogin(String username);
+    void doGetList();
+    void doMove(int move) throws InvalidMoveException;
+    void doMove(int move, int move2) throws InvalidMoveException;
+    void doEnterQueue();
 }
