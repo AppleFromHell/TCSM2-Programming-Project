@@ -1,12 +1,12 @@
 package dt.model.board;
 
 import dt.exceptions.InvalidMoveException;
+import dt.util.Tuple;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Board {
-    public static final int BOARDSIZE = 7;
+    private static final int BOARDSIZE = 7;
 
     private List<Sequence> rows;
     private List<Sequence> columns;
@@ -29,17 +29,17 @@ public class Board {
     }
 
     public void fillBoard(int[] newBoard){ //Parse van int[] to BallType[]
-        for (int r = 0; r < BOARDSIZE; r++){
+        for (int r = 0; r < this.boardSize; r++){
             List<BallType> balls = new ArrayList<>();
-            for(int i = 0; i < BOARDSIZE; i++){
-                balls.add(findBallType(newBoard[r * BOARDSIZE + i]));
+            for(int i = 0; i < this.boardSize; i++){
+                balls.add(findBallType(newBoard[r * this.boardSize + i]));
             }
             this.rows.add(new Sequence(balls));
         }
 
-        for(int r = 0; r < BOARDSIZE; r++){
+        for(int r = 0; r < this.boardSize; r++){
             List<BallType> balls = new ArrayList<>();
-            for(int i = 0; i < BOARDSIZE; i ++){
+            for(int i = 0; i < this.boardSize; i ++){
                 List<BallType> rowBalls = this.rows.get(r).getBalls();
                 balls.add(rowBalls.get(i)); //Essentially doing column[r][i] = row[i][r]
             }
@@ -53,16 +53,22 @@ public class Board {
     }
 
     public HashMap<BallType, Integer> makeMove(int move) throws InvalidMoveException {
-        isValidMove(move);
-        executeMove(move);
-        return getYield();
+        if (isValidSingleMove(move)) {
+            executeMove(move);
+            return getYield();
+        } else {
+            throw new InvalidMoveException("The move that you tried to make is not a valid move");
+        }
     }
 
-    public HashMap<BallType, Integer> makeMove(int move1, int move2) {
-        isValidMove(move1, move2);
-        executeMove(move1);
-        executeMove(move2);
-        return getYield();
+    public HashMap<BallType, Integer> makeMove(Tuple<Integer, Integer> moveSet) throws InvalidMoveException {
+        if(isValidDoubleMove(moveSet)) {
+            executeMove(moveSet.a);
+            executeMove(moveSet.b);
+            return getYield();
+        } else{
+            throw new InvalidMoveException("The move that you tried to make is not a valid move");
+        }
     }
 
     /**
@@ -70,38 +76,71 @@ public class Board {
      * @param move The move to be executed, conform the protocol.
      */
     private void executeMove(int move) {
-        if (move > (3 * BOARDSIZE) - 1) { // move > 20
-            columns.get(move - (3 * BOARDSIZE)).shiftLeftOrDown();
-        } else if (move > (2 * BOARDSIZE) - 1) { // move > 13
-            columns.get(move - (2 * BOARDSIZE)).shiftRightOrUp();
-        } else if (move > BOARDSIZE - 1) { // move > 6
-            rows.get(move - BOARDSIZE).shiftRightOrUp();
+        boolean changedColumn = true;
+        if (move > (3 * this.boardSize) - 1) { // move > 20
+            columns.get(move - (3 * this.boardSize)).shiftLeftOrDown();
+        } else if (move > (2 * this.boardSize) - 1) { // move > 13
+            columns.get(move - (2 * this.boardSize)).shiftRightOrUp();
+        } else if (move > this.boardSize - 1) { // move > 6
+            rows.get(move - this.boardSize).shiftRightOrUp();
+            changedColumn = false;
         } else { // move <= 6
             rows.get(move).shiftLeftOrDown();
+            changedColumn = false;
         }
 
-        //TODO Rows and Columns need to be synchronized again after they have shifted
+        if(changedColumn){
+            synchronize(this.columns, this.rows);
+        } else {
+            synchronize(this.rows, this.columns);
+        }
     }
 
-    public boolean isValidMove(int move) throws InvalidMoveException {
+    private void synchronize(List<Sequence> updatedList, List<Sequence> outdatedList) {
+        for (int r = 0; r < this.boardSize; r++){
+            Sequence row = updatedList.get(r);
+            for(int b = 0; b < this.boardSize; b++){
+                BallType ball = row.getBalls().get(b);
+                outdatedList.get(b).getBalls().set(r, ball);
+            }
+        }
+    }
+
+    public boolean isValidSingleMove(int move) throws InvalidMoveException {
         if(move < 0 || move > 27){
             throw new InvalidMoveException("Move integer given is lower than 0 or higher than 27");
         }
-        return findValidMoves().contains(move);
+        return findValidSingleMoves().contains(move);
     }
 
     /**
      * First looks at whether move1 is valid, and if so places this move on a deep copy of the board, and then sees
      * whether move2 is a valid move.
-     * @param move1 The first move to be done.
-     * @param move2 The second move to be done.
+     * @requires move1 to be possible and move2 to be valid once move1 has been done.
+     * @param moveSet A tuple in the shape of the first and the second move.
      * @return Whether the move sequence is valid or not.
      */
-    public boolean isValidMove(int move1, int move2) {
-        return false;
+    public boolean isValidDoubleMove(Tuple<Integer, Integer> moveSet) {
+        boolean validity = false;
+        if(findValidDoubleMoves().contains(moveSet)){
+            validity = true;
+        }
+        return validity;
     }
 
-    public List<Integer> findValidMoves() {
+    public List<Tuple<Integer, Integer>> findValidDoubleMoves(){
+        List<Tuple<Integer, Integer>> validDoubleMoves = new ArrayList<>();
+        for(Integer move1 : this.findPossibleMoves()){
+            Board copyBoard = this.deepCopy();
+            copyBoard.executeMove(move1);
+            for(Integer move2 : copyBoard.findValidSingleMoves()){
+                validDoubleMoves.add(new Tuple<>(move1, move2));
+            }
+        }
+        return validDoubleMoves;
+    }
+
+    public List<Integer> findValidSingleMoves() {
         // Find all the possible moves
         // Iterate through them
             // Create a deep copy of the current board
@@ -111,11 +150,9 @@ public class Board {
         List<Integer> validMoves = new ArrayList<>();
         List<Integer> possibleMoves = this.findPossibleMoves();
         for(Integer move : possibleMoves){
-            Board copyBoard = new Board(this.boardSize);
-            copyBoard.fillBoard(this.getBoardState()); // Create deep copy
+            Board copyBoard = this.deepCopy();
             copyBoard.executeMove(move);               // Place move on the copyBoard
-            HashMap<BallType, Integer> yield = copyBoard.getYield(); //Get the yield
-            if(yield.values().stream().reduce(0, Integer::sum) > 0){
+            if(!copyBoard.getYield().values().isEmpty()){
                 //throw a party and lets go to the casino because we've got a valid move on our hands bois
                 validMoves.add(move);
             }
@@ -130,7 +167,7 @@ public class Board {
      */
     public List<Integer> findPossibleMoves(){
         List<Integer> possibleMoves = new ArrayList<>();
-        for(int rowIndex = 0; rowIndex < BOARDSIZE; rowIndex++){
+        for(int rowIndex = 0; rowIndex < this.boardSize; rowIndex++){
             Sequence row = this.rows.get(rowIndex);
             List<BallType> balls;
 
@@ -142,13 +179,13 @@ public class Board {
                     if(ballIndex > 0) possibleMoves.add(rowIndex);
 
                     // Check whether it can move right
-                    if(ballIndex < BOARDSIZE - 1) possibleMoves.add(rowIndex + BOARDSIZE);
+                    if(ballIndex < this.boardSize - 1) possibleMoves.add(rowIndex + this.boardSize);
 
                     // check whether it can move up
-                    if(rowIndex > 0) possibleMoves.add(ballIndex + (2 * BOARDSIZE));
+                    if(rowIndex > 0) possibleMoves.add(ballIndex + (2 * this.boardSize));
 
                     // Check whether it can move down
-                    if(rowIndex < BOARDSIZE - 1) possibleMoves.add(ballIndex + (3 * BOARDSIZE));
+                    if(rowIndex < this.boardSize - 1) possibleMoves.add(ballIndex + (3 * this.boardSize));
                 }
             }
         }
@@ -279,7 +316,21 @@ public class Board {
     }
 
     public boolean isGameOver(){
-        return false;
+        boolean singleMove = false;
+        boolean doubleMovePossible = false;
+        if(!findValidSingleMoves().isEmpty()) {
+            for (Integer move : this.findPossibleMoves()) { //Clearly no move is possible on the current board.
+                Board copyBoard = this.deepCopy(); //So you'll set all the possible moves and find out whether any of them come to a valid move.
+                copyBoard.executeMove(move);
+                if (!copyBoard.findValidSingleMoves().isEmpty()) {
+                    doubleMovePossible = true;
+                    break;
+                }
+            }
+        } else {
+            singleMove = true;
+        }
+        return doubleMovePossible || singleMove;
     }
 
     /**
@@ -289,7 +340,7 @@ public class Board {
     public Board deepCopy(){
         Board copyBoard = new Board(this.boardSize);
         copyBoard.fillBoard(getBoardState());
-        return null;
+        return copyBoard;
     }
 
     @Override
