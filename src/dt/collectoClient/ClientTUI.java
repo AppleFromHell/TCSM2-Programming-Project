@@ -34,7 +34,9 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
                     break;
                 } catch (Exception e) {
                     showMessage("Server not availabe. Reason: " + e.getMessage());
-                    exit = !getBoolean("Try again? (y/n)");
+                    if(!getBoolean("Try again? (y/n)")) {
+                        throw new UserExit();
+                    };
                 }
             }
 
@@ -110,13 +112,12 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
     }
 
     public InetAddress getIp() throws UserExit {
-        while(!exit) {
-            try {
-                return InetAddress.getByName(getString("What IP address is the server running on (format: x.x.x.x)"));
-            } catch (UnknownHostException e) {
-                showMessage("Invalid IP, try again. Format: x.x.x.x where x stands for 1-3 integers");
-            }
+        try {
+            return InetAddress.getByName(getString("What IP address is the server running on (format: x.x.x.x)"));
+        } catch (UnknownHostException e) {
+            showMessage("Invalid IP, try again. Format: x.x.x.x where x stands for 1-3 integers");
         }
+
         return null;
     }
 }

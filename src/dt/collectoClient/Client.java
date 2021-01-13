@@ -317,6 +317,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     @Override
     public void shutDown() {
         clearConnection();
+        connection.shutDown();
         clientView.showMessage("See you next time!");
         System.exit(0);
     }

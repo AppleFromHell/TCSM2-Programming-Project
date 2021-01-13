@@ -8,7 +8,6 @@ public class ConnectionHandler implements Runnable {
     private NetworkEntity networkEntity;
     private BufferedReader socketIn;
     private BufferedWriter socketOut;
-    private boolean exit = false;
     private boolean debug = true;
 
     public void run() {
@@ -32,17 +31,15 @@ public class ConnectionHandler implements Runnable {
     }
 
     private void readSocketInput() {
-        while (!exit) {
-            try {
-                if (!socket.isClosed() && socketIn != null) {
-                    String msg = socketIn.readLine();
-                    if(debug) System.out.println(">[Sever]:" +msg);
-                    networkEntity.handleMessage(msg);
-                }
-            } catch (IOException e) {
-                shutDown();//TODO dit ff uitzoeken. Wat gebuert er als de server shutdownt met ch
-                networkEntity.handlePeerShutdown();
+        try {
+            if (!socket.isClosed() && socketIn != null) {
+                String msg = socketIn.readLine();
+                if(debug) System.out.println(">[Sever]:" +msg);
+                networkEntity.handleMessage(msg);
             }
+        } catch (IOException e) {
+            shutDown();//TODO dit ff uitzoeken. Wat gebuert er als de server shutdownt met ch
+            networkEntity.handlePeerShutdown();
         }
     }
 
