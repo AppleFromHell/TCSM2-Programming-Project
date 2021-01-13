@@ -156,7 +156,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     //Outgoing messages. Updates state
     @Override
     public void doHello() {
-        connection.write(ClientMessages.HELLO.constructMessage(CLIENTDESCRIPTION + this.userName));
+        connection.write(ClientMessages.HELLO.constructMessage(CLIENTDESCRIPTION));
         this.state = ClientStates.PENDINGHELLO;
     }
 

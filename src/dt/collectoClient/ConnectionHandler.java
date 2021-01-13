@@ -32,13 +32,12 @@ public class ConnectionHandler implements Runnable {
 
     private void readSocketInput() {
         try {
-            if (!socket.isClosed() && socketIn != null) {
+            while(!socket.isClosed() && socketIn != null ) {
                 String msg = socketIn.readLine();
                 if(debug) System.out.println(">[Sever]:" +msg);
                 networkEntity.handleMessage(msg);
             }
         } catch (IOException e) {
-            shutDown();//TODO dit ff uitzoeken. Wat gebuert er als de server shutdownt met ch
             networkEntity.handlePeerShutdown();
         }
     }

@@ -20,6 +20,7 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
 
     @Override
     public synchronized void start() {
+        printHelpMenu();
         try {
             while (client.getIp() == null) {
                 this.client.setIp(getIp());
@@ -36,7 +37,7 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
                     showMessage("Server not availabe. Reason: " + e.getMessage());
                     if(!getBoolean("Try again? (y/n)")) {
                         throw new UserExit();
-                    };
+                    }
                 }
             }
 
@@ -71,7 +72,7 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
 
     private void handleUserInput(String input) throws CommandException {
         try {
-            String[] arguments = input.split("[ ~+=-]");
+            String[] arguments = input.split(UserCmds.separators);
             UserCmds cmd = UserCmds.getUserCmd(arguments[0]);
             if(cmd == null) throw new CommandException("Unkown command: " + arguments[0]+ "For a list of valid commands type h");
             switch (cmd) {
@@ -89,6 +90,10 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
                     } else {
                         throw new CommandException("Too many moves");
                     }
+                    break;
+                case HELP:
+                    printHelpMenu();
+                    break;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new CommandException("Invalid number of arguments give");
@@ -102,6 +107,12 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
 
     public String getUsername() throws UserExit {
         return getString("What username would you like to have?");
+    }
+
+    private void printHelpMenu() {
+        String ret = "Here is the list of commands:\n";
+        ret += UserCmds.getPrettyCommands();
+        this.showMessage(ret);
     }
 
     public synchronized void displayList(String[] list) { //TODO checken wat synchronized moet zijn
