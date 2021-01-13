@@ -26,5 +26,14 @@ public class Move {
         return this.move2;
     }
 
+    @Override
+    public String toString() {
+        return isDoubleMove()? "[" + this.move1 + "][" + this.move1 + "]" : "[" + this.move1 + "]";
+    }
+
+    public String toServerMove() {
+        return isDoubleMove()? "[" + this.move1 + "][" + this.move1 + "]" : "[" + this.move1 + "]";
+    }
+
 
 }

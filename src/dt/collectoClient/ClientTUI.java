@@ -3,6 +3,7 @@ package dt.collectoClient;
 import dt.exceptions.CommandException;
 import dt.exceptions.InvalidMoveException;
 import dt.server.SimpleTUI;
+import dt.util.Move;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -74,7 +75,9 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
                     break;
                 case MOVE:
                     if(arguments.length == 2) {
-                        this.client.doMove(Integer.parseInt(arguments[1]));
+                        this.client.doMove(new Move(Integer.parseInt(arguments[1])));
+                    } else if(arguments.length == 3) {
+                        this.client.doMove(new Move(Integer.parseInt(arguments[1], Integer.parseInt(arguments[2]))));
                     }
             }
         } catch (ArrayIndexOutOfBoundsException e) {

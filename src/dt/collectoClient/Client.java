@@ -10,6 +10,7 @@ import dt.protocol.ClientMessages;
 import dt.protocol.ClientProtocol;
 import dt.protocol.ProtocolMessages;
 import dt.protocol.ServerMessages;
+import dt.util.Move;
 
 import java.net.InetAddress;
 import java.net.ProtocolException;
@@ -31,7 +32,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     private boolean cryptEnabled;
     private boolean authEnabled;
     private ClientStates state;
-    private int[] ourLastMove;
+    private Move ourLastMove;
 
 
     public Client() {
@@ -179,21 +180,13 @@ public class Client implements ClientProtocol, NetworkEntity {
 
 
     @Override
-    public void doMove(int move) throws InvalidMoveException {
+    public void doMove(Move move) throws InvalidMoveException {
             makeMove(move);
-            connection.write(ClientMessages.MOVE.constructMessage(String.valueOf(move)));
-            this.ourLastMove = new int[]{move};
+            connection.write(ClientMessages.MOVE.constructMessage(move);
+            this.ourLastMove = move;
             this.state = ClientStates.AWAITMOVERESPONSE;
     }
 
-
-    @Override
-    public void doMove(int move, int move2) throws InvalidMoveException {
-            makeMove(move, move2);
-            connection.write(ClientMessages.MOVE.constructMessage(String.valueOf(move), String.valueOf(move2)));
-            this.ourLastMove = new int[]{move, move2};
-            this.state = ClientStates.AWAITMOVERESPONSE;
-    }
 
     @Override
     public void doEnterQueue()  {
@@ -238,13 +231,13 @@ public class Client implements ClientProtocol, NetworkEntity {
             case 1:
                 throw new ProtocolException("No move in response");
             case 2:
-                if(!Arrays.equals(ourLastMove, new int[]{Integer.parseInt(arguments[1])})) {
-                    throw new ProtocolException("Move mismatch. Our move was: " + Arrays.toString(ourLastMove));
+                if(ourLastMove.equals(new Move(Integer.parseInt(arguments[1])))) {
+                    throw new ProtocolException("Move mismatch. Our move was: " + ourLastMove.toString());
                 }
                 break;
             case 3:
-                if(!Arrays.equals(ourLastMove, new int[]{Integer.parseInt(arguments[1], Integer.parseInt(arguments[2]))})) {
-                    throw new ProtocolException("Move mismatch. Our move was: " + Arrays.toString(ourLastMove));
+                if(ourLastMove.equals(new Move(Integer.parseInt(arguments[1], Integer.parseInt(arguments[2]))))) {
+                    throw new ProtocolException("Move mismatch. Our move was: " + ourLastMove.toString());
                 }
                 break;
             default:
@@ -259,10 +252,10 @@ public class Client implements ClientProtocol, NetworkEntity {
             case 1:
                 throw new ProtocolException("No move in response of their move");
             case 2:
-                board.makeMove(Integer.parseInt(arguments[1]));
+                board.makeMove(new Move(Integer.parseInt(arguments[1])));
                 break;
             case 3:
-                board.makeMove(Integer.parseInt(arguments[1]), Integer.parseInt(arguments[2]));
+                board.makeMove(new Move(Integer.parseInt(arguments[1]),Integer.parseInt(arguments[1])));
                 break;
             default:
                 throw new ProtocolException("Too many arguments");
@@ -312,12 +305,8 @@ public class Client implements ClientProtocol, NetworkEntity {
         doHello();
     }
 
-    private void makeMove(int move) throws InvalidMoveException {
+    private void makeMove(Move move) throws InvalidMoveException {
         board.makeMove(move);
-    }
-
-    private void makeMove(int move, int move2) throws InvalidMoveException {
-        board.makeMove(move, move2);
     }
 
     @Override
