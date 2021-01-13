@@ -41,7 +41,7 @@ public class ConnectionHandler implements Runnable {
                 }
             } catch (IOException e) {
                 shutDown();//TODO dit ff uitzoeken. Wat gebuert er als de server shutdownt met ch
-                networkEntity.handleShutdown();
+                networkEntity.handlePeerShutdown();
             }
         }
     }

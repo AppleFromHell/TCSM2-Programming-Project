@@ -5,25 +5,23 @@ import dt.protocol.ClientMessages;
 import java.util.Objects;
 
 public enum UserCmds {
-    LIST("l", "list"),
-    MOVE("m", "move"),
-    QUEUE("q","queue", "newgame");
+    LIST(new String[]{"l", "list"}),
+    MOVE(new String[]{"m", "move"}),
+    QUEUE(new String[]{"q","queue", "newgame", "kwewe"}),
+    EXIT(new String[]{"quit", "exit", "x"}),
+    HELP(new String[]{"?", "h", "help"});
 
-    private String cmd1;
-    private String cmd2;
-    private String cmd3;
 
-    UserCmds(String cmd1, String cmd2) {
-        this.cmd1 = cmd1;
-        this.cmd2 = cmd2;
-    }
-    UserCmds(String cmd1, String cmd2, String cmd3) {
-        this.cmd1 = cmd1;
-        this.cmd2 = cmd2;
-        this.cmd3 = cmd3;
+    private String[]  cmds;
+
+    UserCmds(String[] strings) {
+        this.cmds = strings;
     }
     public boolean isValid(String str) {
-        return this.cmd1.equals(str) || this.cmd2.equals(str) || Objects.equals(this.cmd3, str);
+        for(String cmd : cmds) {
+            if(cmd.equals(str)) return true;
+        }
+        return false;
     }
 
     public static UserCmds getUserCmd(String userCmd) {

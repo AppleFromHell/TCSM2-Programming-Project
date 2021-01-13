@@ -182,7 +182,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     @Override
     public void doMove(Move move) throws InvalidMoveException {
             makeMove(move);
-            connection.write(ClientMessages.MOVE.constructMessage(move);
+            connection.write(ClientMessages.MOVE.constructMessage(move));
             this.ourLastMove = move;
             this.state = ClientStates.AWAITMOVERESPONSE;
     }
@@ -252,10 +252,10 @@ public class Client implements ClientProtocol, NetworkEntity {
             case 1:
                 throw new ProtocolException("No move in response of their move");
             case 2:
-                board.makeMove(new Move(Integer.parseInt(arguments[1])));
+                makeMove(new Move(Integer.parseInt(arguments[1])));
                 break;
             case 3:
-                board.makeMove(new Move(Integer.parseInt(arguments[1]),Integer.parseInt(arguments[1])));
+                makeMove(new Move(Integer.parseInt(arguments[1]),Integer.parseInt(arguments[1])));
                 break;
             default:
                 throw new ProtocolException("Too many arguments");
@@ -306,12 +306,19 @@ public class Client implements ClientProtocol, NetworkEntity {
     }
 
     private void makeMove(Move move) throws InvalidMoveException {
-        board.makeMove(move);
+        //board.makeMove(move);
     }
 
     @Override
-    public void handleShutdown() {
+    public void handlePeerShutdown() {
         clientView.showMessage("Server shutdown"); //TODO dit mooi maken
+    }
+
+    @Override
+    public void shutDown() {
+        clearConnection();
+        clientView.showMessage("See you next time!");
+        System.exit(0);
     }
 
     public void clearConnection() {

@@ -1,6 +1,7 @@
 
 package dt.server;
 
+import dt.collectoClient.NetworkEntity;
 import dt.exceptions.ServerUnavailableException;
 import dt.protocol.ClientMessages;
 import dt.protocol.ProtocolMessages;
@@ -14,7 +15,7 @@ import java.net.*;
  * @author  Theo Ruys
  * @version 2005.02.21
  */
-public class Server {
+public class Server implements NetworkEntity {
     private BufferedReader in;
     private BufferedWriter out;
     private Integer port;
@@ -112,5 +113,20 @@ public class Server {
 
     public Integer getPort() {
         return this.port;
+    }
+
+    @Override
+    public void handleMessage(String msg) {
+
+    }
+
+    @Override
+    public void handlePeerShutdown() {
+
+    }
+
+    @Override
+    public void shutDown() {
+
     }
 } // end of class Server

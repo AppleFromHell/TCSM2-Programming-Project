@@ -2,6 +2,7 @@ package dt.collectoClient;
 
 import dt.exceptions.CommandException;
 import dt.exceptions.InvalidMoveException;
+import dt.exceptions.UserExit;
 import dt.server.SimpleTUI;
 import dt.util.Move;
 
@@ -19,43 +20,48 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
 
     @Override
     public synchronized void start() {
-        while (client.getIp() == null) {
-            this.client.setIp(getIp());
-        }
-        while (client.getPort() == null) {
-            this.client.setPort(getPort());
-        }
-
-        while(!exit) {
-            try {
-                client.createConnection();
-                break;
-            } catch (Exception e) {
-                showMessage("Server not availabe. Reason: " + e.getMessage());
-                exit = !getBoolean("Try again? (y/n)");
+        try {
+            while (client.getIp() == null) {
+                this.client.setIp(getIp());
             }
-        }
-
-        String username = "Somethin wong";
-        while(!exit) {
-            try{
-                this.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            while (client.getPort() == null) {
+                this.client.setPort(getPort());
             }
-            if(client.getState() == ClientStates.LOGGEDIN) break;
-            username = getUsername();
-            client.doLogin(username);
-        }
-        this.client.setUsername(username);
 
-        while(!exit) {
-            try {
-                String input = getString("What would you like to do?");
-                handleUserInput(input);
-            } catch (CommandException e) {
-                this.showMessage(e.getMessage());
-        }
+            while (true) {
+                try {
+                    client.createConnection();
+                    break;
+                } catch (Exception e) {
+                    showMessage("Server not availabe. Reason: " + e.getMessage());
+                    exit = !getBoolean("Try again? (y/n)");
+                }
+            }
+
+            String username = "Somethin wong";
+            while (true) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (client.getState() == ClientStates.LOGGEDIN) break;
+                username = getUsername();
+                client.doLogin(username);
+            }
+            this.client.setUsername(username);
+
+            while (true) {
+                try {
+                    String input = getString("What would you like to do?");
+                    handleUserInput(input);
+                } catch (CommandException e) {
+                    this.showMessage(e.getMessage());
+                }
+            }
+        } catch (UserExit e) {
+            client.shutDown();
+
         }
     }
 
@@ -63,7 +69,7 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
 
     private void handleUserInput(String input) throws CommandException {
         try {
-            String[] arguments = input.split(" ");
+            String[] arguments = input.split("[ ~+=-]");
             UserCmds cmd = UserCmds.getUserCmd(arguments[0]);
             if(cmd == null) throw new CommandException("Unkown command: " + arguments[0]+ "For a list of valid commands type h");
             switch (cmd) {
@@ -78,6 +84,8 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
                         this.client.doMove(new Move(Integer.parseInt(arguments[1])));
                     } else if(arguments.length == 3) {
                         this.client.doMove(new Move(Integer.parseInt(arguments[1], Integer.parseInt(arguments[2]))));
+                    } else {
+                        throw new CommandException("Too many moves");
                     }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -90,7 +98,7 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
 
     }
 
-    public String getUsername() {
+    public String getUsername() throws UserExit {
         return getString("What username would you like to have?");
     }
 
@@ -101,7 +109,7 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
         }
     }
 
-    public InetAddress getIp() {
+    public InetAddress getIp() throws UserExit {
         while(!exit) {
             try {
                 return InetAddress.getByName(getString("What IP address is the server running on (format: x.x.x.x)"));
