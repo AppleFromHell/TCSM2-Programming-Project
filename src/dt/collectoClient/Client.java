@@ -2,10 +2,12 @@ package dt.collectoClient;
 
 import java.io.*;
 
-import com.sun.source.tree.PackageTree;
 import dt.exceptions.InvalidMoveException;
 import dt.exceptions.UnexpectedResponseException;
+import dt.exceptions.UserExit;
 import dt.model.board.ClientBoard;
+import dt.peer.ConnectionHandler;
+import dt.peer.NetworkEntity;
 import dt.protocol.ClientMessages;
 import dt.protocol.ClientProtocol;
 import dt.protocol.ProtocolMessages;
@@ -15,7 +17,6 @@ import dt.util.Move;
 import java.net.InetAddress;
 import java.net.ProtocolException;
 import java.net.Socket;
-import java.util.Arrays;
 
 public class Client implements ClientProtocol, NetworkEntity {
 
@@ -145,9 +146,11 @@ public class Client implements ClientProtocol, NetworkEntity {
             }
         }catch (UnexpectedResponseException e) {
             clientView.showMessage("Unexpected response: " + msg);
-        } catch (IllegalArgumentException | ProtocolException e) {
+        } catch (NumberFormatException  | ProtocolException e) {
             clientView.showMessage("Invalid response from server. Response: " + msg);
-            if(!e.getMessage().equals("")) clientView.showMessage("Reason: " + e.getMessage());
+            if (!e.getMessage().equals("")) clientView.showMessage("Reason: " + e.getMessage());
+        }catch (IllegalArgumentException e) {
+                clientView.showMessage("Unkown command from server. Response: " + msg);
         } catch (InvalidMoveException e) {
             clientView.showMessage(e.getMessage());
         }
@@ -298,7 +301,7 @@ public class Client implements ClientProtocol, NetworkEntity {
             serverSocket = new Socket(ip, port);
         }
 
-        connection = new ConnectionHandler(this, serverSocket);
+        this.connection = new ConnectionHandler(this, serverSocket);
         (new Thread(connection)).start();
 
         clientView.showMessage("Connected to server!");
@@ -311,8 +314,15 @@ public class Client implements ClientProtocol, NetworkEntity {
 
     @Override
     public void handlePeerShutdown() {
-        clientView.showMessage("Server shutdown"); //TODO dit mooi maken
+        this.clientView.showMessage("Server shutdown");
+        try {
+            this.serverSocket.close();
+            this.clientView.reconnect();
+        } catch (UserExit | IOException e) {
+            this.shutDown();
+        }
     }
+
 
     @Override
     public void shutDown() {

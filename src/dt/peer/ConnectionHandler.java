@@ -1,4 +1,4 @@
-package dt.collectoClient;
+package dt.peer;
 
 import java.io.*;
 import java.net.Socket;

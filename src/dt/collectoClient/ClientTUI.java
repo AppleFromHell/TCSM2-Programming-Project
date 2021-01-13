@@ -6,11 +6,10 @@ import dt.exceptions.UserExit;
 import dt.server.SimpleTUI;
 import dt.util.Move;
 
-import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
+public class ClientTUI extends SimpleTUI implements ClientView, Runnable {
 
     private Client client;
 
@@ -20,7 +19,6 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
 
     @Override
     public synchronized void start() {
-        printHelpMenu();
         try {
             while (client.getIp() == null) {
                 this.client.setIp(getIp());
@@ -29,17 +27,7 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
                 this.client.setPort(getPort());
             }
 
-            while (true) {
-                try {
-                    client.createConnection();
-                    break;
-                } catch (Exception e) {
-                    showMessage("Server not availabe. Reason: " + e.getMessage());
-                    if(!getBoolean("Try again? (y/n)")) {
-                        throw new UserExit();
-                    }
-                }
-            }
+            this.createConnection();
 
             String username = "Somethin wong";
             while (true) {
@@ -69,12 +57,12 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
     }
 
 
-
     private void handleUserInput(String input) throws CommandException {
         try {
             String[] arguments = input.split(UserCmds.separators);
             UserCmds cmd = UserCmds.getUserCmd(arguments[0]);
-            if(cmd == null) throw new CommandException("Unkown command: " + arguments[0]+ "For a list of valid commands type h");
+            if (cmd == null)
+                throw new CommandException("Unkown command: " + arguments[0] + "For a list of valid commands type h");
             switch (cmd) {
                 case LIST:
                     this.client.doGetList();
@@ -83,9 +71,9 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
                     this.client.doEnterQueue();
                     break;
                 case MOVE:
-                    if(arguments.length == 2) {
+                    if (arguments.length == 2) {
                         this.client.doMove(new Move(Integer.parseInt(arguments[1])));
-                    } else if(arguments.length == 3) {
+                    } else if (arguments.length == 3) {
                         this.client.doMove(new Move(Integer.parseInt(arguments[1], Integer.parseInt(arguments[2]))));
                     } else {
                         throw new CommandException("Too many moves");
@@ -108,6 +96,30 @@ public class ClientTUI extends SimpleTUI implements ClientView, Runnable  {
     public String getUsername() throws UserExit {
         return getString("What username would you like to have?");
     }
+
+    public void reconnect() throws UserExit {
+
+        if(getBoolean("Reconnect to server? (y/n)")) {
+            createConnection();
+        } else {
+            throw new UserExit();
+        }
+    }
+
+    private void createConnection() throws UserExit{
+            while (true) {
+                try {
+                    client.createConnection();
+                    break;
+                } catch (Exception e) {
+                    this.showMessage("Server not availabe. Reason: " + e.getMessage());
+                    if (!getBoolean("Try again? (y/n)")) {
+                        throw new UserExit();
+                    }
+                }
+            }
+    }
+
 
     private void printHelpMenu() {
         String ret = "Here is the list of commands:\n";

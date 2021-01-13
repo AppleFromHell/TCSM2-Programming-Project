@@ -1,7 +1,7 @@
 
 package dt.server;
 
-import dt.collectoClient.NetworkEntity;
+import dt.peer.NetworkEntity;
 import dt.exceptions.ServerUnavailableException;
 import dt.protocol.ClientMessages;
 import dt.protocol.ProtocolMessages;

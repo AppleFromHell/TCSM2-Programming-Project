@@ -1,4 +1,4 @@
-package dt.collectoClient;
+package dt.peer;
 
 public interface NetworkEntity {
 
