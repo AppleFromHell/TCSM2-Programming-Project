@@ -1,5 +1,6 @@
 package dt.server;
 
+import dt.exceptions.NotYourTurnException;
 import dt.model.Game;
 import dt.peer.NetworkEntity;
 import dt.peer.SocketHandler;
@@ -7,6 +8,7 @@ import dt.protocol.ClientMessages;
 import dt.protocol.ProtocolMessages;
 import dt.protocol.ServerMessages;
 import dt.protocol.ServerProtocol;
+import dt.util.Move;
 
 import javax.security.auth.login.LoginException;
 import java.net.ProtocolException;
@@ -17,10 +19,12 @@ public class ClientHandler implements NetworkEntity, Runnable, ServerProtocol { 
     private final GameManager gameManager;
     private Game game;
     private final SocketHandler socketHandler;
+    private ClientHandler opponent;
     private final ServerTUI view;
     private String name;
     private String userName;
     private ClientHandlerStates state;
+    private boolean myTurn;
 
     public void run() {
 
@@ -59,6 +63,11 @@ public class ClientHandler implements NetworkEntity, Runnable, ServerProtocol { 
                         throw new LoginException();
                     }
                     break;
+                case MOVE:
+                    if(this.state == ClientHandlerStates.INGAME) {
+                        this.handleMove(arguments);
+                        break;
+                    }
             }
         } catch (IllegalArgumentException e) {
             view.showMessage("["+ this.name + "] unknown response. Response: " + msg);
@@ -68,12 +77,15 @@ public class ClientHandler implements NetworkEntity, Runnable, ServerProtocol { 
             view.showMessage("["+ this.name + "] response invalid. Response: " + msg);
             if (!e.getMessage().equals("")) view.showMessage("Reason: " + e.getMessage());
             socketHandler.write(ServerMessages.ERROR.constructMessage("Invalid command. Received: " + msg));
-
+        } catch (NotYourTurnException e) {
+            view.showMessage("["+ this.name + "] tried to move before his turn");
+            socketHandler.write(ServerMessages.ERROR.constructMessage("It's not your turn"));
         } catch (LoginException e) {
-            view.showMessage("["+ this.name + "] tried to access the Queue without loggin in first");
+            view.showMessage("[" + this.name + "] tried to access the Queue without loggin in first");
             socketHandler.write(ServerMessages.ERROR.constructMessage("You need to log in first"));
         }
     }
+
 
     @Override
     public void handleHello(String[] arguments) throws ProtocolException {
@@ -114,13 +126,61 @@ public class ClientHandler implements NetworkEntity, Runnable, ServerProtocol { 
     @Override
     public void handleQueue() {
         gameManager.addToQueue(this);
+        this.state = ClientHandlerStates.INQUEUE;
     }
 
     @Override
     public void startGame(boolean startsFirst, ClientHandler opponent, Game game) {
         this.game = game;
-        socketHandler.write(ServerMessages.NEWGAME.constructMessage(game.getBoard().getBoardState(), this.userName, opponent.userName));
+        this.opponent = opponent;
+        if(startsFirst) {
+            socketHandler.write(ServerMessages.NEWGAME.constructMessage(game.getBoard().getBoardState(), this.userName, opponent.userName));
+            this.myTurn = true;
+        } else {
+            socketHandler.write(ServerMessages.NEWGAME.constructMessage(game.getBoard().getBoardState(), opponent.userName,this.userName));
+            this.myTurn = false;
+        }
+        this.state = ClientHandlerStates.INGAME;
     }
+    public void handleMove(String[] arguments) throws ProtocolException, NotYourTurnException {
+        if(this.myTurn) {
+            this.makeOurMoveHere(arguments);
+        } else {
+            throw new NotYourTurnException("Not your turn");
+        }
+    }
+
+    //This one is called from here
+    private void makeOurMoveHere(String[] arguments) throws ProtocolException {
+        makeMove(arguments);
+        opponent.makeOurMoveThere(arguments);
+        this.myTurn = false;
+    }
+    //Tis one is called from the other ClientHandler
+    public void makeOurMoveThere(String[] arguments) throws ProtocolException {
+        makeMove(arguments);
+        this.myTurn = true;
+    }
+
+    private void makeMove(String[] arguments) throws ProtocolException, NumberFormatException{
+
+        Move move;
+        switch (arguments.length) {
+            case 1:
+                throw new ProtocolException("Not enough arguments");
+            case 2:
+                move = new Move(Integer.parseInt(arguments[1]));
+                break;
+            case 3:
+                move = new Move(Integer.parseInt(arguments[1]), Integer.parseInt(arguments[2]));
+                break;
+            default:
+                throw new ProtocolException("Too many arguments");
+        }
+        this.game.makeMove(move);
+        socketHandler.write(ServerMessages.MOVE.constructMessage(move));
+    }
+
 
     @Override
     public void handlePeerShutdown() {
