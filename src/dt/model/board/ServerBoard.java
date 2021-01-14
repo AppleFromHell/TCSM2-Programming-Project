@@ -1,10 +1,6 @@
 package dt.model.board;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class ServerBoard extends Board{
 
@@ -18,10 +14,12 @@ public class ServerBoard extends Board{
         super(boardSize);
     }
 
-    private void setupBoard(){
-        int[] newBoard = createBoard();
-        this.boardToClient = newBoard;
-        super.fillBoard(newBoard);
+    public void setupBoard(){
+        do {
+            int[] newBoard = createBoard();
+            this.boardToClient = newBoard;
+            super.fillBoard(newBoard);
+        } while(!super.findValidSingleMoves().isEmpty() || !super.findValidDoubleMoves().isEmpty());
     }
 
     private int randomNumber(int min, int max){
