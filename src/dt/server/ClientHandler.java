@@ -14,7 +14,7 @@ import javax.security.auth.login.LoginException;
 import java.net.ProtocolException;
 import java.net.Socket;
 
-public class ClientHandler implements NetworkEntity, Runnable, ServerProtocol { //TODO moet dit concurrent zijn???
+public class ClientHandler implements NetworkEntity, ServerProtocol { //TODO moet dit concurrent zijn???
     private final Server server;
     private final GameManager gameManager;
     private Game game;
@@ -26,17 +26,12 @@ public class ClientHandler implements NetworkEntity, Runnable, ServerProtocol { 
     private ClientHandlerStates state;
     private boolean myTurn;
 
-    public void run() {
-
-    }
-
     ClientHandler(Server server, GameManager gameManager, ServerTUI view, Socket socket) {
         this.server = server;
         this.gameManager = gameManager;
         this.socketHandler = new SocketHandler(this, socket);
         new Thread(socketHandler).start();
         this.view = view;
-        this.state = ClientHandlerStates.IDLE;
     }
 
     @Override
@@ -134,10 +129,18 @@ public class ClientHandler implements NetworkEntity, Runnable, ServerProtocol { 
         this.game = game;
         this.opponent = opponent;
         if(startsFirst) {
-            socketHandler.write(ServerMessages.NEWGAME.constructMessage(game.getBoard().getBoardState(), this.userName, opponent.userName));
+            socketHandler.write(ServerMessages.NEWGAME
+                    .constructMessage(
+                            game.getBoard().getBoardState(),
+                            this.userName,
+                            opponent.userName));
             this.myTurn = true;
         } else {
-            socketHandler.write(ServerMessages.NEWGAME.constructMessage(game.getBoard().getBoardState(), opponent.userName,this.userName));
+            socketHandler.write(ServerMessages.NEWGAME
+                    .constructMessage(
+                            game.getBoard().getBoardState(),
+                            opponent.userName,
+                            this.userName));
             this.myTurn = false;
         }
         this.state = ClientHandlerStates.INGAME;
@@ -151,18 +154,22 @@ public class ClientHandler implements NetworkEntity, Runnable, ServerProtocol { 
     }
 
     //This one is called from here
-    private void makeOurMoveHere(String[] arguments) throws ProtocolException {
+    private void makeOurMoveHere(String[] arguments) throws ProtocolException, NotYourTurnException {
         makeMove(arguments);
         opponent.makeOurMoveThere(arguments);
         this.myTurn = false;
     }
     //Tis one is called from the other ClientHandler
-    public void makeOurMoveThere(String[] arguments) throws ProtocolException {
-        makeMove(arguments);
-        this.myTurn = true;
+    public void makeOurMoveThere(String[] arguments) throws ProtocolException, NotYourTurnException {
+        if(!this.myTurn) {
+            makeMove(arguments);
+            this.myTurn = true;
+        } else {
+            throw new NotYourTurnException("Turn mismatch");
+        }
     }
 
-    private void makeMove(String[] arguments) throws ProtocolException, NumberFormatException{
+    private synchronized void makeMove(String[] arguments) throws ProtocolException, NumberFormatException{
 
         Move move;
         switch (arguments.length) {
@@ -172,7 +179,8 @@ public class ClientHandler implements NetworkEntity, Runnable, ServerProtocol { 
                 move = new Move(Integer.parseInt(arguments[1]));
                 break;
             case 3:
-                move = new Move(Integer.parseInt(arguments[1]), Integer.parseInt(arguments[2]));
+                move = new Move(Integer.parseInt(arguments[1]),
+                        Integer.parseInt(arguments[2]));
                 break;
             default:
                 throw new ProtocolException("Too many arguments");
@@ -184,11 +192,13 @@ public class ClientHandler implements NetworkEntity, Runnable, ServerProtocol { 
 
     @Override
     public void handlePeerShutdown() {
-
+        this.socketHandler.shutDown();
+        this.shutDown();
     }
 
     @Override
     public void shutDown() {
+        this.server.removeClientHandler(this);
         this.server.removeUser(this.name);
     }
 

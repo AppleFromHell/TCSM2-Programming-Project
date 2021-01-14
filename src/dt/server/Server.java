@@ -120,4 +120,8 @@ public class Server implements Runnable{
         this.view.showMessage("Server is shutting down. Cya lator aligator");
         System.exit(69);
     }
-} 
+
+    public void removeClientHandler(ClientHandler clientHandler) {
+        connectedClients.remove(clientHandler);
+    }
+}
