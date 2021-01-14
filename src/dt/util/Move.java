@@ -1,5 +1,7 @@
 package dt.util;
 
+import java.util.Objects;
+
 public class Move {
 
     private Integer move1 = null;
@@ -24,6 +26,20 @@ public class Move {
 
     public Integer getMove2(){
         return this.move2;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Move move = (Move) o;
+        return Objects.equals(move1, move.move1) &&
+                Objects.equals(move2, move.move2);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(move1, move2);
     }
 
     @Override
