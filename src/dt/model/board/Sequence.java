@@ -5,7 +5,6 @@ import java.util.List;
 
 public class Sequence {
     private List<BallType> balls;
-    private boolean isChanged;
 
     public Sequence(List<BallType> balls){
         this.balls = new ArrayList<>();
@@ -49,5 +48,4 @@ public class Sequence {
         }
         return returnValue;
     }
-
 }
