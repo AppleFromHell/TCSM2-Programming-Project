@@ -3,7 +3,7 @@ package dt.peer;
 import java.io.*;
 import java.net.Socket;
 
-public class ConnectionHandler implements Runnable {
+public class SocketHandler implements Runnable {
     private Socket socket;
     private NetworkEntity networkEntity;
     private BufferedReader socketIn;
@@ -14,7 +14,7 @@ public class ConnectionHandler implements Runnable {
         readSocketInput();
     }
 
-    public ConnectionHandler(NetworkEntity networkEntity, Socket socket) {
+    public SocketHandler(NetworkEntity networkEntity, Socket socket) {
         this.networkEntity = networkEntity;
         this.socket = socket;
 
@@ -26,7 +26,7 @@ public class ConnectionHandler implements Runnable {
         try {
             socketOut = new BufferedWriter(new PrintWriter(socket.getOutputStream()));
         } catch (IOException e) {
-            e.printStackTrace();
+            networkEntity.handlePeerShutdown();
         }
     }
 
@@ -34,7 +34,7 @@ public class ConnectionHandler implements Runnable {
         try {
             while(!socket.isClosed() && socketIn != null ) {
                 String msg = socketIn.readLine();
-                if(debug) System.out.println(">[Sever]:" +msg);
+                if(debug) System.out.println("[IN]:" +msg);
                 networkEntity.handleMessage(msg);
             }
         } catch (IOException e) {
@@ -45,12 +45,12 @@ public class ConnectionHandler implements Runnable {
     public void write(String msg) {
         if(!socket.isClosed()) {
             try {
-                if(debug) System.out.println("<[Client]:" + msg);
+                if(debug) System.out.println("[OUT]:" + msg);
                 socketOut.write(msg);
                 socketOut.newLine();
                 socketOut.flush();
             } catch (IOException e) {
-                e.printStackTrace();
+                networkEntity.handlePeerShutdown();
             }
         }
     }

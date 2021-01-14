@@ -10,9 +10,8 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class SimpleTUI {
+public class SimpleTUI implements Runnable {
 
-    protected boolean exit = false;
     protected SimpleTUI(){}
     private final BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
     private final PrintWriter stdOut = new PrintWriter(System.out, true);
@@ -46,7 +45,6 @@ public class SimpleTUI {
     protected int getInt(String question) throws UserExit {
         do {
             String answer = getString(question);
-            if(UserCmds.getUserCmd(answer) == UserCmds.EXIT) throw new UserExit();
             try {
                 if (answer.matches("-?\\d+")) {
                     return Integer.parseInt(answer);
@@ -60,7 +58,6 @@ public class SimpleTUI {
     protected boolean getBoolean(String question) throws UserExit {
         do {
             String answer = getString(question);
-            if(UserCmds.getUserCmd(answer) == UserCmds.EXIT) throw new UserExit();
 
             if (answer.toLowerCase().equals("y") || answer.toLowerCase().equals("yes")) {
                 return true;

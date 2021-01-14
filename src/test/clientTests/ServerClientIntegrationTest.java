@@ -15,14 +15,9 @@ public class ServerClientIntegrationTest {
     Client client = new Client();
 
     static class ServerRunner implements Runnable {
+
         public void run() {
-            try {
-                Server.main(new String[] {"Server by Emiel", "888"});
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ServerUnavailableException e) {
-                e.printStackTrace();
-            }
+            Server.main(new String[] {"Server by Emiel", "888"});
         }
     }
     @BeforeAll

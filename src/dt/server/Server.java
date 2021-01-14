@@ -1,132 +1,123 @@
-
 package dt.server;
 
-import dt.peer.NetworkEntity;
-import dt.exceptions.ServerUnavailableException;
-import dt.protocol.ClientMessages;
-import dt.protocol.ProtocolMessages;
-import dt.protocol.ServerMessages;
 
-import java.io.*;
-import java.net.*;
+import dt.exceptions.UserExit;
+import dt.peer.SocketHandler;
 
-/**
- * Server.
- * @author  Theo Ruys
- * @version 2005.02.21
- */
-public class Server implements NetworkEntity {
-    private BufferedReader in;
-    private BufferedWriter out;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Server implements Runnable{
     private Integer port;
-
+    private List<ClientHandler> connectedClients;
+    private List<String> loggedinUsers;
+    private ServerTUI view;
+    private GameManager gameManager;
+    private ServerSocket serverSocket;
+    private String serverName;
+    private boolean chatEnabled;
+    private boolean rankEnabled;
+    private boolean cryptEnabled;
+    private boolean authEnabled;
+    
+    private Server() {
+        this.view = new ServerTUI(this);
+        this.gameManager = new GameManager();
+        this.connectedClients = new ArrayList<>();
+        this.loggedinUsers = new ArrayList<>();
+        this.serverName = "Wouter en Emiels meest awesome server evvur";
+        this.chatEnabled = false;
+        this.rankEnabled = false;
+        this.cryptEnabled = false;
+        this.authEnabled = false;
+    }
     /** Starts a Server-application. */
-    public static void main(String[] args) throws IOException, ServerUnavailableException {
-        Server serverr = new Server();
-        if(args.length > 0 ) serverr.port = Integer.parseInt(args[0]);
-
-        ServerTUI view = new ServerTUI(serverr);
-        view.start();
-
-
-
-        String name = args[0];
-        InetAddress addr = null;
-        Socket sock = null;
-
-        ServerSocket serverSocket = null;
-        try {
-            serverSocket = new ServerSocket(serverr.port);
-        } catch (IOException e) {
-//            e.printStackTrace();
-
-        }
-
-        //wait until client connects
-        try {
-            assert serverSocket != null;
-            sock = serverSocket.accept();
-            System.out.println("I have found the one.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        serverr.in = new BufferedReader(new InputStreamReader(
-                sock.getInputStream()));
-        serverr.out = new BufferedWriter(new OutputStreamWriter(
-                sock.getOutputStream()));
-
-        serverr.doHello();
-        Peer peer = new Peer("Emiel", sock);
-        new Thread(peer).start();
-        System.out.println("Thread shutdown");
-        peer.handleTerminalInput();
-        System.out.println("Server shutdown");
+    public static void main(String[] args) {
+        Server server = new Server();
+        if(args.length != 0) server.setPort(Integer.parseInt(args[0]));
+        new Thread(server).start();
     }
 
-    private synchronized void write(String input) throws ServerUnavailableException {
-        if(out != null) {
+    public synchronized void run() {
+        setup();
+        while (true) {
             try {
-                out.write(input);
-                out.newLine();
-                out.flush();
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-                throw new ServerUnavailableException("Could not write to server");
+                Socket clientSocket = serverSocket.accept();
+                ClientHandler handler = new ClientHandler(this ,this.gameManager, this.view, clientSocket);
+                new Thread(handler).start();
+
+                this.wait();
+                view.showMessage("New client: [" + handler.getName() + "] connected!");
+            } catch (IOException  | InterruptedException e) {
+                e.printStackTrace();
             }
-        } else {
-            throw new ServerUnavailableException("Socket is not available");
         }
     }
-    public void doHello() throws ServerUnavailableException, ProtocolException {
-        String rawResponse = readLineFromServer();
-        String[] response = rawResponse.split(ProtocolMessages.delimiter);
-        if(!response[0].equals(ClientMessages.HELLO.toString())) {
-            throw new ProtocolException("SHIT BROKE");
-        }
-        System.out.println("[CLIENT]" + response[1]);
-        write(ServerMessages.HELLO.constructMessage("Server by yo fat mama"));
-    }
-
-    private String readLineFromServer() throws ServerUnavailableException {
-        if (in != null) {
+    private void setup() {
+        new Thread(view).start();
+        serverSocket = null;
+        while(serverSocket == null) {
             try {
-                // Read and return answer from Server
-                String answer = in.readLine();
-                if (answer == null) {
-                    throw new ServerUnavailableException("Could not read "
-                            + "from server.");
+                view.showMessage("Starting a server on port: " + this.port + "...");
+                serverSocket = new ServerSocket(port, 0, InetAddress.getByName("localhost"));
+                view.showMessage("Server is started!");
+            } catch (IOException e) {
+                view.showMessage("Could not start server");
+                try {
+                    if (!view.getBoolean("Would you like to try again?")) {
+                        throw new UserExit();
+                    }
+                } catch (UserExit ex) {
+                    this.shutDown();
                 }
-                return answer;
-            } catch (IOException e) {
-                throw new ServerUnavailableException("Could not read "
-                        + "from server.");
             }
-        } else {
-            throw new ServerUnavailableException("Could not read "
-                    + "from server.");
         }
     }
-
+    public List<String> getLoggedInUsers() {
+        return this.loggedinUsers;
+    }
+    public void addUserToList(String name) {
+        this.loggedinUsers.add(name);
+    }
+    public void removeUser(String name) {
+        this.loggedinUsers.remove(name);
+    }
+    public boolean isUserLoggedIn(String name) {
+        return loggedinUsers.contains(name);
+    }
     public void setPort(Integer port) {
         this.port = port;
     }
-
     public Integer getPort() {
         return this.port;
     }
-
-    @Override
-    public void handleMessage(String msg) {
-
+    public String getName() {
+        return this.serverName;
+    }
+    public boolean chatIsEnabled() {
+        return this.chatEnabled;
     }
 
-    @Override
-    public void handlePeerShutdown() {
-
+    public boolean rankIsEnabled() {
+        return this.rankEnabled;
     }
 
-    @Override
+    public boolean authIsEnabled() {
+        return this.authEnabled;
+    }
+
+    public boolean cryptIsEnabled() {
+        return this.cryptEnabled;
+    }
+
     public void shutDown() {
-        //TODO implement diss
+        this.connectedClients.forEach(ClientHandler::shutDown);
+        this.view.showMessage("Server is shutting down. Cya lator aligator");
+        System.exit(69);
     }
-} // end of class Server
+} 

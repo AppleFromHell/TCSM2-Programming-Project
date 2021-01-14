@@ -18,7 +18,7 @@ public class ServerBoard extends Board{
         super(boardSize);
     }
 
-    private void setupBoard(){
+    public void setupBoard(){
         int[] newBoard = createBoard();
         this.boardToClient = newBoard;
         super.fillBoard(newBoard);
