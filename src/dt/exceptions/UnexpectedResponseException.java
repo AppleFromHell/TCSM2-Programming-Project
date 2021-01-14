@@ -1,7 +1,8 @@
 package dt.exceptions;
 
 public class UnexpectedResponseException extends Exception{
-    UnexpectedResponseException(String msg) {
+    public UnexpectedResponseException(String msg) {
         super(msg);
     }
+    public UnexpectedResponseException(){}
 }
