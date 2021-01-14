@@ -1,7 +1,7 @@
 package dt.model.board;
 
 import dt.exceptions.InvalidMoveException;
-import dt.util.Tuple;
+import dt.util.Move;
 
 import java.util.*;
 
@@ -11,6 +11,7 @@ public class Board {
     private List<Sequence> rows;
     private List<Sequence> columns;
     protected int boardSize;
+    private boolean singleMoveAvailable;
 
     public Board() {
         this.boardSize = BOARDSIZE;
@@ -24,7 +25,7 @@ public class Board {
         this.columns = new ArrayList<>();
     }
 
-    public int getBoardsize(){
+    public int getBoardSize(){
         return this.boardSize;
     }
 
@@ -52,21 +53,16 @@ public class Board {
         return allTypes[ball];
     }
 
-    public HashMap<BallType, Integer> makeMove(int move) throws InvalidMoveException {
-        if (isValidSingleMove(move)) {
-            executeMove(move);
+    public HashMap<BallType, Integer> makeMove(Move move) throws InvalidMoveException {
+        if (isValidMove(move)) { // in isValidMove, this.noSingleMove is updated
+            if(move.isDoubleMove()){
+                executeMove(move.getMove1());
+                executeMove(move.getMove2());
+            } else {
+                executeMove(move.getMove1());
+            }
             return getYield();
         } else {
-            throw new InvalidMoveException("The move that you tried to make is not a valid move");
-        }
-    }
-
-    public HashMap<BallType, Integer> makeMove(Tuple<Integer, Integer> moveSet) throws InvalidMoveException {
-        if(isValidDoubleMove(moveSet)) {
-            executeMove(moveSet.a);
-            executeMove(moveSet.b);
-            return getYield();
-        } else{
             throw new InvalidMoveException("The move that you tried to make is not a valid move");
         }
     }
@@ -77,6 +73,7 @@ public class Board {
      */
     private void executeMove(int move) {
         boolean changedColumn = true;
+
         if (move > (3 * this.boardSize) - 1) { // move > 20
             columns.get(move - (3 * this.boardSize)).shiftLeftOrDown();
         } else if (move > (2 * this.boardSize) - 1) { // move > 13
@@ -106,55 +103,47 @@ public class Board {
         }
     }
 
-    public boolean isValidSingleMove(int move) throws InvalidMoveException {
-        if(move < 0 || move > 27){
+    public boolean isValidMove(Move move) throws InvalidMoveException {
+        boolean validity = false;
+
+        if(move.isLegal()) {
+            //calling isDoubleMove lowers complexity if it is a single move
+            if (!move.isDoubleMove()) { //If it is a single move
+                validity = findValidSingleMoves().contains(move);
+            } else if (move.isDoubleMove()) { //If it is a double move
+                if(this.singleMoveAvailable)
+                    throw new InvalidMoveException("You tried to make a double move, while a single move is still available.");
+                validity = findValidDoubleMoves().contains(move);
+            }
+        } else {
             throw new InvalidMoveException("Move integer given is lower than 0 or higher than 27");
         }
-        return findValidSingleMoves().contains(move);
-    }
 
-    /**
-     * First looks at whether move1 is valid, and if so places this move on a deep copy of the board, and then sees
-     * whether move2 is a valid move.
-     * @requires move1 to be possible and move2 to be valid once move1 has been done.
-     * @param moveSet A tuple in the shape of the first and the second move.
-     * @return Whether the move sequence is valid or not.
-     */
-    public boolean isValidDoubleMove(Tuple<Integer, Integer> moveSet) {
-        boolean validity = false;
-        if(findValidDoubleMoves().contains(moveSet)){
-            validity = true;
-        }
         return validity;
     }
 
-    public List<Tuple<Integer, Integer>> findValidDoubleMoves(){
-        List<Tuple<Integer, Integer>> validDoubleMoves = new ArrayList<>();
-        for(Integer move1 : this.findPossibleMoves()){
+    public List<Move> findValidDoubleMoves(){
+        List<Move> validDoubleMoves = new ArrayList<>();
+        for(Move move1 : this.findPossibleMoves()){
             Board copyBoard = this.deepCopy();
-            copyBoard.executeMove(move1);
-            for(Integer move2 : copyBoard.findValidSingleMoves()){
-                validDoubleMoves.add(new Tuple<>(move1, move2));
+            copyBoard.executeMove(move1.getMove1());
+            for(Move move2 : copyBoard.findValidSingleMoves()){
+                validDoubleMoves.add(new Move(move1.getMove1(), move2.getMove1())); //All of these bois are goin' to work, hell yea
             }
         }
         return validDoubleMoves;
     }
 
-    public List<Integer> findValidSingleMoves() {
-        // Find all the possible moves
-        // Iterate through them
-            // Create a deep copy of the current board
-            // Place the move on the copyBoard
-            // If the getYield is not empty, it is a valid move.
-        // Add iteratable to list of valid moves
-        List<Integer> validMoves = new ArrayList<>();
-        List<Integer> possibleMoves = this.findPossibleMoves();
-        for(Integer move : possibleMoves){
+    public List<Move> findValidSingleMoves() {
+        List<Move> validMoves = new ArrayList<>();
+        List<Move> possibleMoves = this.findPossibleMoves();
+        for(Move move : possibleMoves){
             Board copyBoard = this.deepCopy();
-            copyBoard.executeMove(move);               // Place move on the copyBoard
+            copyBoard.executeMove(move.getMove1());               // Place move on the copyBoard
             if(!copyBoard.getYield().values().isEmpty()){
                 //throw a party and lets go to the casino because we've got a valid move on our hands bois
                 validMoves.add(move);
+                this.singleMoveAvailable = true;
             }
         }
 
@@ -165,8 +154,8 @@ public class Board {
      * A method that finds the moves that are possible to do. Though, the return value of this is not per say the moves that are valid.
      * @return A list of integers, indicating the moves that are possible given the current board state.
      */
-    public List<Integer> findPossibleMoves(){
-        List<Integer> possibleMoves = new ArrayList<>();
+    public List<Move> findPossibleMoves(){
+        List<Move> possibleMoves = new ArrayList<>();
         for(int rowIndex = 0; rowIndex < this.boardSize; rowIndex++){
             Sequence row = this.rows.get(rowIndex);
             List<BallType> balls;
@@ -176,16 +165,16 @@ public class Board {
 
                 if(ball.equals(BallType.EMPTY)){
                     // Check whether it can move left
-                    if(ballIndex > 0) possibleMoves.add(rowIndex);
+                    if(ballIndex > 0) possibleMoves.add(new Move(rowIndex));
 
                     // Check whether it can move right
-                    if(ballIndex < this.boardSize - 1) possibleMoves.add(rowIndex + this.boardSize);
+                    if(ballIndex < this.boardSize - 1) possibleMoves.add(new Move(rowIndex + this.boardSize));
 
                     // check whether it can move up
-                    if(rowIndex > 0) possibleMoves.add(ballIndex + (2 * this.boardSize));
+                    if(rowIndex > 0) possibleMoves.add(new Move(ballIndex + (2 * this.boardSize)));
 
                     // Check whether it can move down
-                    if(rowIndex < this.boardSize - 1) possibleMoves.add(ballIndex + (3 * this.boardSize));
+                    if(rowIndex < this.boardSize - 1) possibleMoves.add(new Move(ballIndex + (3 * this.boardSize)));
                 }
             }
         }
@@ -315,22 +304,12 @@ public class Board {
         return board.toString();
     }
 
-    public boolean isGameOver(){
-        boolean singleMove = false;
-        boolean doubleMovePossible = false;
-        if(!findValidSingleMoves().isEmpty()) {
-            for (Integer move : this.findPossibleMoves()) { //Clearly no move is possible on the current board.
-                Board copyBoard = this.deepCopy(); //So you'll set all the possible moves and find out whether any of them come to a valid move.
-                copyBoard.executeMove(move);
-                if (!copyBoard.findValidSingleMoves().isEmpty()) {
-                    doubleMovePossible = true;
-                    break;
-                }
-            }
-        } else {
-            singleMove = true;
+    public boolean isGameOver() {
+        boolean gameOver = false;
+        if (!findValidSingleMoves().isEmpty() || !findValidDoubleMoves().isEmpty()) {
+            gameOver = true;
         }
-        return doubleMovePossible || singleMove;
+        return gameOver;
     }
 
     /**

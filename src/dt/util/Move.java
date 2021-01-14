@@ -35,5 +35,14 @@ public class Move {
         return isDoubleMove()? "[" + this.move1 + "][" + this.move1 + "]" : "[" + this.move1 + "]";
     }
 
+    public boolean isLegal(){
+        boolean validSingle = move1 >= 0 && move1 <= 27;
+        if(isDoubleMove()){
+            boolean validDouble = move2 >= 0 && move2 <= 27;
+            return validSingle && validDouble;
+        }
+        return validSingle;
+    }
+
 
 }
