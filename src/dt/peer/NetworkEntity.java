@@ -1,7 +1,8 @@
-package dt.collectoClient;
+package dt.peer;
 
 public interface NetworkEntity {
 
     void handleMessage(String msg);
-    void handleShutdown();
+    void handlePeerShutdown();
+    void shutDown();
 }

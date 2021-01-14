@@ -1,16 +1,13 @@
 package dt.protocol;
 
 import dt.exceptions.InvalidMoveException;
-import dt.exceptions.ServerUnavailableException;
-
-import java.net.ProtocolException;
+import dt.util.Move;
 
 public interface ClientProtocol {
 
     void doHello();
     void doLogin(String username);
     void doGetList();
-    void doMove(int move) throws InvalidMoveException;
-    void doMove(int move, int move2) throws InvalidMoveException;
+    void doMove(Move move) throws InvalidMoveException;
     void doEnterQueue();
 }

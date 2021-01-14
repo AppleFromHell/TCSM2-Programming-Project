@@ -1,5 +1,7 @@
 package dt.protocol;
 
+import dt.model.board.Board;
+
 import java.util.List;
 
 public interface ProtocolMessages {
@@ -21,6 +23,8 @@ public interface ProtocolMessages {
         ERROR,
         GAMEOVER,
         RANK,
-        CHAT;
+        CHAT,
+        CRYPT,
+        AUTH,
     }
 }

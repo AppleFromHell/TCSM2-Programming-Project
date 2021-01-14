@@ -2,19 +2,21 @@ package dt.collectoClient;
 
 import java.io.*;
 
-import com.sun.source.tree.PackageTree;
 import dt.exceptions.InvalidMoveException;
 import dt.exceptions.UnexpectedResponseException;
+import dt.exceptions.UserExit;
 import dt.model.board.ClientBoard;
+import dt.peer.ConnectionHandler;
+import dt.peer.NetworkEntity;
 import dt.protocol.ClientMessages;
 import dt.protocol.ClientProtocol;
 import dt.protocol.ProtocolMessages;
 import dt.protocol.ServerMessages;
+import dt.util.Move;
 
 import java.net.InetAddress;
 import java.net.ProtocolException;
 import java.net.Socket;
-import java.util.Arrays;
 
 public class Client implements ClientProtocol, NetworkEntity {
 
@@ -28,8 +30,10 @@ public class Client implements ClientProtocol, NetworkEntity {
     private final String CLIENTDESCRIPTION = "Client By: Emiel";
     private boolean chatEnabled;
     private boolean rankEnabled;
+    private boolean cryptEnabled;
+    private boolean authEnabled;
     private ClientStates state;
-    private int[] ourLastMove;
+    private Move ourLastMove;
 
 
     public Client() {
@@ -39,6 +43,8 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.port = null;
         this.chatEnabled = false;
         this.rankEnabled = false;
+        this.cryptEnabled = false;
+        this.authEnabled = false;
     }
     public static void main(String[] args) {
         Client client = new Client();
@@ -102,7 +108,10 @@ public class Client implements ClientProtocol, NetworkEntity {
                     break;
                 case LIST:
                     if (this.state == ClientStates.WAITINGONLIST) {
-                        this.clientView.showMessage(parseListResponse(arguments));
+                        this.clientView.displayList(parseListResponse(arguments));
+                    }
+                    synchronized (clientView) {
+                        this.clientView.notify();
                     }
                     break;
                 case NEWGAME:
@@ -113,27 +122,35 @@ public class Client implements ClientProtocol, NetworkEntity {
                     }
                     break;
                 case MOVE:
+                    this.makeTheirMove(arguments);
+
                     if (this.state == ClientStates.AWAITMOVERESPONSE) {
                         this.checkMoveResponse(arguments);
-                    }
-                    if (this.state == ClientStates.AWAITNGTHEIRMOVE) {
+                    } else if (this.state == ClientStates.AWAITNGTHEIRMOVE) {
                         try {
                             this.makeTheirMove(arguments);
                         } catch (InvalidMoveException e) {
                             throw new InvalidMoveException("The server move was invalid");
                         }
+                    } else {
+                        throw new UnexpectedResponseException();
                     }
+                    break;
                 case GAMEOVER:
                     this.clientView.showMessage(this.handleGameOver(arguments));
                     break;
                 case ERROR:
+                    clientView.showMessage("Server threw error: " + msg);
+                    break;
 
             }
         }catch (UnexpectedResponseException e) {
             clientView.showMessage("Unexpected response: " + msg);
-        } catch (IllegalArgumentException | ProtocolException e) {
+        } catch (NumberFormatException  | ProtocolException e) {
             clientView.showMessage("Invalid response from server. Response: " + msg);
-            if(!e.getMessage().equals("")) clientView.showMessage("Reason: " + e.getMessage());
+            if (!e.getMessage().equals("")) clientView.showMessage("Reason: " + e.getMessage());
+        }catch (IllegalArgumentException e) {
+                clientView.showMessage("Unkown command from server. Response: " + msg);
         } catch (InvalidMoveException e) {
             clientView.showMessage(e.getMessage());
         }
@@ -142,7 +159,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     //Outgoing messages. Updates state
     @Override
     public void doHello() {
-        connection.write(ClientMessages.HELLO.constructMessage(CLIENTDESCRIPTION + this.userName));
+        connection.write(ClientMessages.HELLO.constructMessage(CLIENTDESCRIPTION));
         this.state = ClientStates.PENDINGHELLO;
     }
 
@@ -157,25 +174,22 @@ public class Client implements ClientProtocol, NetworkEntity {
     public void doGetList() {
         connection.write(ClientMessages.LIST.constructMessage());
         this.state = ClientStates.WAITINGONLIST;
+        try {
+            clientView.wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 
     @Override
-    public void doMove(int move) throws InvalidMoveException {
+    public void doMove(Move move) throws InvalidMoveException {
             makeMove(move);
-            connection.write(ClientMessages.MOVE.constructMessage(String.valueOf(move)));
-            this.ourLastMove = new int[]{move};
+            connection.write(ClientMessages.MOVE.constructMessage(move));
+            this.ourLastMove = move;
             this.state = ClientStates.AWAITMOVERESPONSE;
     }
 
-
-    @Override
-    public void doMove(int move, int move2) throws InvalidMoveException {
-            makeMove(move, move2);
-            connection.write(ClientMessages.MOVE.constructMessage(String.valueOf(move), String.valueOf(move2)));
-            this.ourLastMove = new int[]{move, move2};
-            this.state = ClientStates.AWAITMOVERESPONSE;
-    }
 
     @Override
     public void doEnterQueue()  {
@@ -185,36 +199,28 @@ public class Client implements ClientProtocol, NetworkEntity {
 
     //Parsing response
     //HELLO
-    private void handleHello(String[] aguments) throws ProtocolException {
-        switch (aguments.length) {
-            case 1:
-                throw new ProtocolException("No server name given");
-            case 2:
-                this.chatEnabled = aguments[1].equals(ProtocolMessages.Messages.CHAT.toString());
-                this.rankEnabled = aguments[1].equals(ProtocolMessages.Messages.RANK.toString());
-                break;
-            case 3:
-                this.chatEnabled = aguments[1].equals(ProtocolMessages.Messages.CHAT.toString()) ||
-                        aguments[2].equals(ProtocolMessages.Messages.CHAT.toString());
-                this.rankEnabled = aguments[1].equals(ProtocolMessages.Messages.RANK.toString()) ||
-                        aguments[2].equals(ProtocolMessages.Messages.RANK.toString());
-                break;
-            default:
-                throw new ProtocolException("Too many arguments");
+    private void handleHello(String[] arguments)  {
+
+        for(int i = 1; i < arguments.length; i++) {
+            String arg = arguments[i];
+            chatEnabled = arg.equals(ProtocolMessages.Messages.CHAT.toString());
+            rankEnabled = arg.equals(ProtocolMessages.Messages.RANK.toString());
+            cryptEnabled = arg.equals(ProtocolMessages.Messages.CRYPT.toString());
+            authEnabled = arg.equals(ProtocolMessages.Messages.AUTH.toString());
         }
     }
 
     //LIST
-    private String parseListResponse(String[] arguments) throws ProtocolException {
-        String ret = "List of logged in users: \n";
+    private String[] parseListResponse(String[] arguments) {
+        String[] ret = new String[arguments.length-1];
         for(int i = 1; i < arguments.length; i++) {
-            ret = ret.concat(arguments[i] + '\n');
+            ret[i-1] =arguments[i];
         }
         return ret;
     }
 
     //NEWGAME
-    private void createNewBoard(String[] arguments) throws NumberFormatException{
+    private void createNewBoard(String[] arguments) throws NumberFormatException {
         int[] boardState = new int[arguments.length-1]; //TODO add check on valid number of squares
         for(int i = 1; i < arguments.length; i++) {
             boardState[i-1] = Integer.parseInt(arguments[i]);
@@ -228,13 +234,13 @@ public class Client implements ClientProtocol, NetworkEntity {
             case 1:
                 throw new ProtocolException("No move in response");
             case 2:
-                if(!Arrays.equals(ourLastMove, new int[]{Integer.parseInt(arguments[1])})) {
-                    throw new ProtocolException("Move mismatch. Our move was: " + Arrays.toString(ourLastMove));
+                if(ourLastMove.equals(new Move(Integer.parseInt(arguments[1])))) {
+                    throw new ProtocolException("Move mismatch. Our move was: " + ourLastMove.toString());
                 }
                 break;
             case 3:
-                if(!Arrays.equals(ourLastMove, new int[]{Integer.parseInt(arguments[1], Integer.parseInt(arguments[2]))})) {
-                    throw new ProtocolException("Move mismatch. Our move was: " + Arrays.toString(ourLastMove));
+                if(ourLastMove.equals(new Move(Integer.parseInt(arguments[1], Integer.parseInt(arguments[2]))))) {
+                    throw new ProtocolException("Move mismatch. Our move was: " + ourLastMove.toString());
                 }
                 break;
             default:
@@ -249,10 +255,10 @@ public class Client implements ClientProtocol, NetworkEntity {
             case 1:
                 throw new ProtocolException("No move in response of their move");
             case 2:
-                board.makeMove(Integer.parseInt(arguments[1]));
+                makeMove(new Move(Integer.parseInt(arguments[1])));
                 break;
             case 3:
-                board.makeMove(Integer.parseInt(arguments[1]), Integer.parseInt(arguments[2]));
+                makeMove(new Move(Integer.parseInt(arguments[1]),Integer.parseInt(arguments[1])));
                 break;
             default:
                 throw new ProtocolException("Too many arguments");
@@ -295,24 +301,35 @@ public class Client implements ClientProtocol, NetworkEntity {
             serverSocket = new Socket(ip, port);
         }
 
-        connection = new ConnectionHandler(this, serverSocket);
+        this.connection = new ConnectionHandler(this, serverSocket);
         (new Thread(connection)).start();
 
         clientView.showMessage("Connected to server!");
         doHello();
     }
 
-    private void makeMove(int move) throws InvalidMoveException {
-        board.makeMove(move);
-    }
-
-    private void makeMove(int move, int move2) throws InvalidMoveException {
-        board.makeMove(move, move2);
+    private void makeMove(Move move) throws InvalidMoveException {
+        //board.makeMove(move);
     }
 
     @Override
-    public void handleShutdown() {
-        clientView.showMessage("Server shutdown"); //TODO dit mooi maken
+    public void handlePeerShutdown() {
+        this.clientView.showMessage("Server shutdown");
+        try {
+            this.serverSocket.close();
+            this.clientView.reconnect();
+        } catch (UserExit | IOException e) {
+            this.shutDown();
+        }
+    }
+
+
+    @Override
+    public void shutDown() {
+        clearConnection();
+        connection.shutDown();
+        clientView.showMessage("See you next time!");
+        System.exit(0);
     }
 
     public void clearConnection() {

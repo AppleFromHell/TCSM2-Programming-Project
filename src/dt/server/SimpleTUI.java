@@ -1,5 +1,8 @@
 package dt.server;
 
+import dt.collectoClient.UserCmds;
+import dt.exceptions.UserExit;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,19 +12,18 @@ import java.net.UnknownHostException;
 
 public class SimpleTUI {
 
-    private final String EXITSTATEMENT = "exit";
     protected boolean exit = false;
     protected SimpleTUI(){}
     private final BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
     private final PrintWriter stdOut = new PrintWriter(System.out, true);
 
 
-    protected String getString(String question) {
+    protected String getString(String question) throws UserExit {
         showMessage(question);
         String answer = null;
         try {
             answer = stdIn.readLine();
-            if(answer.equals(EXITSTATEMENT)) exit = true;
+            if(UserCmds.getUserCmd(answer) == UserCmds.EXIT) throw new UserExit();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,13 +39,14 @@ public class SimpleTUI {
         stdOut.println(message);
     }
 
-    protected Integer getPort() {
+    protected Integer getPort() throws UserExit {
         return getInt("Which Port is the server running on:");
     }
 
-    protected int getInt(String question) {
+    protected int getInt(String question) throws UserExit {
         do {
             String answer = getString(question);
+            if(UserCmds.getUserCmd(answer) == UserCmds.EXIT) throw new UserExit();
             try {
                 if (answer.matches("-?\\d+")) {
                     return Integer.parseInt(answer);
@@ -54,9 +57,11 @@ public class SimpleTUI {
         } while (true);
     }
 
-    protected boolean getBoolean(String question) {
+    protected boolean getBoolean(String question) throws UserExit {
         do {
             String answer = getString(question);
+            if(UserCmds.getUserCmd(answer) == UserCmds.EXIT) throw new UserExit();
+
             if (answer.toLowerCase().equals("y") || answer.toLowerCase().equals("yes")) {
                 return true;
             } else if (answer.toLowerCase().equals("n") || answer.toLowerCase().equals("no")) {
