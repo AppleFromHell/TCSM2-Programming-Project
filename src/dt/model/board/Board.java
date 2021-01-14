@@ -54,7 +54,7 @@ public class Board {
     }
 
     public HashMap<BallType, Integer> makeMove(Move move) throws InvalidMoveException {
-        if (isValidMove(move)) { // in isValidMove, this.noSingleMove is updated
+        if (isValidMove(move)) {
             if(move.isDoubleMove()){
                 executeMove(move.getMove1());
                 executeMove(move.getMove2());
@@ -74,15 +74,15 @@ public class Board {
     private void executeMove(int move) {
         boolean changedColumn = true;
 
-        if (move > (3 * this.boardSize) - 1) { // move > 20
-            columns.get(move - (3 * this.boardSize)).shiftLeftOrDown();
-        } else if (move > (2 * this.boardSize) - 1) { // move > 13
-            columns.get(move - (2 * this.boardSize)).shiftRightOrUp();
-        } else if (move > this.boardSize - 1) { // move > 6
-            rows.get(move - this.boardSize).shiftRightOrUp();
+        if (move > (3 * this.boardSize) - 1) { // move > 20: Move down
+            columns.get(move - (3 * this.boardSize)).shiftRightOrdown();
+        } else if (move > (2 * this.boardSize) - 1) { // move > 13: Move up
+            columns.get(move - (2 * this.boardSize)).shiftLeftOrUp();
+        } else if (move > this.boardSize - 1) { // move > 6: Move right
+            rows.get(move - this.boardSize).shiftRightOrdown();
             changedColumn = false;
-        } else { // move <= 6
-            rows.get(move).shiftLeftOrDown();
+        } else { // move <= 6: Move left
+            rows.get(move).shiftLeftOrUp();
             changedColumn = false;
         }
 
@@ -140,7 +140,8 @@ public class Board {
         for(Move move : possibleMoves){
             Board copyBoard = this.deepCopy();
             copyBoard.executeMove(move.getMove1());               // Place move on the copyBoard
-            if(!copyBoard.getYield().values().isEmpty()){
+            HashMap<BallType, Integer> yield = copyBoard.getYield();
+            if(!yield.values().isEmpty()){
                 //throw a party and lets go to the casino because we've got a valid move on our hands bois
                 validMoves.add(move);
                 this.singleMoveAvailable = true;
@@ -194,16 +195,16 @@ public class Board {
 
         for(List<Sequence> sequenceList : rowsAndColumns) { //rows and columns
             for(int seq = 0; seq < sequenceList.size(); seq++) { //sequences in the row/column
-                for (int i = 0; i < this.boardSize; i++) {  //elements in the sequence
-                    int sameBallsInARow = sameBallsInSequence(sequenceList.get(seq), i, 1);
+                for (int element = 0; element < this.boardSize; element++) {  //elements in the sequence
+                    int sameBallsInARow = sameBallsInSequence(sequenceList.get(seq), element, 1);
                     if (sameBallsInARow > 1) {
-                        i += sameBallsInARow - 1;
+                        element += sameBallsInARow - 1;
                         //Store the coordinates of those feckers so they can be removed later
-                        for(int offset = 0; offset < sameBallsInARow; offset++) {
-                            toBeRemovedBalls.add(calculateBallCoordinates(sequenceList, seq, i + offset));
+                        for(int offset = -1; offset < sameBallsInARow - 1; offset++) {
+                            toBeRemovedBalls.add(calculateBallCoordinates(sequenceList, seq, element + offset));
                         }
                         //Save the ball and the amount of its neighbours to a HashMap for adding player score.
-                        BallType thisBall = sequenceList.get(seq).getBalls().get(i);
+                        BallType thisBall = sequenceList.get(seq).getBalls().get(element);
                         if (!ballScore.containsKey(thisBall)) {
                             ballScore.put(thisBall, sameBallsInARow);
                         }

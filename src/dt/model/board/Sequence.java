@@ -15,28 +15,36 @@ public class Sequence {
         return this.balls;
     }
 
-    public void shiftRightOrUp(){
+    public void shiftRightOrdown(){
         int emptyAmount = findEmptyBallAmount();
         while(emptyAmount != 0){
             for(int i = balls.size() - 2; i > 0; i--){
                 if (balls.get(i + 1) == BallType.EMPTY) {
-                    balls.set(i + 1, balls.get(i));
+                    for(int j = i; j > 0; j--) { //Shift all the balls after the one you're looking at as well
+                        balls.set(j + 1, balls.get(j));
+                    }
                 }
             }
             emptyAmount--;
         }
+        balls.set(0, BallType.EMPTY);
+        System.out.println("Done shifting");
     }
 
-    public void shiftLeftOrDown(){
+    public void shiftLeftOrUp(){
         int emptyAmount = findEmptyBallAmount();
         while(emptyAmount != 0) {
             for (int i = 1; i < balls.size(); i++) {
                 if (balls.get(i - 1) == BallType.EMPTY) {
-                    balls.set(i - 1, balls.get(i));
+                    for(int j = i; j < balls.size(); j++) { //Shift all the balls after the one you're looking at as well
+                        balls.set(j - 1, balls.get(j));
+                    }
                 }
             }
             emptyAmount--;
         }
+        balls.set(balls.size() - 1, BallType.EMPTY);
+        System.out.println("Done shifting");
     }
 
     private int findEmptyBallAmount(){
