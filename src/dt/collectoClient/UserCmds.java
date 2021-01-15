@@ -2,7 +2,10 @@ package dt.collectoClient;
 
 import dt.protocol.ClientMessages;
 
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public enum UserCmds {
     LIST(new String[]{"l", "list"}, "Get a list of players on the server"),
@@ -23,7 +26,7 @@ public enum UserCmds {
 
     public boolean isValid(String str) {
         for(String cmd : cmds) {
-            if(cmd.equals(str)) return true;
+            if(cmd.equals(str.toLowerCase())) return true;
         }
         return false;
     }

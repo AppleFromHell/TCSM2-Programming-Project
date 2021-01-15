@@ -6,7 +6,7 @@ import dt.exceptions.InvalidMoveException;
 import dt.exceptions.UnexpectedResponseException;
 import dt.exceptions.UserExit;
 import dt.model.board.ClientBoard;
-import dt.peer.ConnectionHandler;
+import dt.peer.SocketHandler;
 import dt.peer.NetworkEntity;
 import dt.protocol.ClientMessages;
 import dt.protocol.ClientProtocol;
@@ -21,7 +21,7 @@ import java.net.Socket;
 public class Client implements ClientProtocol, NetworkEntity {
 
     private Socket serverSocket;
-    private ConnectionHandler connection;
+    private SocketHandler socketHandler;
     private String userName;
     private Integer port;
     private final ClientView clientView;
@@ -63,8 +63,9 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.state = ClientStates.STARTINGUP;
         new Thread(clientView).start();
     }
+
     public void writeMessage(String msg) {
-        connection.write(msg);
+        socketHandler.write(msg);
     }
     @Override
     public void handleMessage(String msg) {
@@ -75,9 +76,7 @@ public class Client implements ClientProtocol, NetworkEntity {
             switch (ServerMessages.valueOf(keyWord)) {
                 case HELLO:
                     if (this.state == ClientStates.PENDINGHELLO) {
-                        this.state = ClientStates.HELLOED;
                         this.handleHello(arguments);
-                        this.clientView.showMessage("Handshake successful! Connected to server: " + arguments[1]);
                         synchronized (clientView) {
                             this.clientView.notify();
                         }
@@ -122,8 +121,6 @@ public class Client implements ClientProtocol, NetworkEntity {
                     }
                     break;
                 case MOVE:
-                    this.makeTheirMove(arguments);
-
                     if (this.state == ClientStates.AWAITMOVERESPONSE) {
                         this.checkMoveResponse(arguments);
                     } else if (this.state == ClientStates.AWAITNGTHEIRMOVE) {
@@ -142,7 +139,6 @@ public class Client implements ClientProtocol, NetworkEntity {
                 case ERROR:
                     clientView.showMessage("Server threw error: " + msg);
                     break;
-
             }
         }catch (UnexpectedResponseException e) {
             clientView.showMessage("Unexpected response: " + msg);
@@ -159,20 +155,20 @@ public class Client implements ClientProtocol, NetworkEntity {
     //Outgoing messages. Updates state
     @Override
     public void doHello() {
-        connection.write(ClientMessages.HELLO.constructMessage(CLIENTDESCRIPTION));
+        socketHandler.write(ClientMessages.HELLO.constructMessage(CLIENTDESCRIPTION));
         this.state = ClientStates.PENDINGHELLO;
     }
 
 
     @Override
     public void doLogin(String username) {
-        connection.write(ClientMessages.LOGIN.constructMessage(username));
+        socketHandler.write(ClientMessages.LOGIN.constructMessage(username));
         this.state = ClientStates.PENDINGLOGIN;
     }
 
     @Override
     public void doGetList() {
-        connection.write(ClientMessages.LIST.constructMessage());
+        socketHandler.write(ClientMessages.LIST.constructMessage());
         this.state = ClientStates.WAITINGONLIST;
         try {
             clientView.wait();
@@ -185,7 +181,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     @Override
     public void doMove(Move move) throws InvalidMoveException {
             makeMove(move);
-            connection.write(ClientMessages.MOVE.constructMessage(move));
+            socketHandler.write(ClientMessages.MOVE.constructMessage(move));
             this.ourLastMove = move;
             this.state = ClientStates.AWAITMOVERESPONSE;
     }
@@ -193,14 +189,14 @@ public class Client implements ClientProtocol, NetworkEntity {
 
     @Override
     public void doEnterQueue()  {
-        connection.write(ClientMessages.QUEUE.constructMessage());
+        socketHandler.write(ClientMessages.QUEUE.constructMessage());
         this.state = ClientStates.INQUEUE;
     }
 
     //Parsing response
     //HELLO
-    private void handleHello(String[] arguments)  {
-
+    private void handleHello(String[] arguments) throws ProtocolException {
+        if(arguments.length == 1) throw new ProtocolException("Not enough arguments");
         for(int i = 1; i < arguments.length; i++) {
             String arg = arguments[i];
             chatEnabled = arg.equals(ProtocolMessages.Messages.CHAT.toString());
@@ -208,6 +204,8 @@ public class Client implements ClientProtocol, NetworkEntity {
             cryptEnabled = arg.equals(ProtocolMessages.Messages.CRYPT.toString());
             authEnabled = arg.equals(ProtocolMessages.Messages.AUTH.toString());
         }
+        this.clientView.showMessage("Handshake successful! Connected to server: " + arguments[1]);
+        this.state = ClientStates.HELLOED;
     }
 
     //LIST
@@ -222,7 +220,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     //NEWGAME
     private void createNewBoard(String[] arguments) throws NumberFormatException {
         int[] boardState = new int[arguments.length-1]; //TODO add check on valid number of squares
-        for(int i = 1; i < arguments.length; i++) {
+        for(int i = 1; i < arguments.length-2; i++) {
             boardState[i-1] = Integer.parseInt(arguments[i]);
         }
         this.board = new ClientBoard(boardState);
@@ -288,7 +286,9 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.state = ClientStates.IDLE;
         return ret;
     }
-
+    private void makeMove(Move move) throws InvalidMoveException {
+        //board.makeMove(move);
+    }
 
     public void createConnection() throws IOException {
         createConnection(this.ip, this.port, this.userName);
@@ -301,24 +301,22 @@ public class Client implements ClientProtocol, NetworkEntity {
             serverSocket = new Socket(ip, port);
         }
 
-        this.connection = new ConnectionHandler(this, serverSocket);
-        (new Thread(connection)).start();
+        this.socketHandler = new SocketHandler(this, serverSocket);
+        new Thread(socketHandler).start();
 
         clientView.showMessage("Connected to server!");
         doHello();
     }
 
-    private void makeMove(Move move) throws InvalidMoveException {
-        //board.makeMove(move);
-    }
+
 
     @Override
     public void handlePeerShutdown() {
-        this.clientView.showMessage("Server shutdown");
+        this.clientView.showMessage("Server shutdown"); //TODO is dit mooi?
+
         try {
-            this.serverSocket.close();
             this.clientView.reconnect();
-        } catch (UserExit | IOException e) {
+        } catch (UserExit e) {
             this.shutDown();
         }
     }
@@ -327,9 +325,9 @@ public class Client implements ClientProtocol, NetworkEntity {
     @Override
     public void shutDown() {
         clearConnection();
-        connection.shutDown();
+        socketHandler.shutDown();
         clientView.showMessage("See you next time!");
-        System.exit(0);
+        System.exit(69);
     }
 
     public void clearConnection() {
@@ -353,7 +351,6 @@ public class Client implements ClientProtocol, NetworkEntity {
     public void setPort(Integer port) {
         this.port = port;
     }
-
 
     public ClientStates getState() {
         return this.state;

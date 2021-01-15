@@ -1,6 +1,7 @@
 package dt.protocol;
 
 import dt.model.board.Board;
+import dt.util.Move;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ public interface ProtocolMessages {
     String constructMessage(String arg1);
     String constructMessage(String arg1, String arg2);
     String constructMessage(List<String> args);
+    String constructMessage(Move move);
 
     enum Messages{
         LOGIN,

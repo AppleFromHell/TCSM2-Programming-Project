@@ -9,7 +9,7 @@ import dt.util.Move;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class ClientTUI extends SimpleTUI implements ClientView, Runnable {
+public class ClientTUI extends SimpleTUI implements ClientView {
 
     private Client client;
 
