@@ -1,8 +1,6 @@
 package modelTests;
 
-import dt.exceptions.InvalidMoveException;
 import dt.model.board.BallType;
-import dt.model.board.Board;
 import dt.model.board.ServerBoard;
 
 import dt.model.board.Sequence;
@@ -25,7 +23,7 @@ class BoardTest {
     void setup(){
         board = new ServerBoard();
         board.fillBoard(board.createBoard());
-        boardSize = board.getBoardsize();
+        boardSize = board.getBoardSize();
     }
 
     @Test

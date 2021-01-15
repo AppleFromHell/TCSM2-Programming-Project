@@ -19,9 +19,11 @@ public class ServerBoard extends Board{
     }
 
     public void setupBoard(){
-        int[] newBoard = createBoard();
-        this.boardToClient = newBoard;
-        super.fillBoard(newBoard);
+        do {
+            int[] newBoard = createBoard();
+            this.boardToClient = newBoard;
+            super.fillBoard(newBoard);
+        } while(!super.findValidSingleMoves().isEmpty() || !super.findValidDoubleMoves().isEmpty());
     }
 
     private int randomNumber(int min, int max){

@@ -1,5 +1,7 @@
 package dt.util;
 
+import java.util.Objects;
+
 public class Move {
 
     private Integer move1 = null;
@@ -27,12 +29,35 @@ public class Move {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Move move = (Move) o;
+        return Objects.equals(move1, move.move1) &&
+                Objects.equals(move2, move.move2);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(move1, move2);
+    }
+
+    @Override
     public String toString() {
         return isDoubleMove()? "[" + this.move1 + "][" + this.move1 + "]" : "[" + this.move1 + "]";
     }
 
     public String toServerMove() {
         return isDoubleMove()? "[" + this.move1 + "][" + this.move1 + "]" : "[" + this.move1 + "]";
+    }
+
+    public boolean isLegal(){
+        boolean validSingle = move1 >= 0 && move1 <= 27;
+        if(isDoubleMove()){
+            boolean validDouble = move2 >= 0 && move2 <= 27;
+            return validSingle && validDouble;
+        }
+        return validSingle;
     }
 
 
