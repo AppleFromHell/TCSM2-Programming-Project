@@ -88,7 +88,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         } catch (NumberFormatException e) {
             throw new CommandException("Move was not an integer");
         } catch (InvalidMoveException e) {
-            throw new CommandException("Move was not valid");
+            throw new CommandException(e.getMessage());
         }
 
     }
