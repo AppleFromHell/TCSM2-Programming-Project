@@ -6,12 +6,15 @@ public class ClientBoard extends Board {
     public ClientBoard(int boardSize) {
         super(boardSize);
     }
-    public ClientBoard(int[] boarstate) {
-       //Ik wil dit kunnen doen:)
+
+    public ClientBoard(int[] boardState) {
+       super();
+       super.fillBoard(boardState);
     }
     public ClientBoard() {
         super();
     }
+
     public List<Integer> getValidMoves(){
         return null;
     }
