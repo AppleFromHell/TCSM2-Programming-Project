@@ -28,7 +28,6 @@ public class Sequence {
             emptyAmount--;
         }
         balls.set(0, BallType.EMPTY);
-        System.out.println("Done shifting");
     }
 
     public void shiftLeftOrUp(){
@@ -44,7 +43,6 @@ public class Sequence {
             emptyAmount--;
         }
         balls.set(balls.size() - 1, BallType.EMPTY);
-        System.out.println("Done shifting");
     }
 
     private int findEmptyBallAmount(){
