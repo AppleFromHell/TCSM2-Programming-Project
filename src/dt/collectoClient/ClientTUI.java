@@ -44,7 +44,12 @@ public class ClientTUI extends SimpleTUI implements ClientView {
 
             while (true) {
                 try {
-                    String input = getString("What would you like to do?");
+                    String input = "";
+                    if (this.client.getState() == ClientStates.INGAME) {
+                        input = getString("Next Move:");
+                    } else {
+                         input = getString("What would you like to do?");
+                    }
                     handleUserInput(input);
                 } catch (CommandException e) {
                     this.showMessage(e.getMessage());

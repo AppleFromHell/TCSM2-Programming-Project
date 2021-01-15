@@ -126,6 +126,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                     } else if (this.state == ClientStates.AWAITNGTHEIRMOVE) {
                         try {
                             this.makeTheirMove(arguments);
+                            this.clientView.showMessage(this.board.getPrettyBoardState());
                         } catch (InvalidMoveException e) {
                             throw new InvalidMoveException("The server move was invalid");
                         }
