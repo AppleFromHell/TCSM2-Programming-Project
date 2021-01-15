@@ -24,7 +24,7 @@ public class Server implements Runnable{
     private boolean rankEnabled;
     private boolean cryptEnabled;
     private boolean authEnabled;
-    
+
     private Server() {
         this.view = new ServerTUI(this);
         this.gameManager = new GameManager();
@@ -49,7 +49,6 @@ public class Server implements Runnable{
             try {
                 Socket clientSocket = serverSocket.accept();
                 ClientHandler handler = new ClientHandler(this ,this.gameManager, this.view, clientSocket);
-                new Thread(handler).start();
 
                 this.wait();
                 view.showMessage("New client: [" + handler.getName() + "] connected!");
