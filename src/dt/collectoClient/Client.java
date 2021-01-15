@@ -37,9 +37,10 @@ public class Client implements ClientProtocol, NetworkEntity {
 
 
     public Client() {
-        this.clientView = new ClientTUI(this);
+        this.clientView = new ClientGUI(this);
         this.board = new ClientBoard();
         this.userName = null;
+        this.ip = null;
         this.port = null;
         this.chatEnabled = false;
         this.rankEnabled = false;
@@ -326,7 +327,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     @Override
     public void shutDown() {
         clearConnection();
-        socketHandler.shutDown();
+        if(socketHandler != null) socketHandler.shutDown();
         clientView.showMessage("See you next time!");
         System.exit(69);
     }
