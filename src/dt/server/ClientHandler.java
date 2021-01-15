@@ -14,7 +14,7 @@ import javax.security.auth.login.LoginException;
 import java.net.ProtocolException;
 import java.net.Socket;
 
-public class ClientHandler implements NetworkEntity, ServerProtocol { //TODO moet dit concurrent zijn???
+public class ClientHandler implements NetworkEntity, ServerProtocol {
     private final Server server;
     private final GameManager gameManager;
     private Game game;
@@ -29,7 +29,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol { //TODO moe
     ClientHandler(Server server, GameManager gameManager, ServerTUI view, Socket socket) {
         this.server = server;
         this.gameManager = gameManager;
-        this.socketHandler = new SocketHandler(this, socket);
+        this.socketHandler = new SocketHandler(this, socket, "");
         new Thread(socketHandler).start();
         this.view = view;
     }
@@ -97,18 +97,20 @@ public class ClientHandler implements NetworkEntity, ServerProtocol { //TODO moe
 
     @Override
     public void handleLogin(String[] arguments) throws ProtocolException {
-        String name;
+        String userName;
         try {
-            name = arguments[1];
+            userName = arguments[1];
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new ProtocolException("Invalid number of arguments");
         }
-        if(this.server.isUserLoggedIn(name)) {
+        if(this.server.isUserLoggedIn(userName)) {
             socketHandler.write(ServerMessages.ALREADYLOGGEDIN.constructMessage());
         } else {
             socketHandler.write(ServerMessages.LOGIN.constructMessage());
-            this.userName = name;
-            this.server.addUserToList(name);
+            this.userName = userName;
+            this.name = userName;
+            this.socketHandler.setName(userName);
+            this.server.addUserToList(userName);
         }
         this.state = ClientHandlerStates.LOGGEDIN;
     }
@@ -192,6 +194,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol { //TODO moe
 
     @Override
     public void handlePeerShutdown() {
+        this.view.showMessage("["+ this.name + "] Disconnected");
         this.socketHandler.shutDown();
         this.shutDown();
     }

@@ -303,7 +303,7 @@ public class Client implements ClientProtocol, NetworkEntity {
             serverSocket = new Socket(ip, port);
         }
 
-        this.socketHandler = new SocketHandler(this, serverSocket);
+        this.socketHandler = new SocketHandler(this, serverSocket, this.CLIENTDESCRIPTION);
         new Thread(socketHandler).start();
 
         clientView.showMessage("Connected to server!");

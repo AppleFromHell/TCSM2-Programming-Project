@@ -8,15 +8,17 @@ public class SocketHandler implements Runnable {
     private NetworkEntity networkEntity;
     private BufferedReader socketIn;
     private BufferedWriter socketOut;
+    private String name;
     private boolean debug = true;
 
     public void run() {
         readSocketInput();
     }
 
-    public SocketHandler(NetworkEntity networkEntity, Socket socket) {
+    public SocketHandler(NetworkEntity networkEntity, Socket socket, String name) {
         this.networkEntity = networkEntity;
         this.socket = socket;
+        this.name = name;
 
         try {
             socketIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -54,7 +56,9 @@ public class SocketHandler implements Runnable {
             }
         }
     }
-
+    public void setName(String name) {
+        this.name = name;
+    }
     public void shutDown() {
         try {
             this.socketIn = null;
