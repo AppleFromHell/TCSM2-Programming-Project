@@ -197,17 +197,20 @@ public class Board {
             for(int seq = 0; seq < sequenceList.size(); seq++) { //sequences in the row/column
                 for (int element = 0; element < this.boardSize; element++) {  //elements in the sequence
                     int sameBallsInARow = sameBallsInSequence(sequenceList.get(seq), element, 1);
-                    if (sameBallsInARow > 1) {
-                        element += sameBallsInARow - 1;
+                    if (sameBallsInARow > 1) { //Houston, we got a score.
+
                         //Store the coordinates of those feckers so they can be removed later
-                        for(int offset = -1; offset < sameBallsInARow - 1; offset++) {
+                        for(int offset = 0; offset < sameBallsInARow; offset++) {
                             toBeRemovedBalls.add(calculateBallCoordinates(sequenceList, seq, element + offset));
                         }
+                        element += sameBallsInARow; //Update the value of the iterator
+
                         //Save the ball and the amount of its neighbours to a HashMap for adding player score.
                         BallType thisBall = sequenceList.get(seq).getBalls().get(element);
                         if (!ballScore.containsKey(thisBall)) {
                             ballScore.put(thisBall, sameBallsInARow);
                         }
+
                         ballScore.replace(thisBall, sameBallsInARow);
                     }
                 }
