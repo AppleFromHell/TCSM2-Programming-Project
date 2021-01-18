@@ -63,17 +63,16 @@ class BoardTest {
 
     @Test
     void testInvalidMove() {
-        int[] boardState = emptyBoardState;
+        int[] boardState = emptyBoardState.clone();
         boardState[0] = 1;
         testBoard.fillBoard(boardState);
         assertThrows(InvalidMoveException.class, () ->  testBoard.makeMove(new Move(0)));
         assertThrows(InvalidMoveException.class, () ->  testBoard.makeMove(new Move(20)));
-
     }
 
     @Test
     void testMakeMove() throws InvalidMoveException {
-        int[] boardState = emptyBoardState;
+        int[] boardState = emptyBoardState.clone();
         testBoard.fillBoard(boardState);
         testBoard.makeMove(new Move(20));
         int[] targetBoardState = boardState;
@@ -82,11 +81,35 @@ class BoardTest {
 
     @Test
     void testPossibleMoves() {
-        int[] boardState = emptyBoardState;
+        int[] boardState = emptyBoardState.clone();
+        List<Move> possibleMoves;
+
         boardState[0] = 1;
         testBoard.fillBoard(boardState);
-        System.out.println(testBoard.getPrettyBoardState());
-        assertEquals(Arrays.asList(new Move(20), new Move(21)), board.findPossibleMoves());
+        possibleMoves= testBoard.findPossibleMoves();
+        assertTrue(possibleMoves.contains(new Move(20)) && possibleMoves.contains(new Move(21)));
+
+        boardState = emptyBoardState.clone();
+        boardState[3] = 1;
+        testBoard.fillBoard(boardState);
+        possibleMoves= testBoard.findPossibleMoves();
+        assertTrue(
+                possibleMoves.contains(new Move(0)) &&
+                possibleMoves.contains(new Move(20)) &&
+                possibleMoves.contains(new Move(24))
+        );
+
+        boardState = emptyBoardState.clone();
+        boardState[24] = 1;
+        testBoard.fillBoard(boardState);
+        possibleMoves= testBoard.findPossibleMoves();
+        System.out.println(possibleMoves.toString());
+        assertTrue(
+                possibleMoves.contains(new Move(3)) &&
+                        possibleMoves.contains(new Move(17)) &&
+                        possibleMoves.contains(new Move(24)) &&
+                        possibleMoves.contains(new Move(10))
+        );
     }
 
     @Test
