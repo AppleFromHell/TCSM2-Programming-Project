@@ -30,21 +30,28 @@ public class Board {
     }
 
     public void fillBoard(int[] newBoard){ //Parse van int[] to BallType[]
+        this.rows.clear();
+        this.columns.clear();
+        List<List<BallType>> columns = Arrays.asList(
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+                );
+
         for (int r = 0; r < this.boardSize; r++){
             List<BallType> balls = new ArrayList<>();
             for(int i = 0; i < this.boardSize; i++){
                 balls.add(findBallType(newBoard[r * this.boardSize + i]));
+                columns.get(i).add(findBallType(newBoard[r * this.boardSize + i]));
             }
             this.rows.add(new Sequence(balls));
         }
-
-        for(int r = 0; r < this.boardSize; r++){
-            List<BallType> balls = new ArrayList<>();
-            for(int i = 0; i < this.boardSize; i ++){
-                List<BallType> rowBalls = this.rows.get(r).getBalls();
-                balls.add(rowBalls.get(i)); //Essentially doing column[r][i] = row[i][r]
-            }
-            this.columns.add(new Sequence(balls));
+        for(List<BallType> balls : columns) {
+           this.columns.add(new Sequence(balls));
         }
     }
 
@@ -155,28 +162,34 @@ public class Board {
      * A method that finds the moves that are possible to do. Though, the return value of this is not per say the moves that are valid.
      * @return A list of integers, indicating the moves that are possible given the current board state.
      */
-    public List<Move> findPossibleMoves(){
+    public List<Move> findPossibleMoves() {
         List<Move> possibleMoves = new ArrayList<>();
-        for(int rowIndex = 0; rowIndex < this.boardSize; rowIndex++){
+
+        for (int rowIndex = 0; rowIndex < this.boardSize; rowIndex++) {
             Sequence row = this.rows.get(rowIndex);
             List<BallType> balls;
 
-            for(int ballIndex = 0; ballIndex < (balls = row.getBalls()).size(); ballIndex++){
+            for (int ballIndex = 0; ballIndex < (balls = row.getBalls()).size(); ballIndex++) {
                 BallType ball = balls.get(ballIndex);
 
-                if(ball.equals(BallType.EMPTY)){
-                    // Check whether it can move left
-                    if(ballIndex > 0) possibleMoves.add(new Move(rowIndex));
+                List<BallType> rowBalls = row.getBalls();
 
-                    // Check whether it can move right
-                    if(ballIndex < this.boardSize - 1) possibleMoves.add(new Move(rowIndex + this.boardSize));
-
-                    // check whether it can move up
-                    if(rowIndex > 0) possibleMoves.add(new Move(ballIndex + (2 * this.boardSize)));
-
-                    // Check whether it can move down
-                    if(rowIndex < this.boardSize - 1) possibleMoves.add(new Move(ballIndex + (3 * this.boardSize)));
+                //If the sequence before or after the ball contains an empty ball, add it to the moves
+                if(ball != BallType.EMPTY) {
+                    if(rowBalls.subList(ballIndex, this.boardSize-1).contains(BallType.EMPTY)) {
+                        possibleMoves.add(new Move(this.boardSize*3-1 - rowIndex));
+                    }
+                    if(rowBalls.subList(0, ballIndex).contains(BallType.EMPTY)) {
+                        possibleMoves.add(new Move(rowIndex));
+                    }
+                    if(this.columns.get(ballIndex).getBalls().subList(rowIndex, this.boardSize-1).contains(BallType.EMPTY)) {
+                        possibleMoves.add(new Move(this.boardSize * 3 + ballIndex));
+                    }
+                    if(this.columns.get(ballIndex).getBalls().subList(0, rowIndex).contains(BallType.EMPTY)) {
+                        possibleMoves.add(new Move(this.boardSize + ballIndex));
+                    }
                 }
+
             }
         }
         return possibleMoves;
@@ -206,7 +219,7 @@ public class Board {
                         element += sameBallsInARow; //Update the value of the iterator
 
                         //Save the ball and the amount of its neighbours to a HashMap for adding player score.
-                        BallType thisBall = sequenceList.get(seq).getBalls().get(element);
+                        BallType thisBall = sequenceList.get(seq).getBalls().get(element-1);
                         if (!ballScore.containsKey(thisBall)) {
                             ballScore.put(thisBall, sameBallsInARow);
                         }
@@ -229,7 +242,7 @@ public class Board {
      * @param elementNum The element index of the sequence.
      * @return the coordinates of the elementNum in sequenceNum, in the sequenceList.
      */
-    private int calculateBallCoordinates(List<Sequence> sequenceList, int sequenceNum, int elementNum){
+    public int calculateBallCoordinates(List<Sequence> sequenceList, int sequenceNum, int elementNum){
         if(sequenceList == this.rows){
             return sequenceNum * this.boardSize + elementNum;
         } else {
@@ -242,7 +255,7 @@ public class Board {
      * @param toBeRemovedBalls A HashSet containing the coordinates of the balls to be removed from the board,
      *                         calculated by the {@link Board#calculateBallCoordinates(List, int, int)} method.
      */
-    private void removeYield(HashSet<Integer> toBeRemovedBalls){
+    public void removeYield(HashSet<Integer> toBeRemovedBalls){
         for (int coord : toBeRemovedBalls) {
             //for the rows
             int yCoord = coord / 7;
@@ -261,6 +274,7 @@ public class Board {
      * @return The amount of balls found that are the same in the sequence
      */
     public int sameBallsInSequence(Sequence sequence, int index, int ballSequence){ //first call index should be 0 or BOARDSIZE - 1
+        if(ballSequence == 0) ballSequence++; //count the first one
         if(index > sequence.getBalls().size() - 2 ){ //At the edge of the board.
             return ballSequence;
         }
@@ -329,5 +343,13 @@ public class Board {
     @Override
     public String toString() {
         return getPrettyBoardState();
+    }
+
+    public List<Sequence> getColumns() {
+        return this.columns;
+    }
+
+    public List<Sequence> getRows(){
+        return this.rows;
     }
 }
