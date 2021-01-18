@@ -61,7 +61,6 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         }
     }
 
-
     private void handleUserInput(String input) throws CommandException {
         try {
             String[] arguments = input.split(UserCmds.separators);
@@ -124,7 +123,6 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                 }
             }
     }
-
 
     private void printHelpMenu() {
         String ret = "Here is the list of commands:\n";

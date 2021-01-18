@@ -37,7 +37,7 @@ public class Client implements ClientProtocol, NetworkEntity {
 
 
     public Client() {
-        this.clientView = new ClientGUI(this);
+        this.clientView = new ClientTUI(this);
         this.board = new ClientBoard();
         this.userName = null;
         this.ip = null;
@@ -115,11 +115,12 @@ public class Client implements ClientProtocol, NetworkEntity {
                     }
                     break;
                 case NEWGAME:
-                    if(this.state == ClientStates.INQUEUE) {
+                    if(this.state == ClientStates.INQUEUE) { //TODO Sometimes when creating a new game, it doesn't expect the NEWGAME response from the server
                         this.createNewBoard(arguments);
                     }   else {
                         throw new UnexpectedResponseException();
                     }
+                    this.clientView.showMessage(this.board.getPrettyBoardState());
                     break;
                 case MOVE:
                     if (this.state == ClientStates.AWAITMOVERESPONSE) {
@@ -213,40 +214,55 @@ public class Client implements ClientProtocol, NetworkEntity {
     //LIST
     private String[] parseListResponse(String[] arguments) {
         String[] ret = new String[arguments.length-1];
-        for(int i = 1; i < arguments.length; i++) {
-            ret[i-1] =arguments[i];
+        if (arguments.length - 1 >= 0) {
+            System.arraycopy(arguments, 1, ret, 0, arguments.length - 1);
         }
         return ret;
     }
 
     //NEWGAME
     private void createNewBoard(String[] arguments) throws NumberFormatException {
-        int[] boardState = new int[arguments.length-1]; //TODO add check on valid number of squares
+        int[] boardState = new int[arguments.length-2]; //TODO add check on valid number of squares
         for(int i = 1; i < arguments.length-2; i++) {
             boardState[i-1] = Integer.parseInt(arguments[i]);
         }
+
+        String beginner = arguments[arguments.length - 2];
+        if(this.userName.equals(beginner)){
+            this.state = ClientStates.AWAITMOVERESPONSE;
+        } else {
+            this.state = ClientStates.AWAITNGTHEIRMOVE;
+        }
+
         this.board = new ClientBoard(boardState);
     }
 
     //MOVE (1st)
-    private void checkMoveResponse(String[] arguments) throws NumberFormatException, ProtocolException {
+    @SuppressWarnings("UnusedAssignment")
+    private void checkMoveResponse(String[] arguments) throws NumberFormatException, ProtocolException { //Wörks
+        boolean errorThrown = false;
         switch (arguments.length) {
             case 1:
+                errorThrown = true;
                 throw new ProtocolException("No move in response");
             case 2:
-                if(ourLastMove.equals(new Move(Integer.parseInt(arguments[1])))) {
+                if(!ourLastMove.equals(new Move(Integer.parseInt(arguments[1])))) {
+                    errorThrown = true;
                     throw new ProtocolException("Move mismatch. Our move was: " + ourLastMove.toString());
                 }
                 break;
             case 3:
-                if(ourLastMove.equals(new Move(Integer.parseInt(arguments[1], Integer.parseInt(arguments[2]))))) {
+                if(!ourLastMove.equals(new Move(Integer.parseInt(arguments[1], Integer.parseInt(arguments[2]))))) {
+                    errorThrown = true;
                     throw new ProtocolException("Move mismatch. Our move was: " + ourLastMove.toString());
                 }
                 break;
             default:
+                errorThrown = true;
                 throw new ProtocolException("Too many arguments");
         }
-        this.state = ClientStates.AWAITNGTHEIRMOVE;
+        //noinspection ConstantConditions
+        if(!errorThrown) this.state = ClientStates.AWAITNGTHEIRMOVE;
     }
 
     //MOVE (2nd)
@@ -288,8 +304,9 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.state = ClientStates.IDLE;
         return ret;
     }
+
     private void makeMove(Move move) throws InvalidMoveException {
-        //board.makeMove(move);
+        board.makeMove(move);
     }
 
     public void createConnection() throws IOException {
@@ -310,11 +327,9 @@ public class Client implements ClientProtocol, NetworkEntity {
         doHello();
     }
 
-
-
     @Override
     public void handlePeerShutdown() {
-        this.clientView.showMessage("Server shutdown"); //TODO is dit mooi?
+        this.clientView.showMessage("Server shutdown");
 
         try {
             this.clientView.reconnect();
@@ -322,7 +337,6 @@ public class Client implements ClientProtocol, NetworkEntity {
             this.shutDown();
         }
     }
-
 
     @Override
     public void shutDown() {
@@ -353,7 +367,6 @@ public class Client implements ClientProtocol, NetworkEntity {
     public void setPort(Integer port) {
         this.port = port;
     }
-
     public ClientStates getState() {
         return this.state;
     }
