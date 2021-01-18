@@ -226,7 +226,7 @@ public class Board {
      * @param elementNum The element index of the sequence.
      * @return the coordinates of the elementNum in sequenceNum, in the sequenceList.
      */
-    private int calculateBallCoordinates(List<Sequence> sequenceList, int sequenceNum, int elementNum){
+    public int calculateBallCoordinates(List<Sequence> sequenceList, int sequenceNum, int elementNum){
         if(sequenceList == this.rows){
             return sequenceNum * this.boardSize + elementNum;
         } else {
@@ -239,7 +239,7 @@ public class Board {
      * @param toBeRemovedBalls A HashSet containing the coordinates of the balls to be removed from the board,
      *                         calculated by the {@link Board#calculateBallCoordinates(List, int, int)} method.
      */
-    private void removeYield(HashSet<Integer> toBeRemovedBalls){
+    public void removeYield(HashSet<Integer> toBeRemovedBalls){
         for (int coord : toBeRemovedBalls) {
             //for the rows
             int yCoord = coord / 7;
@@ -326,5 +326,13 @@ public class Board {
     @Override
     public String toString() {
         return getPrettyBoardState();
+    }
+
+    public List<Sequence> getColumns() {
+        return this.columns;
+    }
+
+    public List<Sequence> getRows(){
+        return this.rows;
     }
 }
