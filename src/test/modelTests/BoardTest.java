@@ -13,10 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -66,6 +63,7 @@ class BoardTest {
     void testInvalidMove() {
         int[] boardState = emptyBoardState.clone();
         boardState[0] = 1;
+        boardState[5] = 2;
         testBoard.fillBoard(boardState);
         assertThrows(InvalidMoveException.class, () ->  testBoard.makeMove(new Move(0)));
         assertThrows(InvalidMoveException.class, () ->  testBoard.makeMove(new Move(20)));
@@ -74,10 +72,24 @@ class BoardTest {
     @Test
     void testMakeMove() throws InvalidMoveException {
         int[] boardState = emptyBoardState.clone();
+        boardState[0] = 1;
+        boardState[6] = 1;
         testBoard.fillBoard(boardState);
         testBoard.makeMove(new Move(20));
-        int[] targetBoardState = boardState;
-        assertEquals(targetBoardState, testBoard.getBoardState());
+        assertArrayEquals(emptyBoardState, testBoard.getBoardState());
+
+        boardState = emptyBoardState.clone();
+        boardState[0] = 1;
+        boardState[2] = 2;
+        boardState[3] = 1;
+        boardState[13] = 1;
+        testBoard.fillBoard(boardState);
+        testBoard.makeMove(new Move(20));
+        int[] targetBordState = emptyBoardState.clone();
+        targetBordState[5] = 2;
+        targetBordState[4] = 1;
+        assertArrayEquals(targetBordState, testBoard.getBoardState());
+
     }
 
     @Test
@@ -126,8 +138,31 @@ class BoardTest {
 
         assertTrue(
                 validSingleMoves.contains(new Move(0)) &&
-                        validSingleMoves.contains(new Move(20))
+                        validSingleMoves.contains(new Move(20)) &&
+                        validSingleMoves.size() == 2
         );
+
+        boardState = emptyBoardState.clone();
+        testBoard.fillBoard(boardState);
+        assertEquals(Collections.emptyList(), testBoard.findValidSingleMoves());
+    }
+
+    @Test
+    void testFindValidDoubleMoves() {
+        int[] boardState = emptyBoardState.clone();
+        boardState[0] = 1;
+        boardState[48] = 1;
+        testBoard.fillBoard(boardState);
+        assertEquals(Collections.emptyList() ,testBoard.findValidSingleMoves());
+        List<Move> validDoubleMoves = testBoard.findValidDoubleMoves();
+        assertTrue(validDoubleMoves.contains(new Move(20, 27)) &&
+                validDoubleMoves.contains(new Move(21, 14)) && validDoubleMoves.size() == 2);
+        boardState[6] = 2;
+        testBoard.fillBoard(boardState);
+        print();
+        assertEquals(Collections.emptyList() ,testBoard.findValidSingleMoves());
+        assertEquals(Collections.singletonList(new Move(21, 14)), testBoard.findValidDoubleMoves());
+
     }
 
     @Test
@@ -355,18 +390,6 @@ class BoardTest {
                 BallType.BLUE
         )).getBalls(), testBoard.getRows().get(boardSize-1).getBalls());
 
-    }
-
-    @Test
-    void testIsValidMove() {
-    }
-
-    @Test
-    void findValidMoves() {
-    }
-
-    @Test
-    void findPossibleMoves() {
     }
 
     @Test
