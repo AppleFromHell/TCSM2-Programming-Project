@@ -2,6 +2,7 @@ package dt.collectoClient;
 
 import java.io.*;
 
+import dt.exceptions.CommandException;
 import dt.exceptions.InvalidMoveException;
 import dt.exceptions.UnexpectedResponseException;
 import dt.exceptions.UserExit;
@@ -14,9 +15,12 @@ import dt.protocol.ProtocolMessages;
 import dt.protocol.ServerMessages;
 import dt.util.Move;
 
+import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.ProtocolException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Client implements ClientProtocol, NetworkEntity {
 
@@ -42,7 +46,7 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.userName = null;
         this.ip = null;
         this.port = null;
-        this.chatEnabled = false;
+        this.chatEnabled = true;
         this.rankEnabled = false;
         this.cryptEnabled = false;
         this.authEnabled = false;
@@ -142,15 +146,25 @@ public class Client implements ClientProtocol, NetworkEntity {
                 case ERROR:
                     clientView.showMessage("Server threw error: " + msg);
                     break;
+                case CHAT:
+                    String[] splitChat = msg.split(ProtocolMessages.delimiter, 3);
+                    clientView.showMessage(splitChat[1] + ": " + splitChat[2]);
+                    break;
+                case WHISPER:
+                    String[] splitWhisper = msg.split(ProtocolMessages.delimiter, 3);
+                    clientView.showMessage(splitWhisper[1] + " whispers: " + splitWhisper[2]);
+                    break;
+                case CANNOTWHISPER:
+                    throw new CommandException(arguments[1] + "Cannot receive whispers");
             }
-        }catch (UnexpectedResponseException e) {
+        } catch (UnexpectedResponseException e) {
             clientView.showMessage("Unexpected response: " + msg);
         } catch (NumberFormatException  | ProtocolException e) {
             clientView.showMessage("Invalid response from server. Response: " + msg);
             if (!e.getMessage().equals("")) clientView.showMessage("Reason: " + e.getMessage());
-        }catch (IllegalArgumentException e) {
-                clientView.showMessage("Unkown command from server. Response: " + msg);
-        } catch (InvalidMoveException e) {
+        } catch (IllegalArgumentException e) {
+            clientView.showMessage("Unkown command from server. Response: " + msg);
+        } catch (InvalidMoveException | CommandException e) {
             clientView.showMessage(e.getMessage());
         }
     }
@@ -158,7 +172,13 @@ public class Client implements ClientProtocol, NetworkEntity {
     //Outgoing messages. Updates state
     @Override
     public void doHello() {
-        socketHandler.write(ClientMessages.HELLO.constructMessage(CLIENTDESCRIPTION));
+        List<String> extensions = new ArrayList<>();
+        if(this.chatEnabled) extensions.add(ProtocolMessages.Messages.CHAT.name());
+        if(this.authEnabled) extensions.add(ProtocolMessages.Messages.AUTH.name());
+        if(this.cryptEnabled) extensions.add(ProtocolMessages.Messages.CRYPT.name());
+        if(this.rankEnabled) extensions.add(ProtocolMessages.Messages.RANK.name());
+
+        socketHandler.write(ClientMessages.HELLO.constructMessage(extensions));
         this.state = ClientStates.PENDINGHELLO;
     }
 
@@ -178,6 +198,14 @@ public class Client implements ClientProtocol, NetworkEntity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void doSendChat(String message){
+        socketHandler.write(ClientMessages.CHAT.constructMessage(message));
+    }
+
+    public void doSendWhisper(String recipient, String message){
+        socketHandler.write(ClientMessages.WHISPER.constructMessage(recipient, message));
     }
 
 
@@ -324,6 +352,7 @@ public class Client implements ClientProtocol, NetworkEntity {
         new Thread(socketHandler).start();
 
         clientView.showMessage("Connected to server!");
+        this.chatEnabled = true;
         doHello();
     }
 

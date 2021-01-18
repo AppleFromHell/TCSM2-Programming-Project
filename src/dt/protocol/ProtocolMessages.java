@@ -26,6 +26,8 @@ public interface ProtocolMessages {
         GAMEOVER,
         RANK,
         CHAT,
+        WHISPER,
+        CANNOTWHISPER,
         CRYPT,
         AUTH,
     }

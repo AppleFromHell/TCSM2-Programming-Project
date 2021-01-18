@@ -11,6 +11,8 @@ public enum UserCmds {
     LIST(new String[]{"l", "list"}, "Get a list of players on the server"),
     MOVE(new String[]{"m", "move"}, "Make a move. Seperate by any of these: '~', '-', '=', '|'"),
     QUEUE(new String[]{"q","queue", "newgame", "kwewe"}, "Queue up. Game will start o nce an opponent has been found"),
+    CHAT(new String[]{"c", "chat", "say"}, "Sends a chat message to all Clients"),
+    WHISPER(new String[]{"w", "whisper", "silentSay", "uWuInThEar"}, "Sends a private chat message to a Clients"),
     EXIT(new String[]{"quit", "exit", "x"}, "Exit. This shuts down the client"),
     HELP(new String[]{"?", "h", "help"}, "Print a help menu");
 

@@ -47,6 +47,7 @@ public class Server implements Runnable{
             try {
                 Socket clientSocket = serverSocket.accept();
                 ClientHandler handler = new ClientHandler(this ,this.gameManager, this.view, clientSocket);
+                this.connectedClients.add(handler);
 
                 this.wait();
                 view.showMessage("New client: [" + handler.getName() + "] connected!");
@@ -55,6 +56,7 @@ public class Server implements Runnable{
             }
         }
     }
+
     private void setup() {
         new Thread(view).start();
         serverSocket = null;
@@ -75,6 +77,7 @@ public class Server implements Runnable{
             }
         }
     }
+
     public List<String> getLoggedInUsers() {
         return this.loggedinUsers;
     }
@@ -95,6 +98,9 @@ public class Server implements Runnable{
     }
     public String getName() {
         return this.serverName;
+    }
+    public List<ClientHandler> getAllClientHandler(){
+        return this.connectedClients;
     }
     public boolean chatIsEnabled() {
         return this.chatEnabled;

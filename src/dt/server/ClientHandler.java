@@ -61,8 +61,14 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
                 case MOVE:
                     if(this.state == ClientHandlerStates.INGAME) {
                         this.handleMove(arguments);
-                        break;
                     }
+                    break;
+                case CHAT:
+                    this.handleChat(msg);
+                    break;
+                case WHISPER:
+                    this.handleWhisper(msg);
+                    break;
             }
         } catch (IllegalArgumentException e) {
             view.showMessage("["+ this.name + "] unknown response. Response: " + msg);
@@ -113,6 +119,46 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
             this.server.addUserToList(userName);
         }
         this.state = ClientHandlerStates.LOGGEDIN;
+    }
+
+    @Override
+    public void handleChat(String msg) throws ProtocolException {
+        try {
+            String[] arguments = msg.split(ProtocolMessages.delimiter, 2);
+            String sender = this.name;
+            String message = ServerMessages.CHAT.constructMessage(sender, arguments[1]);
+            for (ClientHandler handler : server.getAllClientHandler()){
+                handler.getSocketHandler().write(message);
+            }
+        } catch (ArrayIndexOutOfBoundsException e){
+            throw new ProtocolException("Invalid number of arguments");
+        }
+    }
+
+    @Override
+    public void handleWhisper(String msg) throws ProtocolException {
+        try {
+            String[] arguments = msg.split(ProtocolMessages.delimiter, 3);
+            String sender = this.name;
+            String recipient = arguments[1];
+            ClientHandler handler = null;
+            for(ClientHandler h : server.getAllClientHandler()){
+                if(h.name.equals(recipient)){
+                    handler = h; //TODO check whether the handler supports chat messages.
+                    String message = ServerMessages.WHISPER.constructMessage(sender, arguments[2]);
+                    h.getSocketHandler().write(message);
+                    if(!(handler == this)){
+                        socketHandler.write(message);
+                    }
+                    break;
+                }
+            }
+            if(handler == null){
+                socketHandler.write(ServerMessages.CANNOTWHISPER.constructMessage(recipient));
+            }
+        } catch (ArrayIndexOutOfBoundsException e){
+            throw new ProtocolException("Invalid number of arguments");
+        }
     }
 
     @Override
@@ -203,6 +249,10 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     public void shutDown() {
         this.server.removeClientHandler(this);
         this.server.removeUser(this.name);
+    }
+
+    public SocketHandler getSocketHandler() {
+        return socketHandler;
     }
 
     public String getName() {
