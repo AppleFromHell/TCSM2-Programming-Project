@@ -37,7 +37,7 @@ public class Client implements ClientProtocol, NetworkEntity {
 
 
     public Client() {
-        this.clientView = new ClientGUI(this);
+        this.clientView = new ClientTUI(this);
         this.board = new ClientBoard();
         this.userName = null;
         this.ip = null;
@@ -229,17 +229,17 @@ public class Client implements ClientProtocol, NetworkEntity {
     }
 
     //MOVE (1st)
-    private void checkMoveResponse(String[] arguments) throws NumberFormatException, ProtocolException {
+    private void checkMoveResponse(String[] arguments) throws NumberFormatException, ProtocolException { //Wörks
         switch (arguments.length) {
             case 1:
                 throw new ProtocolException("No move in response");
             case 2:
-                if(ourLastMove.equals(new Move(Integer.parseInt(arguments[1])))) {
+                if(!ourLastMove.equals(new Move(Integer.parseInt(arguments[1])))) {
                     throw new ProtocolException("Move mismatch. Our move was: " + ourLastMove.toString());
                 }
                 break;
             case 3:
-                if(ourLastMove.equals(new Move(Integer.parseInt(arguments[1], Integer.parseInt(arguments[2]))))) {
+                if(!ourLastMove.equals(new Move(Integer.parseInt(arguments[1], Integer.parseInt(arguments[2]))))) {
                     throw new ProtocolException("Move mismatch. Our move was: " + ourLastMove.toString());
                 }
                 break;
