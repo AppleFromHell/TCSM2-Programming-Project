@@ -20,8 +20,9 @@ public class Sequence {
         while(emptyAmount != 0){
             for(int i = balls.size() - 2; i > 0; i--){
                 if (balls.get(i + 1) == BallType.EMPTY) {
-                    for(int j = i; j > 0; j--) { //Shift all the balls after the one you're looking at as well
+                    for(int j = i; j >= 0; j--) { //Shift all the balls after the one you're looking at as well
                         balls.set(j + 1, balls.get(j));
+                        balls.set(j,BallType.EMPTY);
                     }
                 }
             }
@@ -37,6 +38,7 @@ public class Sequence {
                 if (balls.get(i - 1) == BallType.EMPTY) {
                     for(int j = i; j < balls.size(); j++) { //Shift all the balls after the one you're looking at as well
                         balls.set(j - 1, balls.get(j));
+                        balls.set(j, BallType.EMPTY);
                     }
                 }
             }
