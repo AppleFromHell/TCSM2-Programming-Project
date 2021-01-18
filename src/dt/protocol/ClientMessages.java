@@ -9,7 +9,9 @@ public enum ClientMessages implements ProtocolMessages {
     LOGIN (Messages.LOGIN),
     LIST (Messages.LIST),
     MOVE (Messages.MOVE),
-    QUEUE (Messages.QUEUE);
+    QUEUE (Messages.QUEUE),
+    CHAT (Messages.CHAT),
+    WHISPER (Messages.WHISPER);
 
     private String msg = "";
 

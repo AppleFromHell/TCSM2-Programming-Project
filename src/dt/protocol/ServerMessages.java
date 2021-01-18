@@ -36,9 +36,15 @@ public enum ServerMessages implements ProtocolMessages {
     },
     MOVE (Messages.MOVE),
     GAMEOVER (Messages.GAMEOVER),
-    ERROR (Messages.ERROR)
+    ERROR (Messages.ERROR),
+    CHAT (Messages.CHAT),
+    WHISPER (Messages.WHISPER),
+    CANNOTWHISPER (Messages.CANNOTWHISPER)
     ;
 
+    ServerMessages(ProtocolMessages.Messages msg) {
+        this.msg = msg.toString();
+    }
 
     public enum GameOverReasons {
         DRAW,
@@ -47,9 +53,6 @@ public enum ServerMessages implements ProtocolMessages {
     }
     private String msg = "";
 
-    ServerMessages(ProtocolMessages.Messages msg) {
-        this.msg = msg.toString();
-    }
     public String constructMessage() {
         return this.msg;
     }

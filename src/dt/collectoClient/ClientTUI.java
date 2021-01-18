@@ -48,7 +48,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                     if (this.client.getState() == ClientStates.INGAME) {
                         input = getString("Next Move:");
                     } else {
-                         input = getString("What would you like to do?");
+                         input = getString(); //Wait for user input
                     }
                     handleUserInput(input);
                 } catch (CommandException e) {
@@ -66,7 +66,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             String[] arguments = input.split(UserCmds.separators);
             UserCmds cmd = UserCmds.getUserCmd(arguments[0]);
             if (cmd == null)
-                throw new CommandException("Unkown command: " + arguments[0] + "For a list of valid commands type h");
+                throw new CommandException("Unkown command: " + arguments[0] + " For a list of valid commands type h");
             switch (cmd) {
                 case LIST:
                     this.client.doGetList();
@@ -85,6 +85,16 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                     break;
                 case HELP:
                     printHelpMenu();
+                    break;
+                case CHAT:
+                    String[] splitChat = input.split(UserCmds.separators, 2);
+                    this.client.doSendChat(splitChat[1]);
+                    break;
+                case WHISPER:
+                    String[] splitWhisper = input.split(UserCmds.separators, 3);
+                    String receiver = splitWhisper[1];
+                    String whisperMessage = splitWhisper[2];
+                    this.client.doSendWhisper(receiver, whisperMessage);
                     break;
             }
         } catch (ArrayIndexOutOfBoundsException e) {

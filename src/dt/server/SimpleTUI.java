@@ -19,6 +19,22 @@ public class SimpleTUI implements Runnable {
 
     protected String getString(String question) throws UserExit {
         showMessage(question);
+        return getString();
+//        String answer = null;
+//        try {
+//            answer = stdIn.readLine();
+//            if(UserCmds.getUserCmd(answer) == UserCmds.EXIT) throw new UserExit();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        if (answer == null || answer.equals("\n")) {
+//            return "Invalid Input";
+//        } else {
+//            return answer.replace("\n", "");
+//        }
+    }
+
+    protected String getString() throws UserExit {
         String answer = null;
         try {
             answer = stdIn.readLine();
@@ -32,6 +48,7 @@ public class SimpleTUI implements Runnable {
             return answer.replace("\n", "");
         }
     }
+
     public void start(){}
 
     public void showMessage(String message) {
