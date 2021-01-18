@@ -78,19 +78,19 @@ public class Board {
      * Executes a move on the board that is provided in the parameter of the function
      * @param move The move to be executed, conform the protocol.
      */
-    private void executeMove(int move) {
-        boolean changedColumn = true;
+    public void executeMove(int move) {
+        boolean changedColumn = false;
 
-        if (move > (3 * this.boardSize) - 1) { // move > 20: Move down
-            columns.get(move - (3 * this.boardSize)).shiftRightOrdown();
-        } else if (move > (2 * this.boardSize) - 1) { // move > 13: Move up
-            columns.get(move - (2 * this.boardSize)).shiftLeftOrUp();
-        } else if (move > this.boardSize - 1) { // move > 6: Move right
-            rows.get(move - this.boardSize).shiftRightOrdown();
-            changedColumn = false;
-        } else { // move <= 6: Move left
+        if(move < this.boardSize) { // < 7
             rows.get(move).shiftLeftOrUp();
-            changedColumn = false;
+        } else if( move < (2 * this.boardSize)) { //< 14
+            columns.get((2 * this.boardSize) - move - 1).shiftLeftOrUp();
+            changedColumn = true;
+        } else if( move < (3 * this.boardSize)) { //<21
+            rows.get((3 * this.boardSize) - move - 1).shiftRightOrdown();
+        } else if( move < (4 * this.boardSize)) { //<28
+            columns.get( move - (3 * this.boardSize)).shiftRightOrdown();
+            changedColumn = true;
         }
 
         if(changedColumn){
@@ -100,7 +100,7 @@ public class Board {
         }
     }
 
-    private void synchronize(List<Sequence> updatedList, List<Sequence> outdatedList) {
+    public void synchronize(List<Sequence> updatedList, List<Sequence> outdatedList) {
         for (int r = 0; r < this.boardSize; r++){
             Sequence row = updatedList.get(r);
             for(int b = 0; b < this.boardSize; b++){

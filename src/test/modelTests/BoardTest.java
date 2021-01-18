@@ -277,6 +277,85 @@ class BoardTest {
         assertEquals(thirdColumn.getBalls(), testBoard.getColumns().get(2).getBalls());
     }
 
+    @Test
+    void testExecuteMove() {
+        int[] boardState = emptyBoardState.clone();
+        boardState[0] = 1;
+        testBoard.fillBoard(boardState);
+        testBoard.executeMove(20);
+        boardState[0] = 0;
+        boardState[6] = 1;
+        assertArrayEquals(boardState, testBoard.getBoardState());
+
+        boardState[20] = 1;
+        testBoard.fillBoard(boardState);
+
+        testBoard.executeMove(27);
+        boardState = emptyBoardState.clone();
+        boardState[41] = 1;
+        boardState[48] = 1;
+        assertArrayEquals(boardState, testBoard.getBoardState());
+
+        testBoard.executeMove(6);
+        boardState[48] = 0;
+        boardState[42] = 1;
+        assertArrayEquals(boardState, testBoard.getBoardState());
+
+        testBoard.executeMove(13);
+        boardState[42] = 0;
+        boardState[0] = 1;
+        assertArrayEquals(boardState, testBoard.getBoardState());
+
+    }
+
+    @Test
+    void testSynchronize() {
+        int[] boardState = emptyBoardState.clone();
+        boardState[0] = 1;
+        testBoard.fillBoard(boardState);
+        print();
+        testBoard.getRows().set(0, new Sequence(Arrays.asList(
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.BLUE
+                )));
+        print();
+        testBoard.synchronize(testBoard.getRows(), testBoard.getColumns());
+        assertEquals(new Sequence(Arrays.asList(
+                BallType.BLUE,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY
+                )).getBalls(), testBoard.getColumns().get(boardSize-1).getBalls());
+        print();
+        testBoard.getColumns().set(boardSize-1, new Sequence(Arrays.asList(
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.BLUE
+                )));
+        testBoard.synchronize(testBoard.getColumns(), testBoard.getRows());
+        assertEquals(new Sequence(Arrays.asList(
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.BLUE
+        )).getBalls(), testBoard.getRows().get(boardSize-1).getBalls());
+
+    }
 
     @Test
     void testIsValidMove() {
@@ -423,5 +502,9 @@ class BoardTest {
 
     @Test
     void isGameOver() {
+    }
+
+    private void print() {
+        System.out.println(testBoard.getPrettyBoardState() + "\n################################");
     }
 }
