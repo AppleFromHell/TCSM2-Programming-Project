@@ -2,15 +2,16 @@ package modelTests;
 
 import dt.exceptions.InvalidMoveException;
 import dt.model.board.BallType;
-import dt.model.board.Board;
 import dt.model.board.ServerBoard;
 
 import dt.model.board.Sequence;
 import dt.util.Move;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Method;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,8 +23,9 @@ class BoardTest {
 
     ServerBoard board;
     int boardSize;
-    int[] testBoardState;
+    int[] emptyBoardState;
     ServerBoard testBoard;
+
 
     @BeforeEach
     void setup(){
@@ -31,10 +33,10 @@ class BoardTest {
         board.fillBoard(board.createBoard());
         boardSize = board.getBoardSize();
 
-        testBoardState = new int[boardSize*boardSize];
+        emptyBoardState = new int[boardSize*boardSize];
         testBoard = new ServerBoard();
         for(int i =0; i < boardSize * boardSize; i++) {
-            testBoardState[i] = 0;
+            emptyBoardState[i] = 0;
         }
     }
 
@@ -60,31 +62,41 @@ class BoardTest {
     }
 
     @Test
+    void testInvalidMove() {
+        int[] boardState = emptyBoardState;
+        boardState[0] = 1;
+        testBoard.fillBoard(boardState);
+        assertThrows(InvalidMoveException.class, () ->  testBoard.makeMove(new Move(0)));
+        assertThrows(InvalidMoveException.class, () ->  testBoard.makeMove(new Move(20)));
+
+    }
+
+    @Test
     void testMakeMove() throws InvalidMoveException {
-
-        testBoardState[0] = 1;
-        testBoardState[13] = 1;
-        testBoard.fillBoard(testBoardState);
-        System.out.println(testBoard.getPrettyBoardState());
-
-        testBoard.makeMove(new Move(0));
-        System.out.println(testBoard.getPrettyBoardState());
-    }
-    @Test
-    void testCalculateBallCoordinates() {
-
-        assertEquals(0, testBoard.calculateBallCoordinates(testBoard.getColumns(), 0, 0));
-        assertEquals(0,testBoard.calculateBallCoordinates(testBoard.getRows(), 0, 0));
-
-        assertEquals(6, testBoard.calculateBallCoordinates(testBoard.getColumns(), 6, 0));
-        assertEquals(6,testBoard.calculateBallCoordinates(testBoard.getRows(), 0, 6));
-
-        assertEquals(48, testBoard.calculateBallCoordinates(testBoard.getColumns(), 6, 6));
-        assertEquals(48,testBoard.calculateBallCoordinates(testBoard.getRows(), 6, 6));
+        int[] boardState = emptyBoardState;
+        testBoard.fillBoard(boardState);
+        testBoard.makeMove(new Move(20));
+        int[] targetBoardState = boardState;
+        assertEquals(targetBoardState, testBoard.getBoardState());
     }
 
     @Test
-    void isValidMove() {
+    void testPossibleMoves() {
+        int[] boardState = emptyBoardState;
+        boardState[0] = 1;
+        testBoard.fillBoard(boardState);
+        System.out.println(testBoard.getPrettyBoardState());
+        assertEquals(Arrays.asList(new Move(20), new Move(21)), board.findPossibleMoves());
+    }
+
+    @Test
+    void testFindValidSingleMoves() {
+        int[] boardState = emptyBoardState;
+        boardState[0] = 1;
+        boardState[6] = 1;
+        testBoard.fillBoard(boardState);
+        System.out.println(testBoard.getPrettyBoardState());
+        assertEquals(Arrays.asList(new Move(0), new Move(20)), testBoard.findValidSingleMoves());
     }
 
     @Test
@@ -109,6 +121,20 @@ class BoardTest {
         int[] oBoardState = original.getBoardState();
         int[] cBoardState = copy.getBoardState();
         assertTrue(Arrays.equals(original.getBoardState(), copy.getBoardState()));
+    }
+
+
+    @Test
+    void testCalculateBallCoordinates() {
+
+        assertEquals(0, testBoard.calculateBallCoordinates(testBoard.getColumns(), 0, 0));
+        assertEquals(0,testBoard.calculateBallCoordinates(testBoard.getRows(), 0, 0));
+
+        assertEquals(6, testBoard.calculateBallCoordinates(testBoard.getColumns(), 6, 0));
+        assertEquals(6,testBoard.calculateBallCoordinates(testBoard.getRows(), 0, 6));
+
+        assertEquals(48, testBoard.calculateBallCoordinates(testBoard.getColumns(), 6, 6));
+        assertEquals(48,testBoard.calculateBallCoordinates(testBoard.getRows(), 6, 6));
     }
 
     @Test
