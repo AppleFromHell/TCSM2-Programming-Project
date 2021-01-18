@@ -214,7 +214,7 @@ public class Board {
                         element += sameBallsInARow; //Update the value of the iterator
 
                         //Save the ball and the amount of its neighbours to a HashMap for adding player score.
-                        BallType thisBall = sequenceList.get(seq).getBalls().get(element);
+                        BallType thisBall = sequenceList.get(seq).getBalls().get(element-1);
                         if (!ballScore.containsKey(thisBall)) {
                             ballScore.put(thisBall, sameBallsInARow);
                         }
@@ -269,6 +269,7 @@ public class Board {
      * @return The amount of balls found that are the same in the sequence
      */
     public int sameBallsInSequence(Sequence sequence, int index, int ballSequence){ //first call index should be 0 or BOARDSIZE - 1
+        if(ballSequence == 0) ballSequence++; //count the first one
         if(index > sequence.getBalls().size() - 2 ){ //At the edge of the board.
             return ballSequence;
         }

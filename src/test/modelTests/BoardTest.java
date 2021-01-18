@@ -95,8 +95,8 @@ class BoardTest {
         possibleMoves= testBoard.findPossibleMoves();
         assertTrue(
                 possibleMoves.contains(new Move(0)) &&
-                possibleMoves.contains(new Move(20)) &&
-                possibleMoves.contains(new Move(24))
+                        possibleMoves.contains(new Move(20)) &&
+                        possibleMoves.contains(new Move(24))
         );
 
         boardState = emptyBoardState.clone();
@@ -114,13 +114,99 @@ class BoardTest {
 
     @Test
     void testFindValidSingleMoves() {
-        int[] boardState = emptyBoardState;
+        int[] boardState = emptyBoardState.clone();
+        List<Move> validSingleMoves;
         boardState[0] = 1;
         boardState[6] = 1;
         testBoard.fillBoard(boardState);
         System.out.println(testBoard.getPrettyBoardState());
-        assertEquals(Arrays.asList(new Move(0), new Move(20)), testBoard.findValidSingleMoves());
+        validSingleMoves = testBoard.findValidSingleMoves();
+        System.out.println(validSingleMoves.toString());
+
+        assertTrue(
+                validSingleMoves.contains(new Move(0)) &&
+                        validSingleMoves.contains(new Move(20))
+        );
     }
+
+    @Test
+    void testSameBallInSequence() {
+        Sequence sequence = new Sequence(Arrays.asList(
+                BallType.BLUE,
+                BallType.BLUE,
+                BallType.BLUE,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY));
+        assertEquals(3, testBoard.sameBallsInSequence(sequence, 0, 0));
+
+        sequence = new Sequence(Arrays.asList(
+                BallType.EMPTY,
+                BallType.BLUE,
+                BallType.BLUE,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.BLUE));
+        assertEquals(2, testBoard.sameBallsInSequence(sequence, 1, 0));
+    }
+
+    @Test
+    void testGetYield() {
+        int[] boardState = emptyBoardState.clone();
+        boardState[0] = 1;
+        boardState[1] = 1;
+        boardState[8] = 1;
+        testBoard.fillBoard(boardState);
+        System.out.println(testBoard.getPrettyBoardState());
+        HashMap<BallType, Integer> targetYield = new HashMap<>();
+        targetYield.put(BallType.BLUE, 3);
+        assertEquals(targetYield, testBoard.getYield());
+        assertEquals(emptyBoardState, testBoard.getBoardState());
+    }
+
+    @Test
+    void testFillBoard() {
+        int[] boardState = emptyBoardState.clone();
+        boardState[0] = 1;
+        boardState[1] = 1;
+        testBoard.fillBoard(boardState);
+        Sequence firstRow = new Sequence(Arrays.asList(
+                BallType.BLUE,
+                BallType.BLUE,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY
+        ));
+        assertEquals(firstRow.getBalls(), testBoard.getRows().get(0).getBalls());
+
+        Sequence firstColumn = new Sequence(Arrays.asList(
+                BallType.BLUE,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY
+        ));
+        assertEquals(firstColumn.getBalls(), testBoard.getColumns().get(0).getBalls());
+
+        Sequence secondColumn = new Sequence(Arrays.asList(
+                BallType.EMPTY,
+                BallType.BLUE,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY
+        ));
+        assertEquals(secondColumn.getBalls(), testBoard.getColumns().get(1).getBalls());
+
+    }
+
 
     @Test
     void testIsValidMove() {
