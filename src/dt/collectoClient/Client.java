@@ -329,7 +329,7 @@ public class Client implements ClientProtocol, NetworkEntity {
 
     @Override
     public void handlePeerShutdown() {
-        this.clientView.showMessage("Server shutdown"); //TODO is dit mooi?
+        this.clientView.showMessage("Server shutdown");
 
         try {
             this.clientView.reconnect();
