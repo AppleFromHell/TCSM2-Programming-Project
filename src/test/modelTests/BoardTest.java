@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -159,11 +160,58 @@ class BoardTest {
         boardState[1] = 1;
         boardState[8] = 1;
         testBoard.fillBoard(boardState);
-        System.out.println(testBoard.getPrettyBoardState());
         HashMap<BallType, Integer> targetYield = new HashMap<>();
         targetYield.put(BallType.BLUE, 3);
         assertEquals(targetYield, testBoard.getYield());
-        assertEquals(emptyBoardState, testBoard.getBoardState());
+        assertArrayEquals(emptyBoardState, testBoard.getBoardState());
+
+        boardState = emptyBoardState.clone();
+        boardState[0] = 1;
+        boardState[7] = 1;
+        boardState[1] = 2;
+        boardState[8] = 2;
+        testBoard.fillBoard(boardState);
+        targetYield.clear();
+        targetYield.put(BallType.BLUE, 2);
+        targetYield.put(BallType.ORANGE, 2);
+        assertEquals(targetYield, testBoard.getYield());
+        assertArrayEquals(emptyBoardState, testBoard.getBoardState());
+
+        boardState = emptyBoardState.clone();
+        boardState[8] = 1;
+        boardState[9] = 2;
+        boardState[10] = 1;
+        boardState[15] = 2;
+        boardState[16] = 2;
+        boardState[17] = 3;
+        testBoard.fillBoard(boardState);
+        targetYield.clear();
+        targetYield.put(BallType.ORANGE, 3);
+        assertEquals(targetYield, testBoard.getYield());
+
+        int[] targetBoardState = boardState.clone();
+        targetBoardState[9] = 0;
+        targetBoardState[15] = 0;
+        targetBoardState[16] = 0;
+        assertArrayEquals(targetBoardState, testBoard.getBoardState());
+
+        boardState = emptyBoardState.clone();
+        Arrays.fill(boardState, 1);
+        testBoard.fillBoard(boardState);
+        targetYield.clear();
+        targetYield.put(BallType.BLUE, 49);
+        assertEquals(targetYield, testBoard.getYield());
+        assertArrayEquals(emptyBoardState, testBoard.getBoardState());
+
+        boardState = emptyBoardState.clone();
+        Arrays.fill(boardState, 0, 14, 1);
+        testBoard.fillBoard(boardState);
+
+        targetYield.clear();
+        targetYield.put(BallType.BLUE, 14);
+        assertEquals(targetYield, testBoard.getYield());
+        assertArrayEquals(emptyBoardState, testBoard.getBoardState());
+
     }
 
     @Test

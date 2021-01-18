@@ -204,7 +204,7 @@ public class Board {
         List<List<Sequence>> rowsAndColumns = new ArrayList<>();
         rowsAndColumns.add(this.rows);
         rowsAndColumns.add(this.columns);
-        HashSet<Integer> toBeRemovedBalls = new HashSet<>();
+        HashMap<Integer, BallType> toBeRemovedBalls = new HashMap<>();
 
         for(List<Sequence> sequenceList : rowsAndColumns) { //rows and columns
             for(int seq = 0; seq < sequenceList.size(); seq++) { //sequences in the row/column
@@ -212,25 +212,27 @@ public class Board {
                     int sameBallsInARow = sameBallsInSequence(sequenceList.get(seq), element, 1);
                     if (sameBallsInARow > 1) { //Houston, we got a score.
 
+
+                        BallType thisBall = sequenceList.get(seq).getBalls().get(element);
                         //Store the coordinates of those feckers so they can be removed later
                         for(int offset = 0; offset < sameBallsInARow; offset++) {
-                            toBeRemovedBalls.add(calculateBallCoordinates(sequenceList, seq, element + offset));
+                            toBeRemovedBalls.putIfAbsent(calculateBallCoordinates(sequenceList, seq, element + offset), thisBall);
                         }
                         element += sameBallsInARow; //Update the value of the iterator
 
                         //Save the ball and the amount of its neighbours to a HashMap for adding player score.
-                        BallType thisBall = sequenceList.get(seq).getBalls().get(element-1);
-                        if (!ballScore.containsKey(thisBall)) {
-                            ballScore.put(thisBall, sameBallsInARow);
-                        }
-
-                        ballScore.replace(thisBall, sameBallsInARow);
                     }
                 }
             }
         }
-
-        removeYield(toBeRemovedBalls);
+        for(BallType b : toBeRemovedBalls.values()) {
+            if(ballScore.containsKey(b)) {
+                ballScore.put(b, ballScore.get(b) + 1);
+            } else {
+                ballScore.put(b, 1);
+            }
+        }
+        removeYield(new HashSet<>(toBeRemovedBalls.keySet()));
 
         return ballScore;
     }
