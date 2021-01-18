@@ -32,21 +32,26 @@ public class Board {
     public void fillBoard(int[] newBoard){ //Parse van int[] to BallType[]
         this.rows.clear();
         this.columns.clear();
+        List<List<BallType>> columns = Arrays.asList(
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+                );
+
         for (int r = 0; r < this.boardSize; r++){
             List<BallType> balls = new ArrayList<>();
             for(int i = 0; i < this.boardSize; i++){
                 balls.add(findBallType(newBoard[r * this.boardSize + i]));
+                columns.get(i).add(findBallType(newBoard[r * this.boardSize + i]));
             }
             this.rows.add(new Sequence(balls));
         }
-
-        for(int r = 0; r < this.boardSize; r++){
-            List<BallType> balls = new ArrayList<>();
-            for(int i = 0; i < this.boardSize; i ++){
-                List<BallType> rowBalls = this.rows.get(r).getBalls();
-                balls.add(rowBalls.get(i)); //Essentially doing column[r][i] = row[i][r]
-            }
-            this.columns.add(new Sequence(balls));
+        for(List<BallType> balls : columns) {
+           this.columns.add(new Sequence(balls));
         }
     }
 

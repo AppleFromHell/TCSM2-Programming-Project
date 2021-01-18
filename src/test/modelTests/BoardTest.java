@@ -171,6 +171,7 @@ class BoardTest {
         int[] boardState = emptyBoardState.clone();
         boardState[0] = 1;
         boardState[1] = 1;
+        boardState[16] = 1;
         testBoard.fillBoard(boardState);
         Sequence firstRow = new Sequence(Arrays.asList(
                 BallType.BLUE,
@@ -182,6 +183,17 @@ class BoardTest {
                 BallType.EMPTY
         ));
         assertEquals(firstRow.getBalls(), testBoard.getRows().get(0).getBalls());
+
+        Sequence thirdRow = new Sequence(Arrays.asList(
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.BLUE,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY
+        ));
+        assertEquals(thirdRow.getBalls(), testBoard.getRows().get(2).getBalls());
 
         Sequence firstColumn = new Sequence(Arrays.asList(
                 BallType.BLUE,
@@ -195,8 +207,8 @@ class BoardTest {
         assertEquals(firstColumn.getBalls(), testBoard.getColumns().get(0).getBalls());
 
         Sequence secondColumn = new Sequence(Arrays.asList(
-                BallType.EMPTY,
                 BallType.BLUE,
+                BallType.EMPTY,
                 BallType.EMPTY,
                 BallType.EMPTY,
                 BallType.EMPTY,
@@ -205,6 +217,16 @@ class BoardTest {
         ));
         assertEquals(secondColumn.getBalls(), testBoard.getColumns().get(1).getBalls());
 
+        Sequence thirdColumn = new Sequence(Arrays.asList(
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.BLUE,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY,
+                BallType.EMPTY
+                ));
+        assertEquals(thirdColumn.getBalls(), testBoard.getColumns().get(2).getBalls());
     }
 
 
