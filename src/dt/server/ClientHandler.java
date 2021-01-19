@@ -1,5 +1,6 @@
 package dt.server;
 
+import dt.exceptions.AlreadyInQueueException;
 import dt.exceptions.InvalidMoveException;
 import dt.exceptions.NotYourTurnException;
 import dt.exceptions.UnexpectedResponseException;
@@ -53,15 +54,17 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
                     this.handleList();
                     break;
                 case QUEUE:
-                    if(this.state == ClientHandlerStates.LOGGEDIN ||
-                        this.state == ClientHandlerStates.IDLE) {
+                    if (this.state == ClientHandlerStates.LOGGEDIN ||
+                            this.state == ClientHandlerStates.IDLE) {
                         this.handleQueue();
+                    } else if (this.state == ClientHandlerStates.INQUEUE) {
+                        throw new AlreadyInQueueException("Yer already in a queue");
                     } else {
                         throw new LoginException();
                     }
                     break;
                 case MOVE:
-                    if(this.state == ClientHandlerStates.INGAME) {
+                    if (this.state == ClientHandlerStates.INGAME) {
                         this.handleMove(arguments);
                     } else {
                         throw new UnexpectedResponseException("You're not in a game");
@@ -94,6 +97,9 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         } catch (UnexpectedResponseException e) {
             view.showMessage("[" + this.name + "] tried to make a move but he isn't in a game");
             socketHandler.write(ServerMessages.ERROR.constructMessage("You're not in a game"));
+        } catch (AlreadyInQueueException e) {
+            view.showMessage("[" + this.name + "] tried to enter the queue, but is already in queue");
+            socketHandler.write(ServerMessages.ERROR.constructMessage("You're already in queue"));
         }
     }
 
@@ -178,8 +184,8 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
 
     @Override
     public void handleQueue() {
-        gameManager.addToQueue(this);
         this.state = ClientHandlerStates.INQUEUE;
+        gameManager.addToQueue(this);
     }
 
     @Override
@@ -235,8 +241,6 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     public void setMyTurn(boolean myTurn) {
         this.myTurn = myTurn;
     }
-
-
 
     private void makeMove(Move move) throws ProtocolException, NumberFormatException, InvalidMoveException {
         this.game.makeMove(move);

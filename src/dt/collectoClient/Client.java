@@ -83,7 +83,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     public synchronized void handleMessage(String msg) {
         String[] arguments = msg.split(ProtocolMessages.delimiter);
         String keyWord = arguments[0];
-
+        clientView.showMessage(this.state.toString());
         try {
             switch (ServerMessages.valueOf(keyWord)) {
                 case HELLO:
@@ -220,6 +220,7 @@ public class Client implements ClientProtocol, NetworkEntity {
 
     @Override
     public synchronized void doMove(Move move) throws InvalidMoveException {
+        this.state = ClientStates.AWAITMOVERESPONSE;
         socketHandler.write(ClientMessages.MOVE.constructMessage(move));
         this.ourLastMove = move;
         this.moveConfirmed = false;
@@ -230,7 +231,7 @@ public class Client implements ClientProtocol, NetworkEntity {
         }
         if(this.moveConfirmed) {
             makeMove(move);
-            this.state = ClientStates.AWAITMOVERESPONSE;
+            this.state = ClientStates.AWAITNGTHEIRMOVE;
         }
     }
 
@@ -312,7 +313,6 @@ public class Client implements ClientProtocol, NetworkEntity {
         //noinspection ConstantConditions
         this.notify();
         this.moveConfirmed = true;
-        if(!errorThrown) this.state = ClientStates.AWAITNGTHEIRMOVE;
     }
 
     //MOVE (2nd)

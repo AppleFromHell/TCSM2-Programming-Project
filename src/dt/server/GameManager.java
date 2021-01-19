@@ -14,12 +14,12 @@ public class GameManager {
         this.activeGames = new ArrayList<>();
     }
 
-    public void addToQueue(ClientHandler clientHandler) {
+    public synchronized void addToQueue(ClientHandler clientHandler) {
         queue.add(clientHandler);
         if(queue.size() > 1) startGame();
     }
 
-    public void startGame() {
+    public synchronized void startGame() {
         Game game = new Game();
         activeGames.add(game);
         ClientHandler player1 = queue.get(0);
