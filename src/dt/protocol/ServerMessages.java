@@ -1,12 +1,11 @@
 package dt.protocol;
 
-import dt.model.board.Board;
 import dt.server.Server;
-import dt.server.SimpleTUI;
 import dt.util.Move;
 
 import java.util.List;
 
+/** @author Emiel Rous and Wouter Koning */
 public enum ServerMessages implements ProtocolMessages {
     HELLO (Messages.HELLO) {
         @Override

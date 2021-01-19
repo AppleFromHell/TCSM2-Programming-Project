@@ -1,10 +1,10 @@
 package dt.protocol;
 
-import dt.model.board.Board;
 import dt.util.Move;
 
 import java.util.List;
 
+/** @author Emiel Rous and Wouter Koning */
 public interface ProtocolMessages {
     String delimiter = "~";
 

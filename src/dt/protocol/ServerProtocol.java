@@ -5,6 +5,7 @@ import dt.server.ClientHandler;
 
 import java.net.ProtocolException;
 
+/** @author Emiel Rous and Wouter Koning */
 public interface ServerProtocol {
 
     void handleHello(String[] arguments) throws ProtocolException;

@@ -4,6 +4,7 @@ import dt.util.Move;
 
 import java.util.List;
 
+/** @author Emiel Rous and Wouter Koning */
 public enum ClientMessages implements ProtocolMessages {
     HELLO (Messages.HELLO),
     LOGIN (Messages.LOGIN),
