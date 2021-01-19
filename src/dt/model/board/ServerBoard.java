@@ -24,10 +24,7 @@ public class ServerBoard extends Board{
             this.boardToClient = newBoard;
             super.fillBoard(newBoard);
         } while(findValidMoves().isEmpty());
-    }
-
-    private int randomNumber(int min, int max){
-        return (int) (Math.random() * (max - min + 1) + min);
+        System.out.println("Valid moves: "+ findValidMoves().toString());
     }
 
     private int randomBall(){

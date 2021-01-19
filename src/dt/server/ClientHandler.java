@@ -1,5 +1,6 @@
 package dt.server;
 
+import dt.exceptions.InvalidMoveException;
 import dt.exceptions.NotYourTurnException;
 import dt.model.Game;
 import dt.peer.NetworkEntity;
@@ -84,6 +85,9 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         } catch (LoginException e) {
             view.showMessage("[" + this.name + "] tried to access the Queue without loggin in first");
             socketHandler.write(ServerMessages.ERROR.constructMessage("You need to log in first"));
+        } catch (InvalidMoveException e) {
+            view.showMessage("[" + this.name + "] tried to make an invalid move");
+            socketHandler.write(ServerMessages.ERROR.constructMessage("Your move was invalid"));
         }
     }
 
@@ -193,7 +197,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         }
         this.state = ClientHandlerStates.INGAME;
     }
-    public void handleMove(String[] arguments) throws ProtocolException, NotYourTurnException {
+    public synchronized void handleMove(String[] arguments) throws ProtocolException, NotYourTurnException, InvalidMoveException {
         //TODO game over fixen. Wat gebuert er client side? Weet die wanneer de game over is en wacht die dan op een gamover van de server?
         if(this.myTurn) {
             this.makeOurMoveHere(arguments);
@@ -203,13 +207,13 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     }
 
     //This one is called from here
-    private void makeOurMoveHere(String[] arguments) throws ProtocolException, NotYourTurnException {
+    private void makeOurMoveHere(String[] arguments) throws ProtocolException, NotYourTurnException, InvalidMoveException {
         makeMove(arguments);
         opponent.makeOurMoveThere(arguments);
         this.myTurn = false;
     }
     //Tis one is called from the other ClientHandler
-    public void makeOurMoveThere(String[] arguments) throws ProtocolException, NotYourTurnException {
+    public void makeOurMoveThere(String[] arguments) throws ProtocolException, NotYourTurnException, InvalidMoveException {
         if(!this.myTurn) {
             makeMove(arguments);
             this.myTurn = true;
@@ -218,7 +222,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         }
     }
 
-    private synchronized void makeMove(String[] arguments) throws ProtocolException, NumberFormatException{
+    private synchronized void makeMove(String[] arguments) throws ProtocolException, NumberFormatException, InvalidMoveException {
 
         Move move;
         switch (arguments.length) {

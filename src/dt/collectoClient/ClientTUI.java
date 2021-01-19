@@ -85,6 +85,9 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                         throw new CommandException("Too many moves");
                     }
                     break;
+                case HINT:
+                    this.client.provideHint();
+                    break;
                 case HELP:
                     printHelpMenu();
                     break;

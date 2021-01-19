@@ -1,5 +1,7 @@
 package dt.model.board;
 
+import dt.util.Move;
+
 import java.util.List;
 
 public class ClientBoard extends Board {
@@ -15,8 +17,9 @@ public class ClientBoard extends Board {
         super();
     }
 
-    public List<Integer> getValidMoves(){
-        return null;
+    public Move getAHint() {
+        List<Move> validMoves = findValidMoves();
+        return validMoves.get(randomNumber(0, validMoves.size()-1));
     }
 
 }

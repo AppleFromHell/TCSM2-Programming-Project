@@ -223,6 +223,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     @Override
     public void doEnterQueue()  {
         socketHandler.write(ClientMessages.QUEUE.constructMessage());
+        clientView.showMessage("Entered queue");
         this.state = ClientStates.INQUEUE;
     }
 
@@ -260,8 +261,10 @@ public class Client implements ClientProtocol, NetworkEntity {
         String beginner = arguments[arguments.length - 2];
         if(this.userName.equals(beginner)){
             this.state = ClientStates.AWAITMOVERESPONSE;
+            clientView.showMessage("You start");
         } else {
             this.state = ClientStates.AWAITNGTHEIRMOVE;
+            clientView.showMessage("Waiting on their move");
         }
 
         this.board = new ClientBoard(boardState);
@@ -335,6 +338,10 @@ public class Client implements ClientProtocol, NetworkEntity {
         return ret;
     }
 
+    public void provideHint() {
+        clientView.showMessage(this.board.getAHint().toString());
+    }
+
     private void makeMove(Move move) throws InvalidMoveException {
         board.makeMove(move);
     }
@@ -401,4 +408,5 @@ public class Client implements ClientProtocol, NetworkEntity {
     public ClientStates getState() {
         return this.state;
     }
+
 }
