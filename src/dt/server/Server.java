@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Server implements Runnable{
+    //TODO when a client disconnects from a game, the other player should be informed that they
+    // have won due to a disconnect.
+
     private Integer port;
     private List<ClientHandler> connectedClients;
     private List<String> loggedinUsers;
