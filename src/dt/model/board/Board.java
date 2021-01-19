@@ -78,19 +78,19 @@ public class Board {
      * Executes a move on the board that is provided in the parameter of the function
      * @param move The move to be executed, conform the protocol.
      */
-    private void executeMove(int move) {
-        boolean changedColumn = true;
+    public void executeMove(int move) {
+        boolean changedColumn = false;
 
-        if (move > (3 * this.boardSize) - 1) { // move > 20: Move down
-            columns.get(move - (3 * this.boardSize)).shiftRightOrdown();
-        } else if (move > (2 * this.boardSize) - 1) { // move > 13: Move up
-            columns.get(move - (2 * this.boardSize)).shiftLeftOrUp();
-        } else if (move > this.boardSize - 1) { // move > 6: Move right
-            rows.get(move - this.boardSize).shiftRightOrdown();
-            changedColumn = false;
-        } else { // move <= 6: Move left
+        if(move < this.boardSize) { // < 7
             rows.get(move).shiftLeftOrUp();
-            changedColumn = false;
+        } else if( move < (2 * this.boardSize)) { //< 14
+            columns.get((2 * this.boardSize) - move - 1).shiftLeftOrUp();
+            changedColumn = true;
+        } else if( move < (3 * this.boardSize)) { //<21
+            rows.get((3 * this.boardSize) - move - 1).shiftRightOrdown();
+        } else if( move < (4 * this.boardSize)) { //<28
+            columns.get( move - (3 * this.boardSize)).shiftRightOrdown();
+            changedColumn = true;
         }
 
         if(changedColumn){
@@ -100,7 +100,7 @@ public class Board {
         }
     }
 
-    private void synchronize(List<Sequence> updatedList, List<Sequence> outdatedList) {
+    public void synchronize(List<Sequence> updatedList, List<Sequence> outdatedList) {
         for (int r = 0; r < this.boardSize; r++){
             Sequence row = updatedList.get(r);
             for(int b = 0; b < this.boardSize; b++){
@@ -204,7 +204,7 @@ public class Board {
         List<List<Sequence>> rowsAndColumns = new ArrayList<>();
         rowsAndColumns.add(this.rows);
         rowsAndColumns.add(this.columns);
-        HashSet<Integer> toBeRemovedBalls = new HashSet<>();
+        HashMap<Integer, BallType> toBeRemovedBalls = new HashMap<>();
 
         for(List<Sequence> sequenceList : rowsAndColumns) { //rows and columns
             for(int seq = 0; seq < sequenceList.size(); seq++) { //sequences in the row/column
@@ -212,25 +212,27 @@ public class Board {
                     int sameBallsInARow = sameBallsInSequence(sequenceList.get(seq), element, 1);
                     if (sameBallsInARow > 1) { //Houston, we got a score.
 
+
+                        BallType thisBall = sequenceList.get(seq).getBalls().get(element);
                         //Store the coordinates of those feckers so they can be removed later
                         for(int offset = 0; offset < sameBallsInARow; offset++) {
-                            toBeRemovedBalls.add(calculateBallCoordinates(sequenceList, seq, element + offset));
+                            toBeRemovedBalls.putIfAbsent(calculateBallCoordinates(sequenceList, seq, element + offset), thisBall);
                         }
                         element += sameBallsInARow; //Update the value of the iterator
 
                         //Save the ball and the amount of its neighbours to a HashMap for adding player score.
-                        BallType thisBall = sequenceList.get(seq).getBalls().get(element-1);
-                        if (!ballScore.containsKey(thisBall)) {
-                            ballScore.put(thisBall, sameBallsInARow);
-                        }
-
-                        ballScore.replace(thisBall, sameBallsInARow);
                     }
                 }
             }
         }
-
-        removeYield(toBeRemovedBalls);
+        for(BallType b : toBeRemovedBalls.values()) {
+            if(ballScore.containsKey(b)) {
+                ballScore.put(b, ballScore.get(b) + 1);
+            } else {
+                ballScore.put(b, 1);
+            }
+        }
+        removeYield(new HashSet<>(toBeRemovedBalls.keySet()));
 
         return ballScore;
     }
