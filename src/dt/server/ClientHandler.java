@@ -1,9 +1,6 @@
 package dt.server;
 
-import dt.exceptions.AlreadyInQueueException;
-import dt.exceptions.InvalidMoveException;
-import dt.exceptions.NotYourTurnException;
-import dt.exceptions.UnexpectedResponseException;
+import dt.exceptions.*;
 import dt.model.Game;
 import dt.peer.NetworkEntity;
 import dt.peer.SocketHandler;
@@ -21,12 +18,16 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     private final Server server;
     private final GameManager gameManager;
     private Game game;
+
     private final SocketHandler socketHandler;
     private ClientHandler opponent;
     private final ServerTUI view;
+
     private String name;
     private String userName;
+
     private ClientHandlerStates state;
+
     private boolean myTurn;
     private boolean chatEnabled;
     private boolean rankEnabled;
@@ -39,6 +40,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         this.socketHandler = new SocketHandler(this, socket, "");
         new Thread(socketHandler).start();
         this.view = view;
+        this.game = null;
     }
 
     @Override
@@ -104,6 +106,9 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         } catch (AlreadyInQueueException e) {
             view.showMessage("[" + this.name + "] tried to enter the queue, but is already in queue");
             socketHandler.write(ServerMessages.ERROR.constructMessage("You're already in queue"));
+        } catch (ClientHandlerNotFoundException e) {
+            view.showMessage(e.getMessage());
+            socketHandler.write(ServerMessages.ERROR.constructMessage("Could not find you in the list of players. Are you solid snake?"));
         }
     }
 
@@ -235,7 +240,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         this.opponent.setState(ClientHandlerStates.INGAME);
     }
 
-    public void handleMove(String[] arguments) throws ProtocolException, NotYourTurnException, InvalidMoveException {
+    public void handleMove(String[] arguments) throws ProtocolException, NotYourTurnException, InvalidMoveException, ClientHandlerNotFoundException {
         Move move;
         switch (arguments.length) {
             case 1:
@@ -266,14 +271,17 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         this.myTurn = myTurn;
     }
 
-    private void makeMove(Move move) throws ProtocolException, NumberFormatException, InvalidMoveException {
-        this.game.makeMove(move);
+    private void makeMove(Move move) throws NumberFormatException, InvalidMoveException, ClientHandlerNotFoundException {
+        this.game.makeMove(move, this);
     }
 
 
     @Override
     public void handlePeerShutdown() {
         this.view.showMessage("["+ this.name + "] Disconnected");
+        if(this.game != null){
+            this.game.playerDisconnected();
+        }
         this.socketHandler.shutDown();
         this.shutDown();
     }
