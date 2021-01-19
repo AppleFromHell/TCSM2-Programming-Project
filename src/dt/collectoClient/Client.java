@@ -68,6 +68,20 @@ public class Client implements ClientProtocol, NetworkEntity {
         client.start();
     }
 
+    public static Client testMain(String[] args) {
+        Client client = new Client();
+        if(args.length > 1) {
+            try {
+                client.ip = InetAddress.getByName(args[0]);
+                client.port = Integer.parseInt(args[1]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        client.start();
+        return client;
+    }
+
     public void start() {
         this.state = ClientStates.STARTINGUP;
         new Thread(clientView).start();
@@ -80,6 +94,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     public void writeMessage(String msg) {
         socketHandler.write(msg);
     }
+
     @Override
     public synchronized void handleMessage(String msg) {
         String[] arguments = msg.split(ProtocolMessages.delimiter);
