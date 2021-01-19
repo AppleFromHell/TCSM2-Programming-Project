@@ -1,7 +1,7 @@
 package dt.collectoClient;
 
 
-enum ClientStates {
+public enum ClientStates {
     STARTINGUP,
     PENDINGHELLO,
     HELLOED,

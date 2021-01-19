@@ -44,6 +44,13 @@ public class Server implements Runnable{
         new Thread(server).start();
     }
 
+    public static Server testMain(String[] args) {
+        Server server = new Server();
+        if(args.length != 0) server.setPort(Integer.parseInt(args[0]));
+        new Thread(server).start();
+        return server;
+    }
+
     public synchronized void run() {
         setup();
         while (true) {
@@ -105,6 +112,16 @@ public class Server implements Runnable{
     public List<ClientHandler> getAllClientHandler(){
         return this.connectedClients;
     }
+
+    public ClientHandler getClientHandler(String name){
+        for(ClientHandler client : connectedClients){
+            if(client.getName().equals(name)){
+                return client;
+            }
+        }
+        return null;
+    }
+
     public boolean chatIsEnabled() {
         return this.chatEnabled;
     }

@@ -6,6 +6,7 @@ import dt.exceptions.CommandException;
 import dt.exceptions.InvalidMoveException;
 import dt.exceptions.UnexpectedResponseException;
 import dt.exceptions.UserExit;
+import dt.model.board.Board;
 import dt.model.board.ClientBoard;
 import dt.peer.SocketHandler;
 import dt.peer.NetworkEntity;
@@ -40,7 +41,6 @@ public class Client implements ClientProtocol, NetworkEntity {
     private ClientStates state;
     private Move ourLastMove;
 
-
     public Client() {
         this.clientView = new ClientTUI(this);
         this.board = new ClientBoard();
@@ -52,6 +52,7 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.cryptEnabled = false;
         this.authEnabled = false;
     }
+
     public static void main(String[] args) {
         Client client = new Client();
         if(args.length > 1) {
@@ -68,6 +69,10 @@ public class Client implements ClientProtocol, NetworkEntity {
     public void start() {
         this.state = ClientStates.STARTINGUP;
         new Thread(clientView).start();
+    }
+
+    public void setDebug(Boolean state){
+        socketHandler.setDebug(state);
     }
 
     public void writeMessage(String msg) {
@@ -407,6 +412,9 @@ public class Client implements ClientProtocol, NetworkEntity {
     }
     public ClientStates getState() {
         return this.state;
+    }
+    public Board getBoard() {
+        return this.board;
     }
 
 }
