@@ -2,6 +2,7 @@ package dt.server;
 
 import dt.exceptions.InvalidMoveException;
 import dt.exceptions.NotYourTurnException;
+import dt.exceptions.UnexpectedResponseException;
 import dt.model.Game;
 import dt.peer.NetworkEntity;
 import dt.peer.SocketHandler;
@@ -36,7 +37,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     }
 
     @Override
-    public void handleMessage(String msg) {
+    public synchronized void handleMessage(String msg) {
         String[] arguments = msg.split(ProtocolMessages.delimiter);
         String keyWord = arguments[0];
 
@@ -62,6 +63,8 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
                 case MOVE:
                     if(this.state == ClientHandlerStates.INGAME) {
                         this.handleMove(arguments);
+                    } else {
+                        throw new UnexpectedResponseException("You're not in a game");
                     }
                     break;
                 case CHAT:
@@ -88,6 +91,9 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         } catch (InvalidMoveException e) {
             view.showMessage("[" + this.name + "] tried to make an invalid move");
             socketHandler.write(ServerMessages.ERROR.constructMessage("Your move was invalid"));
+        } catch (UnexpectedResponseException e) {
+            view.showMessage("[" + this.name + "] tried to make a move but he isn't in a game");
+            socketHandler.write(ServerMessages.ERROR.constructMessage("You're not in a game"));
         }
     }
 
@@ -196,34 +202,10 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
             this.myTurn = false;
         }
         this.state = ClientHandlerStates.INGAME;
-    }
-    public synchronized void handleMove(String[] arguments) throws ProtocolException, NotYourTurnException, InvalidMoveException {
-        //TODO game over fixen. Wat gebuert er client side? Weet die wanneer de game over is en wacht die dan op een gamover van de server?
-        if(this.myTurn) {
-            this.makeOurMoveHere(arguments);
-        } else {
-            throw new NotYourTurnException("Not your turn");
-        }
+        this.opponent.setState(ClientHandlerStates.INGAME);
     }
 
-    //This one is called from here
-    private void makeOurMoveHere(String[] arguments) throws ProtocolException, NotYourTurnException, InvalidMoveException {
-        makeMove(arguments);
-        opponent.makeOurMoveThere(arguments);
-        this.myTurn = false;
-    }
-    //Tis one is called from the other ClientHandler
-    public void makeOurMoveThere(String[] arguments) throws ProtocolException, NotYourTurnException, InvalidMoveException {
-        if(!this.myTurn) {
-            makeMove(arguments);
-            this.myTurn = true;
-        } else {
-            throw new NotYourTurnException("Turn mismatch");
-        }
-    }
-
-    private synchronized void makeMove(String[] arguments) throws ProtocolException, NumberFormatException, InvalidMoveException {
-
+    public void handleMove(String[] arguments) throws ProtocolException, NotYourTurnException, InvalidMoveException {
         Move move;
         switch (arguments.length) {
             case 1:
@@ -238,8 +220,26 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
             default:
                 throw new ProtocolException("Too many arguments");
         }
+        if(this.myTurn) {
+            this.makeMove(move);
+            this.myTurn = false;
+            opponent.setMyTurn(true);
+            String moveMsg = ServerMessages.MOVE.constructMessage(move);
+            socketHandler.write(moveMsg);
+            opponent.getSocketHandler().write(moveMsg);
+        } else {
+            throw new NotYourTurnException("Not your turn");
+        }
+    }
+
+    public void setMyTurn(boolean myTurn) {
+        this.myTurn = myTurn;
+    }
+
+
+
+    private void makeMove(Move move) throws ProtocolException, NumberFormatException, InvalidMoveException {
         this.game.makeMove(move);
-        socketHandler.write(ServerMessages.MOVE.constructMessage(move));
     }
 
 
@@ -266,6 +266,10 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
 
     public Game getGame(){
         return this.game;
+    }
+
+    public void setState(ClientHandlerStates state) {
+        this.state = state;
     }
 
 
