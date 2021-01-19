@@ -12,7 +12,10 @@ import java.net.UnknownHostException;
 /** @author Emiel Rous and Wouter Koning */
 public class ClientTUI extends SimpleTUI implements ClientView {
     //TODO add an AI (with adjustable difficulty level)
+
     //TODO The user should decide at the start of the game who decides on the moves (AI or human)
+
+    //TODO it keeps printing "PENDINGLOGIN" when you're trying to log in. Remove that.
 
     private Client client;
 
