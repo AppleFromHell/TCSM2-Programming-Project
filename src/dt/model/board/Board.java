@@ -131,10 +131,12 @@ public class Board {
 
     public List<Move> findValidDoubleMoves(){
         List<Move> validDoubleMoves = new ArrayList<>();
-        for(Move move1 : this.findPossibleMoves()){
+        List<Move> possibleMoves = this.findPossibleMoves();
+        for(Move move1 : possibleMoves){
             Board copyBoard = this.deepCopy();
             copyBoard.executeMove(move1.getMove1());
-            for(Move move2 : copyBoard.findValidSingleMoves()){
+            List<Move> possibleSecondMoves = copyBoard.findValidSingleMoves();
+            for(Move move2 : possibleSecondMoves){
                 validDoubleMoves.add(new Move(move1.getMove1(), move2.getMove1())); //All of these bois are goin' to work, hell yea
             }
         }
@@ -186,7 +188,7 @@ public class Board {
                         possibleMoves.add(new Move(this.boardSize * 3 + ballIndex));
                     }
                     if(this.columns.get(ballIndex).getBalls().subList(0, rowIndex).contains(BallType.EMPTY)) {
-                        possibleMoves.add(new Move(this.boardSize + ballIndex));
+                        possibleMoves.add(new Move(2 * this.boardSize - 1 - ballIndex));
                     }
                 }
 

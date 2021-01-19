@@ -44,11 +44,11 @@ public class Move {
 
     @Override
     public String toString() {
-        return isDoubleMove()? "[" + this.move1 + "][" + this.move1 + "]" : "[" + this.move1 + "]";
+        return isDoubleMove()? "[" + this.move1 + "][" + this.move2 + "]" : "[" + this.move1 + "]";
     }
 
     public String toServerMove() {
-        return isDoubleMove()? "[" + this.move1 + "][" + this.move1 + "]" : "[" + this.move1 + "]";
+        return isDoubleMove()? "[" + this.move1 + "][" + this.move2 + "]" : "[" + this.move1 + "]";
     }
 
     public boolean isLegal(){
