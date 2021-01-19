@@ -71,4 +71,8 @@ public class SocketHandler implements Runnable {
             e.printStackTrace();
         }
     }
+
+    public void setDebug(Boolean state) {
+        this.debug = state;
+    }
 }
