@@ -3,6 +3,7 @@ package dt.model.board;
 import java.util.ArrayList;
 import java.util.List;
 
+/** @author Emiel Rous and Wouter Koning */
 public class Sequence {
     private List<BallType> balls;
 

@@ -1,5 +1,6 @@
 package dt.model.board;
 
+/** @author Emiel Rous and Wouter Koning */
 public enum BallType {
 
 //            | Integer | Color   |

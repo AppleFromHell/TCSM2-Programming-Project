@@ -1,5 +1,6 @@
 package dt.model.board;
 
+/** @author Emiel Rous and Wouter Koning */
 import dt.util.Move;
 
 import java.util.List;

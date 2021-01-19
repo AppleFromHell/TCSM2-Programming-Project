@@ -5,6 +5,7 @@ import dt.util.Move;
 
 import java.util.*;
 
+/** @author Emiel Rous and Wouter Koning */
 public class Board {
     private static final int BOARDSIZE = 7;
 

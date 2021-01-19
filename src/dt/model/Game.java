@@ -5,6 +5,7 @@ import dt.model.board.Board;
 import dt.model.board.ServerBoard;
 import dt.util.Move;
 
+/** @author Emiel Rous and Wouter Koning */
 public class Game {
     private ServerBoard board;
 
