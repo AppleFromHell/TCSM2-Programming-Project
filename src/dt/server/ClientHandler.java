@@ -26,6 +26,10 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     private String userName;
     private ClientHandlerStates state;
     private boolean myTurn;
+    private boolean chatEnabled;
+    private boolean rankEnabled;
+    private boolean cryptEnabled;
+    private boolean authEnabled;
 
     ClientHandler(Server server, GameManager gameManager, ServerTUI view, Socket socket) {
         this.server = server;
@@ -96,6 +100,27 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     public void handleHello(String[] arguments) throws ProtocolException {
         try {
             this.name = arguments[1];
+
+            if(arguments.length > 2){ //Enable any extensions for this Client
+                for(int i = 2; i < arguments.length; i++){
+                    switch(arguments[i]){
+                        case "CHAT":
+                            this.chatEnabled = true;
+                            break;
+                        case "AUTH":
+                            this.authEnabled = true;
+                            break;
+                        case "CRYPT":
+                            this.cryptEnabled = true;
+                            break;
+                        case "RANK":
+                            this.rankEnabled = true;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new ProtocolException("Invalid number of arguments");
         }
@@ -120,7 +145,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
             this.userName = userName;
             this.name = userName;
             this.socketHandler.setName(userName);
-            this.server.addUserToList(userName);
+            this.server.addUserToLoggedInList(userName);
         }
         this.state = ClientHandlerStates.LOGGEDIN;
     }
@@ -145,19 +170,18 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
             String[] arguments = msg.split(ProtocolMessages.delimiter, 3);
             String sender = this.name;
             String recipient = arguments[1];
-            ClientHandler handler = null;
-            for(ClientHandler h : server.getAllClientHandler()){
-                if(h.name.equals(recipient)){
-                    handler = h; //TODO check whether the handler supports chat messages.
-                    String message = ServerMessages.WHISPER.constructMessage(sender, arguments[2]);
-                    h.getSocketHandler().write(message);
-                    if(!(handler == this)){
+            ClientHandler receivingHandler = null;
+            String message = ServerMessages.WHISPER.constructMessage(sender, arguments[2]);
+
+            receivingHandler = server.getClientHandler(recipient);
+            if(receivingHandler != null){
+                if(receivingHandler.chatEnabled) { //Checks whether the client has chatting enabled.
+                    receivingHandler.getSocketHandler().write(message);
+                    if(!(receivingHandler == this)){ //But don't write the message to yourself twice.
                         socketHandler.write(message);
                     }
-                    break;
                 }
-            }
-            if(handler == null){
+            } else { //If the recipient could not be found, send an error message to the client.
                 socketHandler.write(ServerMessages.CANNOTWHISPER.constructMessage(recipient));
             }
         } catch (ArrayIndexOutOfBoundsException e){
