@@ -174,6 +174,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     @Override
     public void doHello() {
         List<String> extensions = new ArrayList<>();
+        extensions.add(userName);
         if(this.chatEnabled) extensions.add(ProtocolMessages.Messages.CHAT.name());
         if(this.authEnabled) extensions.add(ProtocolMessages.Messages.AUTH.name());
         if(this.cryptEnabled) extensions.add(ProtocolMessages.Messages.CRYPT.name());
@@ -209,7 +210,6 @@ public class Client implements ClientProtocol, NetworkEntity {
         socketHandler.write(ClientMessages.WHISPER.constructMessage(recipient, message));
     }
 
-
     @Override
     public void doMove(Move move) throws InvalidMoveException {
             makeMove(move);
@@ -217,7 +217,6 @@ public class Client implements ClientProtocol, NetworkEntity {
             this.ourLastMove = move;
             this.state = ClientStates.AWAITMOVERESPONSE;
     }
-
 
     @Override
     public void doEnterQueue()  {
