@@ -56,7 +56,7 @@ class BoardTest {
 
     @Test
     void testSetupForConsistency() {
-        for(int i = 0; i < 2000; i++){
+        for(int i = 0; i < 20000; i++){
             testSetup();
         }
     }

@@ -10,6 +10,7 @@ public class Game {
     public Game() {
         this.board = new ServerBoard();
         this.board.setupBoard();
+        System.out.println("ValidMoves: "+ board.findValidMoves().toString());
     }
     public Board getBoard() {
         return this.board;

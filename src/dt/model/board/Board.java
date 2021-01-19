@@ -186,16 +186,20 @@ public class Board {
 
                 //If the sequence before or after the ball contains an empty ball, add it to the moves
                 if(ball != BallType.EMPTY) {
-                    if(rowBalls.subList(ballIndex, this.boardSize-1).contains(BallType.EMPTY)) {
+                    if(rowBalls.subList(ballIndex, this.boardSize-1).contains(BallType.EMPTY) &&
+                        !possibleMoves.contains(new Move(this.boardSize*3-1 - rowIndex))) {
                         possibleMoves.add(new Move(this.boardSize*3-1 - rowIndex));
                     }
-                    if(rowBalls.subList(0, ballIndex).contains(BallType.EMPTY)) {
+                    if(rowBalls.subList(0, ballIndex).contains(BallType.EMPTY) &&
+                        !possibleMoves.contains(new Move(rowIndex))) {
                         possibleMoves.add(new Move(rowIndex));
                     }
-                    if(this.columns.get(ballIndex).getBalls().subList(rowIndex, this.boardSize-1).contains(BallType.EMPTY)) {
+                    if(this.columns.get(ballIndex).getBalls().subList(rowIndex, this.boardSize-1).contains(BallType.EMPTY) &&
+                        !possibleMoves.contains(new Move(this.boardSize * 3 + ballIndex))) {
                         possibleMoves.add(new Move(this.boardSize * 3 + ballIndex));
                     }
-                    if(this.columns.get(ballIndex).getBalls().subList(0, rowIndex).contains(BallType.EMPTY)) {
+                    if(this.columns.get(ballIndex).getBalls().subList(0, rowIndex).contains(BallType.EMPTY) &&
+                        !possibleMoves.contains(new Move(2 * this.boardSize - 1 - ballIndex))){
                         possibleMoves.add(new Move(2 * this.boardSize - 1 - ballIndex));
                     }
                 }

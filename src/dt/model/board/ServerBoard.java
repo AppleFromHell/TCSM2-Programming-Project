@@ -23,7 +23,7 @@ public class ServerBoard extends Board{
             int[] newBoard = createBoard();
             this.boardToClient = newBoard;
             super.fillBoard(newBoard);
-        } while(!super.findValidSingleMoves().isEmpty() || !super.findValidDoubleMoves().isEmpty());
+        } while(findValidMoves().isEmpty());
     }
 
     private int randomNumber(int min, int max){
