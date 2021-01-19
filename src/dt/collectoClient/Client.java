@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Client implements ClientProtocol, NetworkEntity {
+    //TODO prompt the player when it is their turn
 
     private Socket serverSocket;
     private SocketHandler socketHandler;

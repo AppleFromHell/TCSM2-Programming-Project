@@ -10,6 +10,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class ClientTUI extends SimpleTUI implements ClientView {
+    //TODO add an AI (with adjustable difficulty level)
+    //TODO The user should decide at the start of the game who decides on the moves (AI or human)
 
     private Client client;
 
@@ -61,7 +63,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         }
     }
 
-    private void handleUserInput(String input) throws CommandException {
+    private void handleUserInput(String input) throws CommandException { //TODO Add the HINT functionality
         try {
             String[] arguments = input.split(UserCmds.separators);
             UserCmds cmd = UserCmds.getUserCmd(arguments[0]);

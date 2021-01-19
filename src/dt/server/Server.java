@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Server implements Runnable{
+    //TODO when a client disconnects from a game, the other player should be informed that they
+    // have won due to a disconnect.
+
     private Integer port;
     private List<ClientHandler> connectedClients;
     private List<String> loggedinUsers;
@@ -29,7 +32,7 @@ public class Server implements Runnable{
         this.connectedClients = new ArrayList<>();
         this.loggedinUsers = new ArrayList<>();
         this.serverName = "Wouter en Emiels meest awesome server evvur";
-        this.chatEnabled = false;
+        this.chatEnabled = true;
         this.rankEnabled = false;
         this.cryptEnabled = false;
         this.authEnabled = false;
