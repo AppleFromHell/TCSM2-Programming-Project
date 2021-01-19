@@ -3,6 +3,7 @@ package dt.peer;
 import java.io.*;
 import java.net.Socket;
 
+/** @author Emiel Rous and Wouter Koning */
 public class SocketHandler implements Runnable {
     private Socket socket;
     private NetworkEntity networkEntity;
