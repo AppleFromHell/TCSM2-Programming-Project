@@ -41,6 +41,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     private boolean authEnabled;
     private ClientStates state;
     private Move ourLastMove;
+    private boolean moveConfirmed;
 
     public Client() {
         this.clientView = new ClientTUI(this);
@@ -80,10 +81,10 @@ public class Client implements ClientProtocol, NetworkEntity {
         socketHandler.write(msg);
     }
     @Override
-    public void handleMessage(String msg) {
+    public synchronized void handleMessage(String msg) {
         String[] arguments = msg.split(ProtocolMessages.delimiter);
         String keyWord = arguments[0];
-
+        clientView.showMessage(this.state.toString());
         try {
             switch (ServerMessages.valueOf(keyWord)) {
                 case HELLO:
@@ -152,6 +153,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                     break;
                 case ERROR:
                     clientView.showMessage("Server threw error: " + msg);
+                    this.notifyAll();
                     break;
                 case CHAT:
                     String[] splitChat = msg.split(ProtocolMessages.delimiter, 3);
@@ -218,11 +220,20 @@ public class Client implements ClientProtocol, NetworkEntity {
 
 
     @Override
-    public void doMove(Move move) throws InvalidMoveException {
+    public synchronized void doMove(Move move) throws InvalidMoveException {
+        this.state = ClientStates.AWAITMOVERESPONSE;
+        socketHandler.write(ClientMessages.MOVE.constructMessage(move));
+        this.ourLastMove = move;
+        this.moveConfirmed = false;
+        try {
+            this.wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if(this.moveConfirmed) {
             makeMove(move);
-            socketHandler.write(ClientMessages.MOVE.constructMessage(move));
-            this.ourLastMove = move;
-            this.state = ClientStates.AWAITMOVERESPONSE;
+            this.state = ClientStates.AWAITNGTHEIRMOVE;
+        }
     }
 
 
@@ -278,7 +289,7 @@ public class Client implements ClientProtocol, NetworkEntity {
 
     //MOVE (1st)
     @SuppressWarnings("UnusedAssignment")
-    private void checkMoveResponse(String[] arguments) throws NumberFormatException, ProtocolException { //Wörks
+    private synchronized void checkMoveResponse(String[] arguments) throws NumberFormatException, ProtocolException { //Wörks
         boolean errorThrown = false;
         switch (arguments.length) {
             case 1:
@@ -301,7 +312,8 @@ public class Client implements ClientProtocol, NetworkEntity {
                 throw new ProtocolException("Too many arguments");
         }
         //noinspection ConstantConditions
-        if(!errorThrown) this.state = ClientStates.AWAITNGTHEIRMOVE;
+        this.notify();
+        this.moveConfirmed = true;
     }
 
     //MOVE (2nd)

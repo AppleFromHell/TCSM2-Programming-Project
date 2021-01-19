@@ -12,7 +12,7 @@ public class Game {
         this.board = new ServerBoard();
         this.board.setupBoard();
     }
-    public Board getBoard() {
+    public synchronized Board getBoard() {
         return this.board;
     }
 
