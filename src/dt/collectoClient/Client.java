@@ -23,6 +23,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+/** @author Emiel Rous and Wouter Koning */
 public class Client implements ClientProtocol, NetworkEntity {
     //TODO prompt the player when it is their turn
 

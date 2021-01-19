@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+/** @author Emiel Rous and Wouter Koning */
 public class ClientGUI extends JFrame implements ClientView, ActionListener {
     private final Client client;
     private JButton bConnect;

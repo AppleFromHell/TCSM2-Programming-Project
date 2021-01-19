@@ -4,6 +4,7 @@ import dt.exceptions.UserExit;
 
 import java.net.InetAddress;
 
+/** @author Emiel Rous and Wouter Koning */
 public interface ClientView extends Runnable {
 
     void start();

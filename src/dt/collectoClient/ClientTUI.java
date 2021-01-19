@@ -9,6 +9,7 @@ import dt.util.Move;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+/** @author Emiel Rous and Wouter Koning */
 public class ClientTUI extends SimpleTUI implements ClientView {
     //TODO add an AI (with adjustable difficulty level)
     //TODO The user should decide at the start of the game who decides on the moves (AI or human)
