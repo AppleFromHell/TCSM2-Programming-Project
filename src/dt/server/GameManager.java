@@ -5,6 +5,7 @@ import dt.model.Game;
 import java.util.ArrayList;
 import java.util.List;
 
+/** @author Emiel Rous and Wouter Koning */
 public class GameManager {
     private List<ClientHandler> queue;
     private List<Game> activeGames;
