@@ -260,5 +260,9 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         return this.name;
     }
 
+    public Game getGame(){
+        return this.game;
+    }
+
 
 }
