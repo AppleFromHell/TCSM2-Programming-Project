@@ -37,6 +37,9 @@ public class SocketHandler implements Runnable {
             while(!socket.isClosed() && socketIn != null ) {
                 String msg = socketIn.readLine();
                 if(debug) System.out.println("[IN]:" +msg);
+                if(msg == null){
+                    throw new IOException();
+                }
                 networkEntity.handleMessage(msg);
             }
         } catch (IOException e) {
