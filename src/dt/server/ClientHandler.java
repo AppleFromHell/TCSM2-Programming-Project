@@ -194,6 +194,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         this.state = ClientHandlerStates.INGAME;
     }
     public void handleMove(String[] arguments) throws ProtocolException, NotYourTurnException {
+        //TODO game over fixen. Wat gebuert er client side? Weet die wanneer de game over is en wacht die dan op een gamover van de server?
         if(this.myTurn) {
             this.makeOurMoveHere(arguments);
         } else {

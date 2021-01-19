@@ -174,6 +174,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     @Override
     public void doHello() {
         List<String> extensions = new ArrayList<>();
+        extensions.add(CLIENTDESCRIPTION);
         if(this.chatEnabled) extensions.add(ProtocolMessages.Messages.CHAT.name());
         if(this.authEnabled) extensions.add(ProtocolMessages.Messages.AUTH.name());
         if(this.cryptEnabled) extensions.add(ProtocolMessages.Messages.CRYPT.name());

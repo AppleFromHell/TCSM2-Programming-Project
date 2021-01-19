@@ -129,6 +129,14 @@ public class Board {
         return validity;
     }
 
+    public List<Move> findValidMoves() {
+        List<Move> validMoves = findValidSingleMoves();
+        if(validMoves.isEmpty()){
+            validMoves = findValidDoubleMoves();
+        }
+        return validMoves;
+    }
+
     public List<Move> findValidDoubleMoves(){
         List<Move> validDoubleMoves = new ArrayList<>();
         List<Move> possibleMoves = this.findPossibleMoves();
