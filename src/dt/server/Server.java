@@ -29,7 +29,7 @@ public class Server implements Runnable{
         this.connectedClients = new ArrayList<>();
         this.loggedinUsers = new ArrayList<>();
         this.serverName = "Wouter en Emiels meest awesome server evvur";
-        this.chatEnabled = false;
+        this.chatEnabled = true;
         this.rankEnabled = false;
         this.cryptEnabled = false;
         this.authEnabled = false;
