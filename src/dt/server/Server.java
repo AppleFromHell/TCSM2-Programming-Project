@@ -221,7 +221,6 @@ public class Server implements Runnable{
      * @param clientHandler The {@link ClientHandler} to be removed.
      */
     public void removeClientHandler(ClientHandler clientHandler) {
-        clientHandler.shutDown();
         connectedClients.remove(clientHandler);
     }
 }
