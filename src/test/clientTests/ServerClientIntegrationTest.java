@@ -33,7 +33,7 @@ public class ServerClientIntegrationTest {
     @BeforeAll
     static void setup() {
         ServerRunner runner = new ServerRunner();
-//        new Thread(runner).start();
+        new Thread(runner).start();
         System.setOut(new PrintStream(outContent));
     }
 
@@ -140,7 +140,8 @@ public class ServerClientIntegrationTest {
         int[] clientBoardState = client1.getBoard().getBoardState();
 
         assertArrayEquals(serverBoardState, clientBoardState);
-
     }
+
+
 
 }
