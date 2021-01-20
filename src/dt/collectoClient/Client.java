@@ -44,7 +44,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     private boolean moveConfirmed;
 
     public Client() {
-        this.clientView = new ClientGUI(this);
+        this.clientView = new ClientTUI(this);
         this.board = new ClientBoard();
         this.userName = null;
         this.ip = null;
@@ -96,7 +96,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     }
 
     @Override
-    public synchronized void handleMessage(String msg) {
+    public void handleMessage(String msg) {
         String[] arguments = msg.split(ProtocolMessages.delimiter);
         String keyWord = arguments[0];
         clientView.showMessage(this.state.toString());
@@ -135,9 +135,6 @@ public class Client implements ClientProtocol, NetworkEntity {
                     break;
                 case LIST:
                         this.clientView.displayList(parseListResponse(arguments));
-                    synchronized (clientView) {
-                        this.clientView.notify();
-                    }
                     break;
                 case NEWGAME:
                     if(this.state == ClientStates.INQUEUE) { //TODO Sometimes when creating a new game, it doesn't expect the NEWGAME response from the server
@@ -276,7 +273,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     }
 
     //NEWGAME
-    private void createNewBoard(String[] arguments) throws NumberFormatException {
+    private synchronized void createNewBoard(String[] arguments) throws NumberFormatException {
         int[] boardState = new int[arguments.length-2]; //TODO add check on valid number of squares
         for(int i = 1; i < arguments.length-2; i++) {
             boardState[i-1] = Integer.parseInt(arguments[i]);
@@ -324,7 +321,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     }
 
     //MOVE (2nd)
-    private void makeTheirMove(String[] arguments) throws NumberFormatException, ProtocolException, InvalidMoveException {
+    private synchronized void makeTheirMove(String[] arguments) throws NumberFormatException, ProtocolException, InvalidMoveException {
         switch (arguments.length) {
             case 1:
                 throw new ProtocolException("No move in response of their move");
@@ -340,7 +337,7 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.state = ClientStates.INGAME;
     }
 
-    private String handleGameOver(String[] arguments) throws IllegalArgumentException, ProtocolException {
+    private synchronized String handleGameOver(String[] arguments) throws IllegalArgumentException, ProtocolException {
         String ret = "The game is over. \nReason: ";
         if(arguments.length != 3) throw new ProtocolException("Invalid number of arguments");
         switch (ServerMessages.GameOverReasons.valueOf(arguments[1])) {
@@ -367,7 +364,7 @@ public class Client implements ClientProtocol, NetworkEntity {
         clientView.showMessage(this.board.getAHint().toString());
     }
 
-    private void makeMove(Move move) throws InvalidMoveException {
+    private synchronized void makeMove(Move move) throws InvalidMoveException {
         board.makeMove(move);
     }
 

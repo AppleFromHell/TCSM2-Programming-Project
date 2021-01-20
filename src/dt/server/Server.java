@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** @author Emiel Rous and Wouter Koning */
-public class Server implements Runnable{
+public class Server {
     //TODO when a client disconnects from a game, the other player should be informed that they
     // have won due to a disconnect.
 
@@ -42,7 +42,7 @@ public class Server implements Runnable{
     public static void main(String[] args) {
         Server server = new Server();
         if(args.length != 0) server.setPort(Integer.parseInt(args[0]));
-        new Thread(server).start();
+        server.start();
     }
 
     /**
@@ -53,7 +53,7 @@ public class Server implements Runnable{
     public static Server testMain(String[] args) {
         Server server = new Server();
         if(args.length != 0) server.setPort(Integer.parseInt(args[0]));
-        new Thread(server).start();
+        //new Thread(server).start();
         return server;
     }
 
@@ -61,17 +61,16 @@ public class Server implements Runnable{
      * The continuous loop that the server is running in, where it accepts clients and adds them to the list
      * of connected clients.
      */
-    public synchronized void run() {
+    public synchronized void start() {
         setup();
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
                 ClientHandler handler = new ClientHandler(this ,this.gameManager, this.view, clientSocket);
                 this.connectedClients.add(handler);
-
-                this.wait();
+                this.wait(); //Mega belangrijk maar ik weet niet waarom
                 view.showMessage("New client: [" + handler.getName() + "] connected!");
-            } catch (IOException  | InterruptedException e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         }
@@ -86,20 +85,37 @@ public class Server implements Runnable{
     private void setup() {
         new Thread(view).start();
         serverSocket = null;
-        while(serverSocket == null) {
+        while (serverSocket == null) {
             try {
-                view.showMessage("Starting a server on port: " + this.port + "...");
-                serverSocket = new ServerSocket(port, 0, InetAddress.getByName("localhost"));
-                view.showMessage("Server is started!");
-            } catch (IOException e) {
-                view.showMessage("Could not start server");
                 try {
+                    synchronized (this) {
+                        if( this.port == null) this.wait();
+                    }
+                    view.showMessage("Starting a server on port: " + this.port + "...");
+                    serverSocket = new ServerSocket(port, 0, InetAddress.getByName("localhost"));
+                    view.showMessage("Server is started!");
+
+                    //Signaling that the server is started
+                    synchronized (view) {
+                        view.notify();
+                    }
+                } catch (IOException | InterruptedException e) {
+                    view.showMessage("Could not start server");
+
                     if (!view.getBoolean("Would you like to try again?")) {
                         throw new UserExit();
                     }
-                } catch (UserExit ex) {
-                    this.shutDown();
+
+                    //Set port to null so view will ask again
+                    this.port = null;
+                    //Signaling that the server is not started
+                    synchronized (view) {
+                        view.notify();
+                    }
+
                 }
+            } catch (UserExit ex) {
+                this.shutDown();
             }
         }
     }
