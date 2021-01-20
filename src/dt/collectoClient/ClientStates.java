@@ -8,7 +8,6 @@ public enum ClientStates {
     PENDINGLOGIN,
     LOGGEDIN,
     INQUEUE,
-    WAITINGONLIST,
     INGAME,
     AWAITNGTHEIRMOVE,
     AWAITMOVERESPONSE,

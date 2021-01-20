@@ -65,7 +65,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
                     break;
                 case MOVE:
                     if (this.state == ClientHandlerStates.INGAME) {
-                        this.handleMove(arguments);
+                       this.handleMove(arguments);
                     } else {
                         throw new UnexpectedResponseException("You're not in a game");
                     }

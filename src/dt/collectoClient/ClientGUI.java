@@ -1,19 +1,17 @@
 package dt.collectoClient;
 
+import dt.exceptions.InvalidMoveException;
 import dt.exceptions.UserExit;
+import dt.util.Move;
 
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.sql.Time;
 
-public class ClientGUI extends JFrame implements ClientView, ActionListener {
+public class ClientGUI extends JFrame implements ClientView {
     private final Client client;
-    private JButton bConnect;
-    private JTextField tfPort;
-    private JTextArea taMessages;
-
+    private MainDisplay display;
     public ClientGUI(Client client) {
         super("Collecto Client");
         this.client = client;
@@ -22,12 +20,14 @@ public class ClientGUI extends JFrame implements ClientView, ActionListener {
 
     public void start() {
 
-        this.serverAddressPrompt();
-        try {
-            this.client.createConnection();
-        } catch (IOException e) {
-            shorErrorPopup("Couldn't connect to server, try again");
-            serverAddressPrompt();
+        while(true) {
+            new Server_prompt();
+            try {
+                this.client.createConnection();
+                break;
+            } catch (IOException e) {
+                shorErrorPopup("Couldn't connect to server, try again");
+            }
         }
 
         while(true) {
@@ -49,73 +49,17 @@ public class ClientGUI extends JFrame implements ClientView, ActionListener {
                 shorErrorPopup("Something went wrong, try again");
             }
         }
+        display = new MainDisplay(this);
+        this.setContentPane(display);
+        this.pack();
+        this.setVisible(true);
     }
 
     private String userNamePrompt() {
         return JOptionPane.showInputDialog("Connection Successful!\nEnter Username to login");
     }
-    private void serverAddressPrompt() {
-        JPanel panel = new JPanel();
-        JTextField ip = new JTextField(10);
-        JTextField port = new JTextField(4);
-        ip.setEditable(false);
-        ip.setText("localhost");
-        port.setEditable(false);
-        port.setText("6969");
-        JLabel server = new JLabel("Server:");
-        JCheckBox checkBox = new JCheckBox("Default", true);
-        checkBox.addItemListener(e -> {
-            if (e.getStateChange() == 1) {
-                ip.setEditable(false);
-                ip.setText("localhost");
-                port.setEditable(false);
-                port.setText("6969");
-            } else {
-                ip.setEditable(true);
-                port.setEditable(true);
-            }
-        });
-        panel.add(server);
-        panel.add(ip);
-        panel.add(port);
-        panel.add(checkBox);
-        Object[] options = {"Connect", "Exit"};
-        JOptionPane optionPane = new JOptionPane(
-                panel,
-                JOptionPane.QUESTION_MESSAGE,
-                JOptionPane.YES_NO_CANCEL_OPTION,
-                null,
-                options);
-        JDialog dialog = new JDialog(this, "Server address", true);
-        dialog.setSize(300, 300);
 
-        dialog.setContentPane(optionPane);
-        optionPane.addPropertyChangeListener(
-                e -> {
-                    String prop = e.getPropertyName();
-                    if (dialog.isVisible()
-                            && (e.getSource() == optionPane)
-                            && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
-                        dialog.setVisible(false);
-                    }
-                });
-        dialog.pack();
-        dialog.setVisible(true);
-        String value = (String) optionPane.getValue();
-        if (value == options[0]) {
-            try {
-                this.client.setIp(InetAddress.getByName(ip.getText()));
-            } catch (UnknownHostException e) {
-                shorErrorPopup("Enter a valid IP address");
-                serverAddressPrompt();
-            }
-        } else if (value == options[1]) {
-            client.shutDown();
-        } else {
-            client.shutDown();
-        }
-    }
-    private void shorErrorPopup(String err) {
+    public void shorErrorPopup(String err) {
         JOptionPane.showConfirmDialog(
                 this,
                 err,
@@ -125,16 +69,26 @@ public class ClientGUI extends JFrame implements ClientView, ActionListener {
     }
 
     public void run() {
-        start();
-        setVisible(true);
+        int delay = 5000; //milliseconds
+        ActionListener taskPerformer = evt -> {
+            if(this.display != null) {
+                client.doGetList();
+            }
+        };
+        new Timer(delay, taskPerformer).start();
+
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 e.getWindow().dispose();
-            }
-            public void windowClosed(WindowEvent e) {
-                System.exit(0);
+                client.shutDown();
             }
         });
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        start();
     }
 
     @Override
@@ -144,7 +98,7 @@ public class ClientGUI extends JFrame implements ClientView, ActionListener {
 
     @Override
     public void displayList(String[] list) {
-
+        this.display.updateUserList(list);
     }
 
     @Override
@@ -153,10 +107,15 @@ public class ClientGUI extends JFrame implements ClientView, ActionListener {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        Object src = e.getSource();
-        if(src == bConnect) {
-            taMessages.append("YEET");
-        }
+    public void displayChatMessage(String msg) {
+        this.display.displayMessage(msg);
+    }
+
+
+    public void makeMove(int move) {
+    }
+
+    public void sendMessage(String text) {
+        client.doSendChat(text);
     }
 }

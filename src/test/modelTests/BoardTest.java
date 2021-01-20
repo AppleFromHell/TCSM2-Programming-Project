@@ -6,13 +6,9 @@ import dt.model.board.ServerBoard;
 
 import dt.model.board.Sequence;
 import dt.util.Move;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.lang.reflect.Array;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -468,9 +464,9 @@ class BoardTest {
         List<BallType> balls = new ArrayList<>();
         balls.add(BallType.BLUE);
         balls.add(BallType.ORANGE);
-        balls.add(BallType.PURPLE);
+        balls.add(BallType.PINK);
         balls.add(BallType.ORANGE);
-        balls.add(BallType.PURPLE);
+        balls.add(BallType.PINK);
         balls.add(BallType.BLUE);
         balls.add(BallType.EMPTY);
         Sequence sequence = new Sequence(balls);
@@ -485,7 +481,7 @@ class BoardTest {
         balls.add(BallType.BLUE);   //1
         balls.add(BallType.BLUE);   //2
         balls.add(BallType.BLUE);   //3
-        balls.add(BallType.PURPLE); //4
+        balls.add(BallType.PINK); //4
         balls.add(BallType.GREEN);  //5
         balls.add(BallType.EMPTY);  //6
         Sequence sequence = new Sequence(balls);
@@ -505,7 +501,7 @@ class BoardTest {
         List<BallType> balls = new ArrayList<>();
         balls.add(BallType.ORANGE);
         balls.add(BallType.ORANGE);
-        balls.add(BallType.PURPLE);
+        balls.add(BallType.PINK);
         balls.add(BallType.BLUE);
         balls.add(BallType.BLUE);
         balls.add(BallType.BLUE);
@@ -529,7 +525,7 @@ class BoardTest {
         List<BallType> balls = new ArrayList<>();
         balls.add(BallType.ORANGE);
         balls.add(BallType.BLUE);
-        balls.add(BallType.PURPLE);
+        balls.add(BallType.PINK);
         balls.add(BallType.BLUE);
         balls.add(BallType.EMPTY);
         balls.add(BallType.EMPTY);

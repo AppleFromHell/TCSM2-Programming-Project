@@ -16,6 +16,6 @@ public enum BallType {
     ORANGE,
     RED,
     GREEN,
-    PURPLE,
+    PINK,
     YELLOW
 }

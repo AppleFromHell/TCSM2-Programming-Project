@@ -152,6 +152,10 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         }
     }
 
+    @Override
+    public void displayChatMessage(String msg) {
+        showMessage(msg);
+    }
     public InetAddress getIp() throws UserExit {
         try {
             return InetAddress.getByName(getString("What IP address is the server running on (format: x.x.x.x)"));

@@ -43,7 +43,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     private boolean moveConfirmed;
 
     public Client() {
-        this.clientView = new ClientTUI(this);
+        this.clientView = new ClientGUI(this);
         this.board = new ClientBoard();
         this.userName = null;
         this.ip = null;
@@ -118,9 +118,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                     }
                     break;
                 case LIST:
-                    if (this.state == ClientStates.WAITINGONLIST) {
                         this.clientView.displayList(parseListResponse(arguments));
-                    }
                     synchronized (clientView) {
                         this.clientView.notify();
                     }
@@ -156,11 +154,11 @@ public class Client implements ClientProtocol, NetworkEntity {
                     break;
                 case CHAT:
                     String[] splitChat = msg.split(ProtocolMessages.delimiter, 3);
-                    clientView.showMessage(splitChat[1] + ": " + splitChat[2]);
+                    clientView.displayChatMessage(splitChat[1] + ": " + splitChat[2]);
                     break;
                 case WHISPER:
                     String[] splitWhisper = msg.split(ProtocolMessages.delimiter, 3);
-                    clientView.showMessage(splitWhisper[1] + " whispers: " + splitWhisper[2]);
+                    clientView.displayChatMessage(splitWhisper[1] + " whispers: " + splitWhisper[2]);
                     break;
                 case CANNOTWHISPER:
                     throw new CommandException(arguments[1] + "Cannot receive whispers");
@@ -201,12 +199,6 @@ public class Client implements ClientProtocol, NetworkEntity {
     @Override
     public void doGetList() {
         socketHandler.write(ClientMessages.LIST.constructMessage());
-        this.state = ClientStates.WAITINGONLIST;
-        try {
-            clientView.wait();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     public void doSendChat(String message){
