@@ -1,4 +1,4 @@
-package dt.model;
+package dt.server;
 
 import dt.exceptions.ClientHandlerNotFoundException;
 import dt.exceptions.InvalidMoveException;

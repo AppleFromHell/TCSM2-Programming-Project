@@ -1,6 +1,6 @@
 package dt.protocol;
 
-import dt.model.Game;
+import dt.server.Game;
 import dt.server.ClientHandler;
 
 import java.net.ProtocolException;

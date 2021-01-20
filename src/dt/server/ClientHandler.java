@@ -1,7 +1,6 @@
 package dt.server;
 
 import dt.exceptions.*;
-import dt.model.Game;
 import dt.peer.NetworkEntity;
 import dt.peer.SocketHandler;
 import dt.protocol.ClientMessages;
