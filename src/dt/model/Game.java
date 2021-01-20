@@ -4,10 +4,10 @@ import dt.exceptions.ClientHandlerNotFoundException;
 import dt.exceptions.InvalidMoveException;
 import dt.model.board.Board;
 import dt.model.board.ServerBoard;
-import dt.protocol.ProtocolMessages;
 import dt.protocol.ServerMessages;
 import dt.server.ClientHandler;
 import dt.server.GameManager;
+import dt.server.Player;
 import dt.util.Move;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package dt.model;
+package dt.server;
 
 import dt.model.board.BallType;
 import dt.server.ClientHandler;
