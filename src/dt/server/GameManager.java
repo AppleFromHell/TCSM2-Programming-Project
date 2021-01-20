@@ -24,12 +24,16 @@ public class GameManager {
         ClientHandler player1 = queue.get(0);
         ClientHandler player2 = queue.get(1);
 
-        Game game = new Game(player1, player2);
+        Game game = new Game(this, player1, player2);
         activeGames.add(game);
 
         player1.startGame(true, player2, game);
         player2.startGame(false, player1, game);
         queue.remove(player1);
         queue.remove(player2);
+    }
+
+    public synchronized void removeGame(Game game){
+        this.activeGames.remove(game);
     }
 }

@@ -39,4 +39,12 @@ public class Player {
         }
         return score;
     }
+
+    public int getBallAmount(){
+        return collectedBalls.values().stream().reduce(0, Integer::sum);
+    }
+
+    public String getName() {
+        return name;
+    }
 }

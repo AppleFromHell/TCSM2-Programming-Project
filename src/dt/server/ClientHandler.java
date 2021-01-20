@@ -187,7 +187,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
             String[] arguments = msg.split(ProtocolMessages.delimiter, 3);
             String sender = this.name;
             String recipient = arguments[1];
-            ClientHandler receivingHandler = null;
+            ClientHandler receivingHandler;
             String message = ServerMessages.WHISPER.constructMessage(sender, arguments[2]);
 
             receivingHandler = server.getClientHandler(recipient);
@@ -238,6 +238,12 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         }
         this.state = ClientHandlerStates.INGAME;
         this.opponent.setState(ClientHandlerStates.INGAME);
+    }
+
+    public void gameOver(){
+        this.game = null;
+        this.opponent = null;
+        this.setState(ClientHandlerStates.LOGGEDIN);
     }
 
     public void handleMove(String[] arguments) throws ProtocolException, NotYourTurnException, InvalidMoveException, ClientHandlerNotFoundException {
