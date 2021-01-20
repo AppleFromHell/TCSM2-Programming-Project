@@ -3,7 +3,7 @@ package dt.collectoClient;
 import dt.exceptions.CommandException;
 import dt.exceptions.InvalidMoveException;
 import dt.exceptions.UserExit;
-import dt.server.SimpleTUI;
+import dt.util.SimpleTUI;
 import dt.util.Move;
 
 import java.net.InetAddress;

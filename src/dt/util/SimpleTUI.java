@@ -1,4 +1,4 @@
-package dt.server;
+package dt.util;
 
 import dt.collectoClient.UserCmds;
 import dt.exceptions.UserExit;
@@ -18,24 +18,12 @@ public class SimpleTUI implements Runnable {
     private final PrintWriter stdOut = new PrintWriter(System.out, true);
 
 
-    protected String getString(String question) throws UserExit {
+    public String getString(String question) throws UserExit {
         showMessage(question);
         return getString();
-//        String answer = null;
-//        try {
-//            answer = stdIn.readLine();
-//            if(UserCmds.getUserCmd(answer) == UserCmds.EXIT) throw new UserExit();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        if (answer == null || answer.equals("\n")) {
-//            return "Invalid Input";
-//        } else {
-//            return answer.replace("\n", "");
-//        }
     }
 
-    protected String getString() throws UserExit {
+    public String getString() throws UserExit {
         String answer = null;
         try {
             answer = stdIn.readLine();
@@ -56,11 +44,11 @@ public class SimpleTUI implements Runnable {
         stdOut.println(message);
     }
 
-    protected Integer getPort() throws UserExit {
+    public Integer getPort() throws UserExit {
         return getInt("Which Port is the server running on:");
     }
 
-    protected int getInt(String question) throws UserExit {
+    public int getInt(String question) throws UserExit {
         do {
             String answer = getString(question);
             try {
@@ -73,7 +61,7 @@ public class SimpleTUI implements Runnable {
         } while (true);
     }
 
-    protected boolean getBoolean(String question) throws UserExit {
+    public boolean getBoolean(String question) throws UserExit {
         do {
             String answer = getString(question);
 
