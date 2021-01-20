@@ -1,6 +1,6 @@
 package dt.collectoClient;
 
-import dt.model.board.BallType;
+import dt.model.BallType;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,7 +1,6 @@
-package dt.model;
+package dt.server;
 
-import dt.model.board.BallType;
-import dt.server.ClientHandler;
+import dt.model.BallType;
 
 import java.util.HashMap;
 import java.util.Map;

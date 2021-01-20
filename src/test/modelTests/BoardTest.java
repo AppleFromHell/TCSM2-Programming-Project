@@ -1,9 +1,9 @@
 package modelTests;
 
 import dt.exceptions.InvalidMoveException;
-import dt.model.board.BallType;
-import dt.model.board.Sequence;
-import dt.model.board.ServerBoard;
+import dt.model.BallType;
+import dt.model.Sequence;
+import dt.model.ServerBoard;
 import dt.util.Move;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

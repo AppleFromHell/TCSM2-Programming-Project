@@ -6,8 +6,8 @@ import dt.exceptions.CommandException;
 import dt.exceptions.InvalidMoveException;
 import dt.exceptions.UnexpectedResponseException;
 import dt.exceptions.UserExit;
-import dt.model.board.Board;
-import dt.model.board.ClientBoard;
+import dt.model.Board;
+import dt.model.ClientBoard;
 import dt.peer.SocketHandler;
 import dt.peer.NetworkEntity;
 import dt.protocol.ClientMessages;
@@ -16,7 +16,6 @@ import dt.protocol.ProtocolMessages;
 import dt.protocol.ServerMessages;
 import dt.util.Move;
 
-import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.ProtocolException;
 import java.net.Socket;
