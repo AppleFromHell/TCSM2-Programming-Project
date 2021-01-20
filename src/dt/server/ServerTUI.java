@@ -17,11 +17,20 @@ public class ServerTUI extends SimpleTUI {
         try {
             while (this.server.getPort() == null) {
                 this.server.setPort(getPort());
+                //Signaling that the port is filled
+                synchronized (server) {
+                    server.notify();
+                }
+                //Waiting on response
+                synchronized (this) {
+                    this.wait();
+                }
             }
+
             while (true) {
                 getString("");
             }
-        } catch (UserExit e) {
+        } catch (UserExit | InterruptedException e) {
             server.shutDown();
         }
     }

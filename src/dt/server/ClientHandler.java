@@ -43,7 +43,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     }
 
     @Override
-    public synchronized void handleMessage(String msg) {
+    public void handleMessage(String msg) {
         String[] arguments = msg.split(ProtocolMessages.delimiter);
         String keyWord = arguments[0];
 
@@ -239,7 +239,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         this.opponent.setState(ClientHandlerStates.INGAME);
     }
 
-    public void gameOver(){
+    public void closeGame(){
         this.game = null;
         this.opponent = null;
         this.setState(ClientHandlerStates.LOGGEDIN);
@@ -285,7 +285,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     public void handlePeerShutdown() {
         this.view.showMessage("["+ this.name + "] Disconnected");
         if(this.game != null){
-            this.game.playerDisconnected();
+            this.game.playerDisconnected(this);
         }
         this.socketHandler.shutDown();
         this.shutDown();
@@ -314,4 +314,8 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     }
 
 
+    public void gameOver(ServerMessages.GameOverReasons reason, ClientHandler winner) {
+        socketHandler.write(ServerMessages.GAMEOVER.constructMessage(reason.toString(), winner.getName()));
+        this.closeGame();
+    }
 }

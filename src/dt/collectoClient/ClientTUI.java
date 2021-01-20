@@ -24,7 +24,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
     }
 
     @Override
-    public synchronized void start() {
+    public void start() {
         try {
             while (client.getIp() == null) {
                 this.client.setIp(getIp());
@@ -38,7 +38,9 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             String username = "Somethin wong";
             while (true) {
                 try {
-                    this.wait();
+                    synchronized (this) {
+                        this.wait();
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -149,7 +151,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         this.showMessage(ret);
     }
 
-    public synchronized void displayList(String[] list) { //TODO checken wat synchronized moet zijn
+    public void displayList(String[] list) { //TODO checken wat synchronized moet zijn
         this.showMessage("List of logged in users");
         for(int i = 0; i < list.length; i++) {
             this.showMessage(list[i]);
