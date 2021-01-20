@@ -29,16 +29,13 @@ public class Game {
     }
 
     public synchronized void makeMove(Move move, ClientHandler mover) throws InvalidMoveException, ClientHandlerNotFoundException {
-        boolean playerFound = false;
-        for(Player player : players){
-            if(player.getClientHandler() == mover){
-                player.addBalls(this.board.makeMove(move));
-                playerFound = true;
-            }
-        }
-        if(!playerFound){
+        Player player = findPlayer(mover);
+
+        if(player == null){
             throw new ClientHandlerNotFoundException("Client could not be found while trying to make a move.");
         }
+
+        player.addBalls(this.board.makeMove(move));
 
         if(board.isGameOver()){
             //woo its game over wow it's great so great oh my god lets call the ClientHandlers and tell them!
@@ -46,47 +43,57 @@ public class Game {
         }
     }
 
+    private Player findPlayer(ClientHandler playa) {
+        for(Player player : players){
+            if(player.getClientHandler() == playa){
+                return player;
+            }
+        }
+        return  null;
+    }
     private synchronized void gameOver(){
         Player player1 = players.get(0);
         Player player2 = players.get(1);
         int scorePlayer1 = player1.getScore();
         int scorePlayer2 = player2.getScore();
         String message;
-
+        Player winner = null;
         //Construct a message depending on what the outcome of the game is.
         if(scorePlayer1 > scorePlayer2) { //Player 1 has won
-            message = ServerMessages.GAMEOVER.constructMessage(
-                    ServerMessages.GameOverReasons.VICTORY.toString(), player1.getName());
+            winner = player1;
         //Player 2 has won
         } else if (scorePlayer2 > scorePlayer1){
-            message = ServerMessages.GAMEOVER.constructMessage(
-                    ServerMessages.GameOverReasons.VICTORY.toString(), player2.getName());
+            winner = player2;
         //Players have the same score, so you gotta count the balls they got
         } else {
             int player1Balls = player1.getBallAmount();
             int player2Balls = player2.getBallAmount();
             if (player1Balls > player2Balls) { //Player 1 got more balls than player 2
-                message = ServerMessages.GAMEOVER.constructMessage(
-                        ServerMessages.GameOverReasons.VICTORY.toString(), player1.getName());
+                winner = player1;
             } else if(player2Balls > player1Balls){ //Player 2 got more balls than player 1
-                message = ServerMessages.GAMEOVER.constructMessage(
-                        ServerMessages.GameOverReasons.VICTORY.toString(), player2.getName());
+                winner = player2;
             } else { //They got the same amount of balls, so nobody won
-                message = ServerMessages.GAMEOVER.constructMessage(
-                        ServerMessages.GameOverReasons.DRAW.toString());
+                winner = null;
             }
         }
-
-        for (Player p : players) {
-            ClientHandler handler = p.getClientHandler();
-            handler.getSocketHandler().write(message); //Send that message over to the clients
-            handler.gameOver(); //Tell the ClientHandler class it is also game over
+        if(winner != null) {
+           sendGameOver(ServerMessages.GameOverReasons.VICTORY, winner);
+        } else {
+           sendGameOver(ServerMessages.GameOverReasons.DRAW, null);
         }
         this.manager.removeGame(this);
     }
 
-    public synchronized void playerDisconnected() {
-
+    public void playerDisconnected(ClientHandler rageQuitter) {
+        Player quitter = findPlayer(rageQuitter);
+        for(Player player : this.players) {
+            if(player != quitter) sendGameOver(ServerMessages.GameOverReasons.VICTORY, player);
+        }
     }
 
+    private void sendGameOver(ServerMessages.GameOverReasons reason, Player winner) {
+        for(Player player : this.players) {
+            player.getClientHandler().gameOver(reason, winner.getClientHandler());
+        }
+    }
 }
