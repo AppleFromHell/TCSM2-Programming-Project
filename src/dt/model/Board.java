@@ -1,4 +1,4 @@
-package dt.model.board;
+package dt.model;
 
 import dt.exceptions.InvalidMoveException;
 import dt.util.Move;

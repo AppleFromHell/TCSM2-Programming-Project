@@ -1,4 +1,4 @@
-package dt.model.board;
+package dt.model;
 
 /** @author Emiel Rous and Wouter Koning */
 public enum BallType {

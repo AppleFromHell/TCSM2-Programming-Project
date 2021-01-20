@@ -1,11 +1,9 @@
-package dt.model.board;
+package dt.model;
 
 import dt.util.DistributedRandomNumberGenerator;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /** @author Emiel Rous and Wouter Koning */

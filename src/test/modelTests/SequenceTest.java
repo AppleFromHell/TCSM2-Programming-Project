@@ -1,8 +1,7 @@
 package modelTests;
 
-import dt.model.board.BallType;
-import dt.model.board.Sequence;
-import org.junit.jupiter.api.BeforeEach;
+import dt.model.BallType;
+import dt.model.Sequence;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package modelTests;
 
-import dt.model.board.ServerBoard;
+import dt.model.ServerBoard;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
