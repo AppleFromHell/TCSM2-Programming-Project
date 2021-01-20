@@ -1,9 +1,6 @@
 package dt.server;
 
-import dt.exceptions.AlreadyInQueueException;
-import dt.exceptions.InvalidMoveException;
-import dt.exceptions.NotYourTurnException;
-import dt.exceptions.UnexpectedResponseException;
+import dt.exceptions.*;
 import dt.model.Game;
 import dt.peer.NetworkEntity;
 import dt.peer.SocketHandler;
@@ -21,13 +18,21 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     private final Server server;
     private final GameManager gameManager;
     private Game game;
+
     private final SocketHandler socketHandler;
     private ClientHandler opponent;
     private final ServerTUI view;
+
     private String name;
     private String userName;
+
     private ClientHandlerStates state;
+
     private boolean myTurn;
+    private boolean chatEnabled;
+    private boolean rankEnabled;
+    private boolean cryptEnabled;
+    private boolean authEnabled;
 
     ClientHandler(Server server, GameManager gameManager, ServerTUI view, Socket socket) {
         this.server = server;
@@ -35,6 +40,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         this.socketHandler = new SocketHandler(this, socket, "");
         new Thread(socketHandler).start();
         this.view = view;
+        this.game = null;
     }
 
     @Override
@@ -100,6 +106,9 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         } catch (AlreadyInQueueException e) {
             view.showMessage("[" + this.name + "] tried to enter the queue, but is already in queue");
             socketHandler.write(ServerMessages.ERROR.constructMessage("You're already in queue"));
+        } catch (ClientHandlerNotFoundException e) {
+            view.showMessage(e.getMessage());
+            socketHandler.write(ServerMessages.ERROR.constructMessage("Could not find you in the list of players. Are you solid snake?"));
         }
     }
 
@@ -108,6 +117,27 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     public void handleHello(String[] arguments) throws ProtocolException {
         try {
             this.name = arguments[1];
+
+            if(arguments.length > 2){ //Enable any extensions for this Client
+                for(int i = 2; i < arguments.length; i++){
+                    switch(arguments[i]){
+                        case "CHAT":
+                            this.chatEnabled = true;
+                            break;
+                        case "AUTH":
+                            this.authEnabled = true;
+                            break;
+                        case "CRYPT":
+                            this.cryptEnabled = true;
+                            break;
+                        case "RANK":
+                            this.rankEnabled = true;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new ProtocolException("Invalid number of arguments");
         }
@@ -132,7 +162,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
             this.userName = userName;
             this.name = userName;
             this.socketHandler.setName(userName);
-            this.server.addUserToList(userName);
+            this.server.addUserToLoggedInList(userName);
         }
         this.state = ClientHandlerStates.LOGGEDIN;
     }
@@ -157,19 +187,18 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
             String[] arguments = msg.split(ProtocolMessages.delimiter, 3);
             String sender = this.name;
             String recipient = arguments[1];
-            ClientHandler handler = null;
-            for(ClientHandler h : server.getAllClientHandler()){
-                if(h.name.equals(recipient)){
-                    handler = h; //TODO check whether the handler supports chat messages.
-                    String message = ServerMessages.WHISPER.constructMessage(sender, arguments[2]);
-                    h.getSocketHandler().write(message);
-                    if(!(handler == this)){
+            ClientHandler receivingHandler;
+            String message = ServerMessages.WHISPER.constructMessage(sender, arguments[2]);
+
+            receivingHandler = server.getClientHandler(recipient);
+            if(receivingHandler != null){
+                if(receivingHandler.chatEnabled) { //Checks whether the client has chatting enabled.
+                    receivingHandler.getSocketHandler().write(message);
+                    if(!(receivingHandler == this)){ //But don't write the message to yourself twice.
                         socketHandler.write(message);
                     }
-                    break;
                 }
-            }
-            if(handler == null){
+            } else { //If the recipient could not be found, send an error message to the client.
                 socketHandler.write(ServerMessages.CANNOTWHISPER.constructMessage(recipient));
             }
         } catch (ArrayIndexOutOfBoundsException e){
@@ -211,7 +240,13 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         this.opponent.setState(ClientHandlerStates.INGAME);
     }
 
-    public void handleMove(String[] arguments) throws ProtocolException, NotYourTurnException, InvalidMoveException {
+    public void gameOver(){
+        this.game = null;
+        this.opponent = null;
+        this.setState(ClientHandlerStates.LOGGEDIN);
+    }
+
+    public void handleMove(String[] arguments) throws ProtocolException, NotYourTurnException, InvalidMoveException, ClientHandlerNotFoundException {
         Move move;
         switch (arguments.length) {
             case 1:
@@ -242,14 +277,17 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         this.myTurn = myTurn;
     }
 
-    private void makeMove(Move move) throws ProtocolException, NumberFormatException, InvalidMoveException {
-        this.game.makeMove(move);
+    private void makeMove(Move move) throws NumberFormatException, InvalidMoveException, ClientHandlerNotFoundException {
+        this.game.makeMove(move, this);
     }
 
 
     @Override
     public void handlePeerShutdown() {
         this.view.showMessage("["+ this.name + "] Disconnected");
+        if(this.game != null){
+            this.game.playerDisconnected();
+        }
         this.socketHandler.shutDown();
         this.shutDown();
     }

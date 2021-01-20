@@ -3,6 +3,7 @@ package dt.protocol;
 import dt.exceptions.InvalidMoveException;
 import dt.util.Move;
 
+/** @author Emiel Rous and Wouter Koning */
 public interface ClientProtocol {
 
     void doHello();

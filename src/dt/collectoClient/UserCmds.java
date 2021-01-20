@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+/** @author Emiel Rous and Wouter Koning */
 public enum UserCmds {
     LIST(new String[]{"l", "list"}, "Get a list of players on the server"),
     MOVE(new String[]{"m", "move"}, "Make a move. Seperate by any of these: '~', '-', '=', '|'"),

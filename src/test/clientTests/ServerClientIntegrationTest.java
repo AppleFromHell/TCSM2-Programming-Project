@@ -1,25 +1,20 @@
 package clientTests;
 
 import dt.collectoClient.Client;
-import dt.collectoClient.ClientStates;
 import dt.exceptions.ServerUnavailableException;
-import dt.server.ClientHandler;
 import dt.server.Server;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
-import java.net.ProtocolException;
-import java.net.UnknownHostException;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ServerClientIntegrationTest {
     Client client = new Client();
@@ -38,7 +33,7 @@ public class ServerClientIntegrationTest {
     @BeforeAll
     static void setup() {
         ServerRunner runner = new ServerRunner();
-//        new Thread(runner).start();
+        new Thread(runner).start();
         System.setOut(new PrintStream(outContent));
     }
 
@@ -145,7 +140,8 @@ public class ServerClientIntegrationTest {
         int[] clientBoardState = client1.getBoard().getBoardState();
 
         assertArrayEquals(serverBoardState, clientBoardState);
-
     }
+
+
 
 }

@@ -9,6 +9,7 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.sql.Time;
 
+/** @author Emiel Rous and Wouter Koning */
 public class ClientGUI extends JFrame implements ClientView {
     private final Client client;
     private MainDisplay display;

@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+/** @author Emiel Rous and Wouter Koning */
 public class SimpleTUI implements Runnable {
 
     protected SimpleTUI(){}

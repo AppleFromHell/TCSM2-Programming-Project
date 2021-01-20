@@ -2,6 +2,7 @@ package dt.util;
 
 import java.util.Objects;
 
+/** @author Emiel Rous and Wouter Koning */
 public class Move {
 
     private Integer move1 = null;
