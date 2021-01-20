@@ -43,7 +43,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     }
 
     @Override
-    public synchronized void handleMessage(String msg) {
+    public void handleMessage(String msg) {
         String[] arguments = msg.split(ProtocolMessages.delimiter);
         String keyWord = arguments[0];
 

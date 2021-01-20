@@ -61,16 +61,16 @@ public class Server {
      * The continuous loop that the server is running in, where it accepts clients and adds them to the list
      * of connected clients.
      */
-    public synchronized void start() {
+    public void start() {
         setup();
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
                 ClientHandler handler = new ClientHandler(this ,this.gameManager, this.view, clientSocket);
                 this.connectedClients.add(handler);
-                this.wait(); //Mega belangrijk maar ik weet niet waarom
                 view.showMessage("New client: [" + handler.getName() + "] connected!");
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException  e) {
+
                 e.printStackTrace();
             }
         }
