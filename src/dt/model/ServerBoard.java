@@ -85,9 +85,9 @@ public class ServerBoard extends Board{
                 newBoard[i] = 0;
             } else if (i % this.boardSize != 0 && up >= 0) {   //If it's not on the left edge, and not at the top
                 newBoard[i] = randomBall(new ArrayList<>(List.of(newBoard[left], newBoard[up])));
-                newBoard[i] = randomNumberGenerator.getRandomNumber();
-                ballsLeft[newBoard[i]]--;
-                randomNumberGenerator.addNumber(newBoard[i], ballsLeft[newBoard[i]]);
+//                newBoard[i] = randomNumberGenerator.getRandomNumber();
+//                ballsLeft[newBoard[i]]--;
+//                randomNumberGenerator.addNumber(newBoard[i], ballsLeft[newBoard[i]]);
 
             } else if (i % this.boardSize != 0 && left >= 0) { //If it's not on the left edge, and at the top
                 newBoard[i] = randomBall(new ArrayList<>(List.of(newBoard[left])));
