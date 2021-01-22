@@ -4,8 +4,8 @@ import dt.model.Board;
 import dt.util.Move;
 
 /** @author Emiel Rous and Wouter Koning */
-public interface AI {
+public abstract class AI {
 
-    Move findBestMove(Board board);
+    abstract Move findBestMove(Board board);
 
 }

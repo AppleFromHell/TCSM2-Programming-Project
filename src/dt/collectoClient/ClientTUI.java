@@ -1,5 +1,7 @@
 package dt.collectoClient;
 
+import dt.ai.AI;
+import dt.ai.AITypes;
 import dt.exceptions.CommandException;
 import dt.exceptions.InvalidMoveException;
 import dt.exceptions.UserExit;
@@ -9,6 +11,7 @@ import dt.util.Move;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 /** @author Emiel Rous and Wouter Koning */
 public class ClientTUI extends SimpleTUI implements ClientView {
@@ -152,6 +155,35 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             this.showMessage(list[i]);
         }
     }
+
+    /**
+     *
+     * @return A new instance of an AI type. If the return value is null, the person has chosen for manual playing.
+     * @throws UserExit
+     */
+    public AI getClientAI() throws UserExit {
+        boolean aiEnabled = getBoolean("Would you like to play this game with an AI?"); //TODO Sometimes you have to answer this question twice?
+        if(aiEnabled){
+
+            String question = "What AI difficulty would you like to use for this game? Choose from:"
+                    .concat(System.lineSeparator())
+                    .concat(AITypes.allToString());
+            String aiString = getString(question);
+
+            while(true) {
+                try {
+                    AITypes aiType = AITypes.valueOf(aiString);
+                    return aiType.getAIClass();
+                } catch (IllegalArgumentException e) {
+                    getString(aiString + " is not a valid AI type. Choose one of the following AI Types: "
+                            .concat(System.lineSeparator())
+                            .concat(AITypes.allToString()));
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public void clearBoard(){
 

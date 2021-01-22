@@ -3,10 +3,11 @@ package dt.ai;
 import dt.model.Board;
 import dt.util.Move;
 
+import java.util.Arrays;
 import java.util.List;
 
 /** @author Emiel Rous and Wouter Koning */
-public class RandomAI implements AI {
+public class RandomAI extends AI {
 
     public RandomAI(){
 

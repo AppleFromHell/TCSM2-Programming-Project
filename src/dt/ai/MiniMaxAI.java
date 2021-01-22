@@ -7,10 +7,16 @@ import dt.util.Move;
 import java.util.List;
 
 /** @author Emiel Rous and Wouter Koning */
-public class MiniMaxAI implements AI{
+public class MiniMaxAI extends AI{
+
+    private static int DEFAULTDEPTH = 5;
 
     private final int depth;
     private Player you;
+
+    public MiniMaxAI(){
+        this.depth = DEFAULTDEPTH;
+    }
 
     public MiniMaxAI(int depth){
         this.depth = depth;
