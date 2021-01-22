@@ -204,7 +204,7 @@ public class Board {
      * Go over all rows and columns and find the type and amount of balls that lie next to each other.
      * @return a HashMap<BallType, Integer> with as key the {@link BallType}, and as value the amount of balls the move yielded.
      */
-    public HashMap<BallType, Integer> getYield(){ //TODO this sometimes checks on diagonals, rather than just on the sequences.
+    public HashMap<BallType, Integer> getYield(){
         HashMap<BallType, Integer> ballScore = new HashMap<>();
         List<List<Sequence>> rowsAndColumns = new ArrayList<>();
         rowsAndColumns.add(this.rows);

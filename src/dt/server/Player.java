@@ -12,8 +12,6 @@ public class Player {
     private ClientHandler client;
     private Map<BallType, Integer> collectedBalls;
 
-    //TODO This needs to be actually implemented into the game!!!
-
     public Player(ClientHandler client) {
         this.client = client;
         this.name = client.getName();
