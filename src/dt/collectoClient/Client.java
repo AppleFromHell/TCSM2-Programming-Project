@@ -358,7 +358,7 @@ public class Client implements ClientProtocol, NetworkEntity {
         if(arguments.length != 3) throw new ProtocolException("Invalid number of arguments");
         switch (ServerMessages.GameOverReasons.valueOf(arguments[1])) {
             case VICTORY:
-                ret = ret.concat("VICTORY");
+                ret = ret.concat("VICTORY ");
                 if(arguments[2].equals(this.userName)) {
                     ret += "Congratulations YOU WON! :)";
                 } else {
@@ -372,6 +372,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                 ret = ret.concat("Your opponent left because he/she could not stand your face ;) (but you won so that's nice)");
                 break;
         }
+        this.notifyAll();
         this.clientView.clearBoard();
         this.state = ClientStates.IDLE;
         return ret;

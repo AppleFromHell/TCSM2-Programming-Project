@@ -45,7 +45,6 @@ class BoardTest {
         assertEquals(0, boardState[middle]);
         HashMap<BallType, Integer> yield = board.getYield();
         assertEquals(0, yield.values().stream().reduce(0, Integer::sum));
-
         assertNotEquals(Collections.emptyList(), board.findValidMoves());
     }
 
