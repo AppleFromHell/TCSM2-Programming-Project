@@ -82,7 +82,6 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             }
         } catch (UserExit e) {
             client.shutDown();
-
         }
     }
 
@@ -103,7 +102,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                     if(client.getAi() == null) {
                         this.client.doMove(parseMove(arguments));
                     } else {
-                        client.getAi().findBestMove(this.client.getBoard());
+                        this.client.doMove(client.getAi().findBestMove(this.client.getBoard()));
                     }
                     break;
                 case HINT:
@@ -180,17 +179,17 @@ public class ClientTUI extends SimpleTUI implements ClientView {
      */
     public synchronized AI getClientAI() throws UserExit {
         this.interrupted = true;
-        boolean aiEnabled = getBoolean("Would you like to play this game with an AI?"); //TODO Sometimes you have to answer this question twice?
+        boolean aiEnabled = getBoolean("Would you like to play this game with an AI?");
         if(aiEnabled){
 
             String question = "What AI difficulty would you like to use for this game? Choose from:"
                     .concat(System.lineSeparator())
                     .concat(AITypes.allToString());
             String aiString = getString(question);
-
             while(true) {
                 try {
                     AITypes aiType = AITypes.valueOf(aiString.toUpperCase());
+                    this.interrupted = false;
                     this.notify();
                     return aiType.getAIClass();
                 } catch (IllegalArgumentException e) {
@@ -200,6 +199,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                 }
             }
         }
+        this.interrupted = false;
         this.notify();
         return null;
     }
