@@ -1,11 +1,17 @@
 package dt.collectoClient;
 
+import dt.exceptions.CommandException;
 import dt.exceptions.UserExit;
+import dt.model.ClientBoard;
+import dt.util.Move;
 
 import java.net.InetAddress;
 
 /** @author Emiel Rous and Wouter Koning */
 public interface ClientView extends Runnable {
+
+    String UNKOWNCOMMAND = "Unkown command: %s. For a list of valid commands type h";
+    String NOTINTEGERMOVE = "Move was not an integer";
 
     void start();
 
@@ -18,4 +24,16 @@ public interface ClientView extends Runnable {
     void reconnect() throws UserExit;
 
     void displayChatMessage(String msg);
+
+    default Move parseMove(String[] arguments) throws CommandException {
+        if (arguments.length == 2) {
+            return new Move(Integer.parseInt(arguments[1]));
+        } else if (arguments.length == 3) {
+            return new Move(Integer.parseInt(arguments[1], Integer.parseInt(arguments[2])));
+        } else {
+            throw new CommandException("Too many moves");
+        }
+    }
+
+    void showBoard(ClientBoard board);
 }

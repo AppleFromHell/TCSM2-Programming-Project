@@ -1,6 +1,8 @@
-package dt.collectoClient;
+package dt.collectoClient.GUI;
 
 import dt.model.BallType;
+import dt.model.ClientBoard;
+import dt.model.ServerBoard;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,14 +14,16 @@ public class GameDisplay extends JPanel {
     private String[] balls;
     private Color[] ballColors;
     private final Color BACKGROUND;
-    private int boardSize;
+    private final int BOARDSIZE = 7;
     private int ballSize;
     private int squareSize;
 
+    public GameDisplay() {
 
-    public GameDisplay(int[] gameState) {
-        this.gameState = gameState;
-        this.boardSize =  (int) Math.round(Math.sqrt(gameState.length));
+        this.gameState = new int[BOARDSIZE*BOARDSIZE];
+        for(int i =0; i < BOARDSIZE * BOARDSIZE; i++) {
+            gameState[i] = 0;
+        }
         this.ballColors = new Color[BallType.values().length];
         this.BACKGROUND = Color.WHITE;
         this.setBackground(BACKGROUND);
@@ -34,9 +38,14 @@ public class GameDisplay extends JPanel {
             }
         }
     }
+    public GameDisplay(int[] gameState) {
+        this();
+        this.gameState = gameState;
+    }
 
     public void setGameState(int[] state) {
         this.gameState = state;
+        this.paintComponent(this.getGraphics());
     }
 
     public int getSquareSize() {
@@ -50,32 +59,32 @@ public class GameDisplay extends JPanel {
         int offset = 30;
         int width = this.getWidth() -offset;
 
-        squareSize = width/this.boardSize;
+        squareSize = width/this.BOARDSIZE;
         ballSize = squareSize - width / 100;
 
-        for(int y = 0; y < this.boardSize * squareSize; y+= squareSize) {
-            for (int x = 0; x < this.boardSize * squareSize; x+= squareSize) {
+        for(int y = 0; y < this.BOARDSIZE * squareSize; y+= squareSize) {
+            for (int x = 0; x < this.BOARDSIZE * squareSize; x+= squareSize) {
                 int ballNumber = gameState[x/squareSize+(y/squareSize)];
                 g.setColor(ballColors[ballNumber]);
                 g.fillOval(x + offset/2, y+offset/2, ballSize, ballSize);
             }
         }
-        for(int i = 0; i < this.boardSize; i++) {
+        for(int i = 0; i < this.BOARDSIZE; i++) {
             g.setColor(Color.BLACK);
-            g.drawString(String.valueOf(3*this.boardSize + i), squareSize*i + squareSize - offset/2 -3, offset/2-3);
+            g.drawString(String.valueOf(3*this.BOARDSIZE + i), squareSize*i + squareSize - offset/2 -3, offset/2-3);
         }
-        for(int i = 0; i < this.boardSize; i++) {
+        for(int i = 0; i < this.BOARDSIZE; i++) {
             g.setColor(Color.BLACK);
-            g.drawString(String.valueOf(this.boardSize * 2 - i -1), squareSize*i + squareSize/4*3, width + offset/4*3);
+            g.drawString(String.valueOf(this.BOARDSIZE * 2 - i -1), squareSize*i + squareSize/4*3, width + offset/4*3);
         }
 
-        for(int i = 0; i < this.boardSize; i++) {
+        for(int i = 0; i < this.BOARDSIZE; i++) {
             g.setColor(Color.BLACK);
             g.drawString(String.valueOf(i), width + offset/2, squareSize * i + squareSize - offset/2 + 3);
         }
-        for(int i = 0; i < this.boardSize; i++) {
+        for(int i = 0; i < this.BOARDSIZE; i++) {
             g.setColor(Color.BLACK);
-            g.drawString(String.valueOf(this.boardSize* 3 - i -1), offset/20, squareSize * i + squareSize - offset/2 +3);
+            g.drawString(String.valueOf(this.BOARDSIZE* 3 - i -1), offset/20, squareSize * i + squareSize - offset/2 +3);
         }
 
         g.drawRect(offset/2, offset/2, width-offset/4, width-offset/4);

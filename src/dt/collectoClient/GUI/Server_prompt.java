@@ -1,4 +1,4 @@
-package dt.collectoClient;
+package dt.collectoClient.GUI;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

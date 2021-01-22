@@ -1,6 +1,8 @@
-package dt.collectoClient;
+package dt.collectoClient.GUI;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class MainDisplay extends JPanel{
     private JPanel mainPanel;
@@ -15,6 +17,7 @@ public class MainDisplay extends JPanel{
     private JTextField moveField;
     private JButton confirmButton;
     private JLabel moveLabel;
+    private JButton queueButton;
     private ClientGUI view;
 
     public MainDisplay(ClientGUI view) {
@@ -24,6 +27,7 @@ public class MainDisplay extends JPanel{
         chatFIeld.addActionListener(e -> sendMessage());
         confirmButton.addActionListener(e -> makeMove());
         moveField.addActionListener(e -> makeMove());
+        queueButton.addActionListener(e -> enterQueue());
     }
 
     public void updateUserList(String[] list) {
@@ -36,9 +40,9 @@ public class MainDisplay extends JPanel{
 
     private void makeMove() {
         try {
-            view.makeMove(Integer.parseInt(moveField.getText()));
+            view.makeMove(moveField.getText());
         } catch (NumberFormatException ex) {
-            view.shorErrorPopup("Enter an integer");
+            view.showErrorPopup("Enter an integer");
             moveField.setText("");
         }
     }
@@ -60,9 +64,16 @@ public class MainDisplay extends JPanel{
         frame.setVisible(true);
 
     }
+    private void enterQueue() {
+        this.queueButton.setEnabled(false);
+        view.enterQueue();
+    }
 
     private void createUIComponents() {
-        // TODO: place custom component creation code here
-        this.gameDisplay = new GameDisplay(new int[]{1,2,4,5,2,4,3,2,2,6,6,4,3,3,2,3,4,0,5,3,5,4,4,3,2,4,5,3,2,3,4,4,3,2,1,1,2,3,4,5,4,3,2,2,3,4,5,2,2});
+        this.gameDisplay = new GameDisplay();
+    }
+
+    public void showBoard(int[] boardState) {
+        ((GameDisplay) gameDisplay).setGameState(boardState);
     }
 }

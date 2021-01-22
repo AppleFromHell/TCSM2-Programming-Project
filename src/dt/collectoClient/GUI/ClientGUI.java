@@ -1,13 +1,17 @@
-package dt.collectoClient;
+package dt.collectoClient.GUI;
 
+import dt.collectoClient.Client;
+import dt.collectoClient.ClientStates;
+import dt.collectoClient.ClientView;
+import dt.collectoClient.UserCmds;
+import dt.exceptions.CommandException;
 import dt.exceptions.InvalidMoveException;
 import dt.exceptions.UserExit;
-import dt.util.Move;
+import dt.model.ClientBoard;
 
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.sql.Time;
 
 /** @author Emiel Rous and Wouter Koning */
 public class ClientGUI extends JFrame implements ClientView {
@@ -27,7 +31,7 @@ public class ClientGUI extends JFrame implements ClientView {
                 this.client.createConnection();
                 break;
             } catch (IOException e) {
-                shorErrorPopup("Couldn't connect to server, try again");
+                showErrorPopup("Couldn't connect to server, try again");
             }
         }
 
@@ -38,16 +42,17 @@ public class ClientGUI extends JFrame implements ClientView {
                     client.shutDown();
                 }
                 this.client.doLogin(userName);
+                this.client.setUsername(userName);
                 synchronized (this) {
                     this.wait();
                 }
                 if (this.client.getState() == ClientStates.PENDINGLOGIN) {
-                    shorErrorPopup("Username already logged in, try again");
+                    showErrorPopup("Username already logged in, try again");
                 } else {
                     break;
                 }
             } catch (InterruptedException e) {
-                shorErrorPopup("Something went wrong, try again");
+                showErrorPopup("Something went wrong, try again");
             }
         }
         display = new MainDisplay(this);
@@ -60,7 +65,7 @@ public class ClientGUI extends JFrame implements ClientView {
         return JOptionPane.showInputDialog("Connection Successful!\nEnter Username to login");
     }
 
-    public void shorErrorPopup(String err) {
+    public void showErrorPopup(String err) {
         JOptionPane.showConfirmDialog(
                 this,
                 err,
@@ -108,15 +113,32 @@ public class ClientGUI extends JFrame implements ClientView {
     }
 
     @Override
+    public void showBoard(ClientBoard board) {
+        this.display.showBoard(board.getBoardState());
+    }
+
+    @Override
     public void displayChatMessage(String msg) {
         this.display.displayMessage(msg);
     }
 
 
-    public void makeMove(int move) {
+    public void makeMove(String move) {
+        String[] arguments = move.split(UserCmds.separators);
+        try {
+            this.client.doMove(parseMove(arguments));
+        } catch (CommandException e) {
+            showErrorPopup(String.format(UNKOWNCOMMAND, arguments[0]));
+        } catch (InvalidMoveException e) {
+            showErrorPopup(e.getMessage());
+        }
     }
 
     public void sendMessage(String text) {
         client.doSendChat(text);
+    }
+
+    public void enterQueue() {
+        client.doEnterQueue();
     }
 }

@@ -3,6 +3,7 @@ package dt.collectoClient;
 import dt.exceptions.CommandException;
 import dt.exceptions.InvalidMoveException;
 import dt.exceptions.UserExit;
+import dt.model.ClientBoard;
 import dt.util.SimpleTUI;
 import dt.util.Move;
 
@@ -74,7 +75,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             String[] arguments = input.split(UserCmds.separators);
             UserCmds cmd = UserCmds.getUserCmd(arguments[0]);
             if (cmd == null)
-                throw new CommandException("Unkown command: " + arguments[0] + " For a list of valid commands type h");
+                throw new CommandException(String.format(UNKOWNCOMMAND, arguments[0]));
             switch (cmd) {
                 case LIST:
                     this.client.doGetList();
@@ -83,13 +84,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                     this.client.doEnterQueue();
                     break;
                 case MOVE:
-                    if (arguments.length == 2) {
-                        this.client.doMove(new Move(Integer.parseInt(arguments[1])));
-                    } else if (arguments.length == 3) {
-                        this.client.doMove(new Move(Integer.parseInt(arguments[1], Integer.parseInt(arguments[2]))));
-                    } else {
-                        throw new CommandException("Too many moves");
-                    }
+                    this.client.doMove(parseMove(arguments));
                     break;
                 case HINT:
                     this.client.provideHint();
@@ -111,7 +106,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new CommandException("Invalid number of arguments give");
         } catch (NumberFormatException e) {
-            throw new CommandException("Move was not an integer");
+            throw new CommandException(NOTINTEGERMOVE);
         } catch (InvalidMoveException e) {
             throw new CommandException(e.getMessage());
         }
@@ -156,6 +151,11 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         for(int i = 0; i < list.length; i++) {
             this.showMessage(list[i]);
         }
+    }
+
+    @Override
+    public void showBoard(ClientBoard board) {
+        this.showMessage(board.getPrettyBoardState());
     }
 
     @Override

@@ -2,6 +2,7 @@ package dt.collectoClient;
 
 import java.io.*;
 
+import dt.collectoClient.GUI.ClientGUI;
 import dt.exceptions.CommandException;
 import dt.exceptions.InvalidMoveException;
 import dt.exceptions.UnexpectedResponseException;
@@ -43,7 +44,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     private boolean moveConfirmed;
 
     public Client() {
-        this.clientView = new ClientTUI(this);
+        this.clientView = new ClientGUI(this);
         this.board = new ClientBoard();
         this.userName = null;
         this.ip = null;
@@ -98,7 +99,6 @@ public class Client implements ClientProtocol, NetworkEntity {
     public void handleMessage(String msg) {
         String[] arguments = msg.split(ProtocolMessages.delimiter);
         String keyWord = arguments[0];
-        clientView.showMessage(this.state.toString());
         try {
             switch (ServerMessages.valueOf(keyWord)) {
                 case HELLO:
@@ -141,7 +141,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                     }   else {
                         throw new UnexpectedResponseException();
                     }
-                    this.clientView.showMessage(this.board.getPrettyBoardState());
+                    this.clientView.showBoard(this.board);
                     break;
                 case MOVE:
                     if (this.state == ClientStates.AWAITMOVERESPONSE) {
@@ -149,7 +149,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                     } else if (this.state == ClientStates.AWAITNGTHEIRMOVE) {
                         try {
                             this.makeTheirMove(arguments);
-                            this.clientView.showMessage(this.board.getPrettyBoardState());
+                            this.clientView.showBoard(this.board);
                         } catch (InvalidMoveException e) {
                             throw new InvalidMoveException("The server move was invalid");
                         }
@@ -158,7 +158,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                     }
                     break;
                 case GAMEOVER:
-                    this.clientView.showMessage(this.handleGameOver(arguments));
+                    this.clientView.showMessage(this.handleGameOver(arguments)); //TODO method maken voor gui met deze dingen
                     break;
                 case ERROR:
                     clientView.showMessage("Server threw error: " + msg);
