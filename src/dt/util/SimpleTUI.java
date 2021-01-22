@@ -3,18 +3,16 @@ package dt.util;
 import dt.collectoClient.UserCmds;
 import dt.exceptions.UserExit;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 
 /** @author Emiel Rous and Wouter Koning */
 public class SimpleTUI implements Runnable {
 
     protected SimpleTUI(){}
-    private final BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+    private BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
     private final PrintWriter stdOut = new PrintWriter(System.out, true);
 
 

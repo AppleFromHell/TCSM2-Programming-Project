@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** @author Emiel Rous and Wouter Koning */
-public class RandomAI extends AI {
+public class RandomAI implements AI {
 
     public RandomAI(){
 

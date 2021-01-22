@@ -19,6 +19,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
 
     //TODO The user should decide at the start of the game who decides on the moves (AI or human)
 
+    private boolean interrupted =false;
     private Client client;
 
     ClientTUI(Client client) {
@@ -61,9 +62,20 @@ public class ClientTUI extends SimpleTUI implements ClientView {
 
                         }
                     } else {
-                         input = getString(); //Wait for user input
+
+                        try {
+                            synchronized (this) {
+                                if(interrupted) this.wait();
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                            input = getString(); //Wait for user input
                     }
-                    handleUserInput(input);
+                    if(input != null) {
+                        handleUserInput(input);
+                    }
                 } catch (CommandException e) {
                     this.showMessage(e.getMessage());
                 }
@@ -88,7 +100,11 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                     this.client.doEnterQueue();
                     break;
                 case MOVE:
-                    this.client.doMove(parseMove(arguments));
+                    if(client.getAi() == null) {
+                        this.client.doMove(parseMove(arguments));
+                    } else {
+                        client.getAi().findBestMove(this.client.getBoard());
+                    }
                     break;
                 case HINT:
                     this.client.provideHint();
@@ -162,7 +178,8 @@ public class ClientTUI extends SimpleTUI implements ClientView {
      * @return A new instance of an AI type. If the return value is null, the person has chosen for manual playing.
      * @throws UserExit if the user decides to exit the program.
      */
-    public AI getClientAI() throws UserExit {
+    public synchronized AI getClientAI() throws UserExit {
+        this.interrupted = true;
         boolean aiEnabled = getBoolean("Would you like to play this game with an AI?"); //TODO Sometimes you have to answer this question twice?
         if(aiEnabled){
 
@@ -174,6 +191,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             while(true) {
                 try {
                     AITypes aiType = AITypes.valueOf(aiString.toUpperCase());
+                    this.notify();
                     return aiType.getAIClass();
                 } catch (IllegalArgumentException e) {
                     getString(aiString + " is not a valid AI type. Choose one of the following AI Types: "
@@ -182,6 +200,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                 }
             }
         }
+        this.notify();
         return null;
     }
 
