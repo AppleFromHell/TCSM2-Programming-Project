@@ -173,7 +173,7 @@ public class Board {
      * A method that finds the moves that are possible to do. Though, the return value of this is not per say the moves that are valid.
      * @return A list of integers, indicating the moves that are possible given the current board state.
      */
-    public List<Move> findPossibleMoves() {
+    public List<Move> findPossibleMoves() { //TODO findPossibleMoves does not function. At all. Probably due to the protocol confusion.
         List<Move> possibleMoves = new ArrayList<>();
 
         for (int rowIndex = 0; rowIndex < this.boardSize; rowIndex++) {
@@ -341,7 +341,7 @@ public class Board {
 
     public boolean isGameOver() {
         boolean gameOver = false;
-        if (!findValidSingleMoves().isEmpty() || !findValidDoubleMoves().isEmpty()) {
+        if (findValidSingleMoves().isEmpty() && findValidDoubleMoves().isEmpty()) {
             gameOver = true;
         }
         return gameOver;

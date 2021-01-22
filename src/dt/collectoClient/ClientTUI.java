@@ -58,7 +58,10 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                 try {
                     String input = "";
                     if (this.client.getState() == ClientStates.INGAME) {
-                        input = getString("Next Move:");
+                        if(this.client.getAi() == null){ // If the human has decided to play for themselves.
+                            input = getString("Next Move:");
+
+                        }
                     } else {
                          input = getString(); //Wait for user input
                     }
@@ -160,7 +163,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
     /**
      *
      * @return A new instance of an AI type. If the return value is null, the person has chosen for manual playing.
-     * @throws UserExit
+     * @throws UserExit if the user decides to exit the program.
      */
     public AI getClientAI() throws UserExit {
         boolean aiEnabled = getBoolean("Would you like to play this game with an AI?"); //TODO Sometimes you have to answer this question twice?
@@ -173,7 +176,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
 
             while(true) {
                 try {
-                    AITypes aiType = AITypes.valueOf(aiString);
+                    AITypes aiType = AITypes.valueOf(aiString.toUpperCase());
                     return aiType.getAIClass();
                 } catch (IllegalArgumentException e) {
                     getString(aiString + " is not a valid AI type. Choose one of the following AI Types: "

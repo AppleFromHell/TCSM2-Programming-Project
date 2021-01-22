@@ -24,7 +24,7 @@ public class ServerBoard extends Board{
             int[] newBoard = createBoard();
             this.boardToClient = newBoard;
             super.fillBoard(newBoard);
-        } while(findValidMoves().isEmpty());
+        } while(findValidSingleMoves().isEmpty());
         System.out.println("Valid moves: "+ findValidMoves().toString());
     }
 
@@ -63,7 +63,7 @@ public class ServerBoard extends Board{
         return availableNumbers.get(randomNumber(0, availableNumbers.size() - 1));
     }
 
-    public int[] createBoard() {
+    private int[] createBoard() {
         //TODO Make it so that only 8 balls of every colour exist in the board (use the DistributedRandomNumberGenerator)
         //fill the board up daddy
         int[] newBoard = new int[this.boardSize * this.boardSize];
