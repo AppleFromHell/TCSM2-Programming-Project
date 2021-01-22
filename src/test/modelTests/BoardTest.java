@@ -166,11 +166,10 @@ class BoardTest {
         boardState[48] = 1;
         testBoard.fillBoard(boardState);
         validSingleMoves = testBoard.findValidSingleMoves();
-        System.out.println(validSingleMoves.toString());
 
         assertTrue(
                 validSingleMoves.contains(new Move(27)) &&
-                        validSingleMoves.contains(new Move(7)) &&
+                        validSingleMoves.contains(new Move(20)) &&
                         validSingleMoves.size() == 2
         );
     }
@@ -184,26 +183,26 @@ class BoardTest {
         assertEquals(Collections.emptyList() ,testBoard.findValidSingleMoves());
         List<Move> validDoubleMoves = testBoard.findValidDoubleMoves();
         assertTrue(
-                validDoubleMoves.contains(new Move(20, 27)) &&
-                        validDoubleMoves.contains(new Move(20, 7)) &&
-                        validDoubleMoves.contains(new Move(21, 14)) &&
-                        validDoubleMoves.contains(new Move(21, 6)) &&
-                        validDoubleMoves.contains(new Move(6, 13)) &&
-                        validDoubleMoves.contains(new Move(6, 21)) &&
-                        validDoubleMoves.contains(new Move(7, 0)) &&
+                validDoubleMoves.contains(new Move(7, 27)) &&
                         validDoubleMoves.contains(new Move(7, 20)) &&
+                        validDoubleMoves.contains(new Move(21, 13)) &&
+                        validDoubleMoves.contains(new Move(21, 6)) &&
+                        validDoubleMoves.contains(new Move(6, 14)) &&
+                        validDoubleMoves.contains(new Move(6, 21)) &&
+                        validDoubleMoves.contains(new Move(20, 0)) &&
+                        validDoubleMoves.contains(new Move(20, 7)) &&
                         validDoubleMoves.size() == 8);
         boardState[6] = 2;
         testBoard.fillBoard(boardState);
         assertEquals(Collections.emptyList() ,testBoard.findValidSingleMoves());
         validDoubleMoves = testBoard.findValidDoubleMoves();
         assertTrue(
-                validDoubleMoves.contains(new Move(21,14)) &&
+                validDoubleMoves.contains(new Move(21,13)) &&
                         validDoubleMoves.contains(new Move(21, 6)) &&
-                        validDoubleMoves.contains(new Move(6,13)) &&
+                        validDoubleMoves.contains(new Move(6,14)) &&
                         validDoubleMoves.contains(new Move(6, 21)) &&
-                        validDoubleMoves.contains(new Move(20,26)) &&
-                        validDoubleMoves.contains(new Move(7, 1)) &&
+                        validDoubleMoves.contains(new Move(7,26)) &&
+                        validDoubleMoves.contains(new Move(20, 1)) &&
                         validDoubleMoves.size() == 6
         );
 
