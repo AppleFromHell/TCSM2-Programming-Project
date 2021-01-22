@@ -10,7 +10,7 @@ public class SocketHandler implements Runnable {
     private BufferedReader socketIn;
     private BufferedWriter socketOut;
     private String name;
-    private boolean debug = true;
+    private boolean debug = false;
 
     public void run() {
         readSocketInput();

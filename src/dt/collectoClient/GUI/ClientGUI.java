@@ -12,7 +12,7 @@ import dt.model.ClientBoard;
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.IOException;
-
+//TODO hint doen
 /** @author Emiel Rous and Wouter Koning */
 public class ClientGUI extends JFrame implements ClientView {
     private final Client client;

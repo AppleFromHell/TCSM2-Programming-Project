@@ -39,7 +39,6 @@ public class GameDisplay extends JPanel {
 
     public void setGameState(int[] state) {
         this.gameState = state;
-        this.paintComponent(this.getGraphics());
     }
 
     public int getSquareSize() {
@@ -56,11 +55,11 @@ public class GameDisplay extends JPanel {
         squareSize = width/this.BOARDSIZE;
         ballSize = squareSize - width / 100;
 
-        for(int y = 0; y < this.BOARDSIZE * squareSize; y+= squareSize) {
-            for (int x = 0; x < this.BOARDSIZE * squareSize; x+= squareSize) {
-                int ballNumber = gameState[x/squareSize+(y/squareSize)];
+        for(int y = 0; y < this.BOARDSIZE; y++) {
+            for (int x = 0; x < this.BOARDSIZE; x++) {
+                int ballNumber = gameState[x+y * this.BOARDSIZE];
                 g.setColor(ballColors[ballNumber]);
-                g.fillOval(x + offset/2, y+offset/2, ballSize, ballSize);
+                g.fillOval(x * this.squareSize + offset/2, y * this.squareSize+offset/2, ballSize, ballSize);
             }
         }
         for(int i = 0; i < this.BOARDSIZE; i++) {
@@ -87,7 +86,11 @@ public class GameDisplay extends JPanel {
     public static void main(String[] args) {
         JFrame win = new JFrame("Mandelbrot Set");
         win.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        GameDisplay gameDisplay = new GameDisplay(new int[]{1,2,4,5,2,4,3,2,2,6,6,4,3,3,2,3,4,0,5,3,5,4,4,3,2,4,5,3,2,3,4,4,3,2,1,1,2,3,4,5,4,3,2,2,3,4,5,2,2});
+        int[] bord = new int[49];
+        for(int i = 0; i < 7*7; i++) {
+            bord[i] = i % 7;
+        }
+        GameDisplay gameDisplay = new GameDisplay(bord);
         win.setSize(400, 440);
         win.setContentPane(gameDisplay);
         win.setVisible(true);

@@ -41,9 +41,9 @@ public class ServerClientIntegrationTest {
     void startup() throws IOException, ServerUnavailableException {
 
         client.setIp(InetAddress.getByName("localhost"));
-        client.setPort(888);
+        client.setPort(6969);
         client.setUsername(username);
-        client.createConnection();
+        client.start();
 
     }
 
