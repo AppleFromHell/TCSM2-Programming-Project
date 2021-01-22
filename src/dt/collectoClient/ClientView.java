@@ -35,5 +35,7 @@ public interface ClientView extends Runnable {
         }
     }
 
+    void clearBoard();
+
     void showBoard(ClientBoard board);
 }

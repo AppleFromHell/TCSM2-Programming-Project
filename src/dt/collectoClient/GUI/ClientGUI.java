@@ -56,6 +56,8 @@ public class ClientGUI extends JFrame implements ClientView {
             }
         }
         display = new MainDisplay(this);
+        display.setUsername('\n'+client.getUserName());
+        display.setServerName('\n'+client.getServerName());
         this.setContentPane(display);
         this.pack();
         this.setVisible(true);
@@ -113,7 +115,13 @@ public class ClientGUI extends JFrame implements ClientView {
     }
 
     @Override
+    public void clearBoard() {
+        this.display.emptyBoard();
+    }
+
+    @Override
     public void showBoard(ClientBoard board) {
+        this.display.setOurTurn(client.isOurTurn());
         this.display.showBoard(board.getBoardState());
     }
 

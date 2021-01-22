@@ -152,7 +152,10 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             this.showMessage(list[i]);
         }
     }
+    @Override
+    public void clearBoard(){
 
+    }
     @Override
     public void showBoard(ClientBoard board) {
         this.showMessage(board.getPrettyBoardState());

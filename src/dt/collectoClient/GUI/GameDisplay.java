@@ -1,8 +1,6 @@
 package dt.collectoClient.GUI;
 
 import dt.model.BallType;
-import dt.model.ClientBoard;
-import dt.model.ServerBoard;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,11 +17,7 @@ public class GameDisplay extends JPanel {
     private int squareSize;
 
     public GameDisplay() {
-
-        this.gameState = new int[BOARDSIZE*BOARDSIZE];
-        for(int i =0; i < BOARDSIZE * BOARDSIZE; i++) {
-            gameState[i] = 0;
-        }
+        this.setEmptyBoard();
         this.ballColors = new Color[BallType.values().length];
         this.BACKGROUND = Color.WHITE;
         this.setBackground(BACKGROUND);
@@ -97,5 +91,12 @@ public class GameDisplay extends JPanel {
         win.setSize(400, 440);
         win.setContentPane(gameDisplay);
         win.setVisible(true);
+    }
+
+    public void setEmptyBoard() {
+        this.gameState = new int[BOARDSIZE*BOARDSIZE];
+        for(int i =0; i < BOARDSIZE * BOARDSIZE; i++) {
+            gameState[i] = 0;
+        }
     }
 }

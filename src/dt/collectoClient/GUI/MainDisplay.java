@@ -1,8 +1,6 @@
 package dt.collectoClient.GUI;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class MainDisplay extends JPanel{
     private JPanel mainPanel;
@@ -18,7 +16,12 @@ public class MainDisplay extends JPanel{
     private JButton confirmButton;
     private JLabel moveLabel;
     private JButton queueButton;
+    private JLabel usernameLabel;
+    private JLabel servernameLabel;
+    private JLabel turnLabel;
     private ClientGUI view;
+    private String username;
+    private String serverName;
 
     public MainDisplay(ClientGUI view) {
         this.add(mainPanel);
@@ -75,5 +78,24 @@ public class MainDisplay extends JPanel{
 
     public void showBoard(int[] boardState) {
         ((GameDisplay) gameDisplay).setGameState(boardState);
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+        this.usernameLabel.setText(this.usernameLabel.getText() + username);
+    }
+
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
+        this.servernameLabel.setText(this.servernameLabel.getText() + serverName);
+    }
+
+    public void setOurTurn(boolean ourTurn) {
+        this.turnLabel.setText(turnLabel.getText() + (ourTurn? "Ours": "Theirs"));
+    }
+
+    public void emptyBoard() {
+        this.turnLabel.setText("Turn:");
+        ((GameDisplay)this.gameDisplay).setEmptyBoard();
     }
 }

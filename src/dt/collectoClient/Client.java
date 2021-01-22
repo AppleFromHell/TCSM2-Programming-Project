@@ -43,6 +43,9 @@ public class Client implements ClientProtocol, NetworkEntity {
     private Move ourLastMove;
     private boolean moveConfirmed;
 
+    private String serverName;
+    private boolean myTurn;
+
     public Client() {
         this.clientView = new ClientGUI(this);
         this.board = new ClientBoard();
@@ -236,6 +239,7 @@ public class Client implements ClientProtocol, NetworkEntity {
         if(this.moveConfirmed) {
             makeMove(move);
             this.state = ClientStates.AWAITNGTHEIRMOVE;
+            this.myTurn = false;
         }
     }
 
@@ -258,7 +262,8 @@ public class Client implements ClientProtocol, NetworkEntity {
             cryptEnabled = arg.equals(ProtocolMessages.Messages.CRYPT.toString());
             authEnabled = arg.equals(ProtocolMessages.Messages.AUTH.toString());
         }
-        this.clientView.showMessage("Handshake successful! Connected to server: " + arguments[1]);
+        this.serverName =  arguments[1];
+        this.clientView.showMessage("Handshake successful! Connected to server: " +serverName);
         this.state = ClientStates.HELLOED;
     }
 
@@ -281,9 +286,11 @@ public class Client implements ClientProtocol, NetworkEntity {
         String beginner = arguments[arguments.length - 2];
         if(this.userName.equals(beginner)){
             this.state = ClientStates.AWAITMOVERESPONSE;
+            this.myTurn = true;
             clientView.showMessage("You start");
         } else {
             this.state = ClientStates.AWAITNGTHEIRMOVE;
+            this.myTurn = false;
             clientView.showMessage("Waiting on their move");
         }
 
@@ -333,7 +340,11 @@ public class Client implements ClientProtocol, NetworkEntity {
             default:
                 throw new ProtocolException("Too many arguments");
         }
+        this.myTurn = true;
         this.state = ClientStates.INGAME;
+    }
+    private synchronized void makeMove(Move move) throws InvalidMoveException {
+        board.makeMove(move);
     }
 
     private synchronized String handleGameOver(String[] arguments) throws IllegalArgumentException, ProtocolException {
@@ -355,6 +366,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                 ret = ret.concat("Your opponent left because he/she could not stand your face ;)");
                 break;
         }
+        this.clientView.clearBoard();
         this.state = ClientStates.IDLE;
         return ret;
     }
@@ -363,9 +375,7 @@ public class Client implements ClientProtocol, NetworkEntity {
         clientView.showMessage(this.board.getAHint().toString());
     }
 
-    private synchronized void makeMove(Move move) throws InvalidMoveException {
-        board.makeMove(move);
-    }
+
 
     public void createConnection() throws IOException {
         createConnection(this.ip, this.port, this.userName);
@@ -432,5 +442,12 @@ public class Client implements ClientProtocol, NetworkEntity {
     public Board getBoard() {
         return this.board;
     }
+    public String getServerName() {
+        return serverName;
+    }
+    public boolean isOurTurn() {
+        return this.myTurn;
+    }
+
 
 }
