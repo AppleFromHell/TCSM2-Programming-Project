@@ -7,6 +7,7 @@ import dt.model.ServerBoard;
 import dt.util.Move;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.util.*;
 
@@ -23,7 +24,7 @@ class BoardTest {
     @BeforeEach
     void setup(){
         board = new ServerBoard();
-        board.fillBoard(board.createBoard());
+        board.setupBoard();
         boardSize = board.getBoardSize();
 
         emptyBoardState = new int[boardSize*boardSize];
@@ -50,7 +51,7 @@ class BoardTest {
 
     @Test
     void testSetupForConsistency() {
-        for(int i = 0; i < 20000; i++){
+        for(int i = 0; i < 10000; i++){
             testSetup();
         }
     }
@@ -71,7 +72,7 @@ class BoardTest {
         boardState[0] = 1;
         boardState[6] = 1;
         testBoard.fillBoard(boardState);
-        testBoard.makeMove(new Move(20));
+        testBoard.makeMove(new Move(0));
         assertArrayEquals(emptyBoardState, testBoard.getBoardState());
 
         boardState = emptyBoardState.clone();
@@ -80,7 +81,7 @@ class BoardTest {
         boardState[3] = 1;
         boardState[13] = 1;
         testBoard.fillBoard(boardState);
-        testBoard.makeMove(new Move(20));
+        testBoard.makeMove(new Move(7));
         int[] targetBordState = emptyBoardState.clone();
         targetBordState[5] = 2;
         targetBordState[4] = 1;
@@ -150,7 +151,7 @@ class BoardTest {
 
         assertTrue(
                 validSingleMoves.contains(new Move(0)) &&
-                        validSingleMoves.contains(new Move(20)) &&
+                        validSingleMoves.contains(new Move(7)) &&
                         validSingleMoves.size() == 2
         );
 
@@ -356,7 +357,7 @@ class BoardTest {
         int[] boardState = emptyBoardState.clone();
         boardState[0] = 1;
         testBoard.fillBoard(boardState);
-        testBoard.executeMove(20);
+        testBoard.executeMove(7);
         boardState[0] = 0;
         boardState[6] = 1;
         assertArrayEquals(boardState, testBoard.getBoardState());
@@ -375,7 +376,7 @@ class BoardTest {
         boardState[42] = 1;
         assertArrayEquals(boardState, testBoard.getBoardState());
 
-        testBoard.executeMove(13);
+        testBoard.executeMove(14);
         boardState[42] = 0;
         boardState[0] = 1;
         assertArrayEquals(boardState, testBoard.getBoardState());

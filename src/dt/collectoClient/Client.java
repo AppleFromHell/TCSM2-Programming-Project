@@ -2,6 +2,7 @@ package dt.collectoClient;
 
 import java.io.*;
 
+import dt.ai.AI;
 import dt.collectoClient.GUI.ClientGUI;
 import dt.exceptions.CommandException;
 import dt.exceptions.InvalidMoveException;
@@ -46,6 +47,8 @@ public class Client implements ClientProtocol, NetworkEntity {
     private boolean moveConfirmed;
     private boolean debug;
 
+    private AI ai;
+
     private String serverName;
     private boolean myTurn;
 
@@ -59,7 +62,7 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.rankEnabled = false;
         this.cryptEnabled = false;
         this.authEnabled = false;
-        this.debug = false;
+        this.debug = true;
     }
 
     public static void main(String[] args) {
@@ -140,6 +143,8 @@ public class Client implements ClientProtocol, NetworkEntity {
                     break;
                 case NEWGAME:
                     if(this.state == ClientStates.INQUEUE) { //TODO Sometimes when creating a new game, it doesn't expect the NEWGAME response from the server
+
+                        this.ai = clientView.getClientAI(); //TODO ask the user for whether they would like to use an AI or not, and if so what difficulty!
                         this.createNewBoard(arguments);
                     }   else {
                         throw new UnexpectedResponseException();
@@ -186,6 +191,8 @@ public class Client implements ClientProtocol, NetworkEntity {
             clientView.showMessage("Unkown command from server. Response: " + msg);
         } catch (InvalidMoveException | CommandException e) {
             clientView.showMessage(e.getMessage());
+        } catch (UserExit userExit) {
+            this.shutDown();
         }
     }
 
@@ -459,4 +466,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     }
 
 
+    public AI getAi() {
+        return ai;
+    }
 }

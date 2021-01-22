@@ -1,5 +1,6 @@
 package dt.collectoClient.GUI;
 
+import dt.ai.AI;
 import dt.collectoClient.Client;
 import dt.collectoClient.ClientStates;
 import dt.collectoClient.ClientView;
@@ -128,6 +129,11 @@ public class ClientGUI extends JFrame implements ClientView {
     @Override
     public void displayChatMessage(String msg) {
         this.display.displayMessage(msg);
+    }
+
+    @Override
+    public AI getClientAI() throws UserExit {
+        return null;
     }
 
 

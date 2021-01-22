@@ -263,7 +263,9 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         if(this.myTurn) {
             this.makeMove(move);
             this.myTurn = false;
-            opponent.setMyTurn(true);
+            if(opponent != null) {
+                opponent.setMyTurn(true);
+            }
             String moveMsg = ServerMessages.MOVE.constructMessage(move);
             socketHandler.write(moveMsg);
             opponent.getSocketHandler().write(moveMsg);

@@ -1,5 +1,6 @@
 package dt.collectoClient;
 
+import dt.ai.AI;
 import dt.exceptions.CommandException;
 import dt.exceptions.UserExit;
 import dt.model.ClientBoard;
@@ -34,6 +35,8 @@ public interface ClientView extends Runnable {
             throw new CommandException("Too many moves");
         }
     }
+
+    AI getClientAI() throws UserExit;
 
     void clearBoard();
 
