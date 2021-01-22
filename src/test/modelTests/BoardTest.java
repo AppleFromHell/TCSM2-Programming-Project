@@ -81,7 +81,7 @@ class BoardTest {
         boardState[3] = 1;
         boardState[13] = 1;
         testBoard.fillBoard(boardState);
-        testBoard.makeMove(new Move(7));
+        testBoard.makeMove(new Move(20));
         int[] targetBordState = emptyBoardState.clone();
         targetBordState[5] = 2;
         targetBordState[4] = 1;
@@ -360,9 +360,14 @@ class BoardTest {
         int[] boardState = emptyBoardState.clone();
         boardState[0] = 1;
         testBoard.fillBoard(boardState);
+
         testBoard.executeMove(7);
         boardState[0] = 0;
         boardState[6] = 1;
+        testBoard.fillBoard(boardState);
+        System.out.println(Arrays.toString(testBoard.getBoardState()));
+        System.out.println(Arrays.toString(boardState));
+
         assertArrayEquals(boardState, testBoard.getBoardState());
 
         boardState[20] = 1;
@@ -378,8 +383,9 @@ class BoardTest {
         boardState[48] = 0;
         boardState[42] = 1;
         assertArrayEquals(boardState, testBoard.getBoardState());
-
+        print();
         testBoard.executeMove(14);
+        print();
         boardState[42] = 0;
         boardState[0] = 1;
         assertArrayEquals(boardState, testBoard.getBoardState());

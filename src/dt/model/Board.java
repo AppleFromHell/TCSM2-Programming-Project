@@ -90,7 +90,7 @@ public class Board {
             columns.get(move - (2 * this.boardSize)).shiftLeftOrUp();
             changedColumn = true;
         } else if( move < (4 * this.boardSize)) { //<28
-            columns.get( move - (3 * this.boardSize)).shiftRightOrdown();
+            columns.get( move -( 3 * this.boardSize)).shiftRightOrdown();
             changedColumn = true;
         }
 
