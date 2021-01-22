@@ -96,10 +96,13 @@ class BoardTest {
 
         boardState[0] = 1;
         testBoard.fillBoard(boardState);
+        print();
+
         possibleMoves= testBoard.findPossibleMoves();
+
         assertTrue(
-                possibleMoves.contains(new Move(20)) &&
-                        possibleMoves.contains(new Move(21)) &&
+                possibleMoves.contains(new Move(21)) &&
+                        possibleMoves.contains(new Move(7)) &&
                         possibleMoves.size() ==2
 
                         );
@@ -107,10 +110,11 @@ class BoardTest {
         boardState = emptyBoardState.clone();
         boardState[3] = 1;
         testBoard.fillBoard(boardState);
+        print();
         possibleMoves= testBoard.findPossibleMoves();
         assertTrue(
                 possibleMoves.contains(new Move(0)) &&
-                        possibleMoves.contains(new Move(20)) &&
+                        possibleMoves.contains(new Move(7)) &&
                         possibleMoves.contains(new Move(24)) &&
                         possibleMoves.size() == 3
         );
@@ -119,7 +123,6 @@ class BoardTest {
         boardState[24] = 1;
         testBoard.fillBoard(boardState);
         possibleMoves= testBoard.findPossibleMoves();
-        System.out.println(possibleMoves.toString());
         assertTrue(
                 possibleMoves.contains(new Move(3)) &&
                         possibleMoves.contains(new Move(17)) &&
@@ -131,10 +134,11 @@ class BoardTest {
         boardState = emptyBoardState.clone();
         boardState[48] = 1;
         testBoard.fillBoard(boardState);
+        print();
         possibleMoves = testBoard.findPossibleMoves();
         assertTrue(
                 possibleMoves.contains(new Move(6)) &&
-                        possibleMoves.contains(new Move(7)) &&
+                        possibleMoves.contains(new Move(20)) &&
                         possibleMoves.size() == 2
         );
     }
