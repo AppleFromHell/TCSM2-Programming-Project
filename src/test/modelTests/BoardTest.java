@@ -24,7 +24,7 @@ class BoardTest {
     @BeforeEach
     void setup(){
         board = new ServerBoard();
-        board.fillBoard(board.createBoard());
+        board.setupBoard();
         boardSize = board.getBoardSize();
 
         emptyBoardState = new int[boardSize*boardSize];
