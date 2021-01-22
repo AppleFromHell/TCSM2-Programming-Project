@@ -30,7 +30,7 @@ public interface ClientView extends Runnable {
         if (arguments.length == 2) {
             return new Move(Integer.parseInt(arguments[1]));
         } else if (arguments.length == 3) {
-            return new Move(Integer.parseInt(arguments[1], Integer.parseInt(arguments[2])));
+            return new Move(Integer.parseInt(arguments[1]), Integer.parseInt(arguments[2]));
         } else {
             throw new CommandException("Too many moves");
         }

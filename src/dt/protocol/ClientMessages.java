@@ -33,7 +33,7 @@ public enum ClientMessages implements ProtocolMessages {
     public String constructMessage(Move move) {
         StringBuilder msg = new StringBuilder(this.msg+delimiter);
         return move.isDoubleMove()?
-                msg.append(move.getMove1()).append(move.getMove2()).toString() :
+                msg.append(move.getMove1()).append(delimiter).append(move.getMove2()).toString() :
                 msg.append(move.getMove1()).toString();
     }
     public String constructMessage(List<String> args) {

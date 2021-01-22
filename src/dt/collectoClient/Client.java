@@ -28,7 +28,6 @@ import java.util.List;
 
 /** @author Emiel Rous and Wouter Koning */
 public class Client implements ClientProtocol, NetworkEntity {
-    //TODO prompt the player when it is their turn
 
     private Socket serverSocket;
     private SocketHandler socketHandler;
@@ -144,7 +143,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                 case NEWGAME:
                     if(this.state == ClientStates.INQUEUE) { //TODO Sometimes when creating a new game, it doesn't expect the NEWGAME response from the server
 
-                        this.ai = clientView.getClientAI(); //TODO ask the user for whether they would like to use an AI or not, and if so what difficulty!
+                        this.ai = clientView.getClientAI();
                         this.createNewBoard(arguments);
                     }   else {
                         throw new UnexpectedResponseException();
