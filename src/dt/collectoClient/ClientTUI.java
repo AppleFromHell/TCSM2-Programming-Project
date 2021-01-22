@@ -16,8 +16,6 @@ public class ClientTUI extends SimpleTUI implements ClientView {
 
     //TODO The user should decide at the start of the game who decides on the moves (AI or human)
 
-    //TODO it keeps printing "PENDINGLOGIN" when you're trying to log in. Remove that.
-
     private Client client;
 
     ClientTUI(Client client) {
@@ -70,7 +68,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         }
     }
 
-    private void handleUserInput(String input) throws CommandException { //TODO Add the HINT functionality
+    private void handleUserInput(String input) throws CommandException {
         try {
             String[] arguments = input.split(UserCmds.separators);
             UserCmds cmd = UserCmds.getUserCmd(arguments[0]);
@@ -146,7 +144,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         this.showMessage(ret);
     }
 
-    public void displayList(String[] list) { //TODO checken wat synchronized moet zijn
+    public void displayList(String[] list) {
         this.showMessage("List of logged in users");
         for(int i = 0; i < list.length; i++) {
             this.showMessage(list[i]);

@@ -12,8 +12,6 @@ import java.util.List;
 
 /** @author Emiel Rous and Wouter Koning */
 public class Server {
-    //TODO when a client disconnects from a game, the other player should be informed that they
-    // have won due to a disconnect.
 
     private Integer port;
     private List<ClientHandler> connectedClients;
