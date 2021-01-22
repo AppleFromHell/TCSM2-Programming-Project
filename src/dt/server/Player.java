@@ -17,6 +17,7 @@ public class Player {
     public Player(ClientHandler client) {
         this.client = client;
         this.name = client.getName();
+        this.collectedBalls = new HashMap<>();
     }
 
     public ClientHandler getClientHandler() {

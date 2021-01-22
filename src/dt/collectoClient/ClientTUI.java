@@ -98,6 +98,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                 case CHAT:
                     String[] splitChat = input.split(UserCmds.separators, 2);
                     this.client.doSendChat(splitChat[1]);
+                    this.showMessage(client.getUserName()+":"+splitChat[1]);
                     break;
                 case WHISPER:
                     String[] splitWhisper = input.split(UserCmds.separators, 3);
@@ -191,6 +192,8 @@ public class ClientTUI extends SimpleTUI implements ClientView {
     @Override
     public void showBoard(ClientBoard board) {
         this.showMessage(board.getPrettyBoardState());
+        this.showMessage("############################################");
+
     }
 
     @Override
