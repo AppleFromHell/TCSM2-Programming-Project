@@ -7,7 +7,7 @@ import dt.util.Move;
 import java.util.HashMap;
 
 /** @author Emiel Rous and Wouter Koning */
-public class GreedyAI extends AI {
+public class GreedyAI implements AI {
 
     public GreedyAI(){
 

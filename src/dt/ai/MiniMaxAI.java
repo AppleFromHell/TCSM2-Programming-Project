@@ -7,7 +7,7 @@ import dt.util.Move;
 import java.util.List;
 
 /** @author Emiel Rous and Wouter Koning */
-public class MiniMaxAI extends AI{
+public class MiniMaxAI implements AI{
 
     private static int DEFAULTDEPTH = 5;
 

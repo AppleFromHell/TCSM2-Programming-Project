@@ -157,6 +157,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                     } else if (this.state == ClientStates.AWAITNGTHEIRMOVE) {
                         try {
                             this.makeTheirMove(arguments);
+                            if(this.ai != null) this.makeMove(ai.findBestMove(this.board));
                         } catch (InvalidMoveException e) {
                             throw new InvalidMoveException("The server move was invalid: "+ Arrays.toString(arguments));
                         }
@@ -233,6 +234,7 @@ public class Client implements ClientProtocol, NetworkEntity {
 
     @Override
     public synchronized void doMove(Move move) throws InvalidMoveException {
+
         this.state = ClientStates.AWAITMOVERESPONSE;
         socketHandler.write(ClientMessages.MOVE.constructMessage(move));
         this.ourLastMove = move;
@@ -295,6 +297,7 @@ public class Client implements ClientProtocol, NetworkEntity {
             this.state = ClientStates.AWAITMOVERESPONSE;
             this.myTurn = true;
             clientView.showMessage("You start");
+            if(this.ai != null)  clientView.showMessage("Type: m to start");
         } else {
             this.state = ClientStates.AWAITNGTHEIRMOVE;
             this.myTurn = false;
