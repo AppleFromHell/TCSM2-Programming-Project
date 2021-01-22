@@ -2,6 +2,7 @@ package dt.collectoClient;
 
 import java.io.*;
 
+import dt.ai.AI;
 import dt.collectoClient.GUI.ClientGUI;
 import dt.exceptions.CommandException;
 import dt.exceptions.InvalidMoveException;
@@ -45,6 +46,8 @@ public class Client implements ClientProtocol, NetworkEntity {
     private Move ourLastMove;
     private boolean moveConfirmed;
     private boolean debug;
+
+    private AI ai;
 
     private String serverName;
     private boolean myTurn;
@@ -140,6 +143,8 @@ public class Client implements ClientProtocol, NetworkEntity {
                     break;
                 case NEWGAME:
                     if(this.state == ClientStates.INQUEUE) { //TODO Sometimes when creating a new game, it doesn't expect the NEWGAME response from the server
+
+//                        this.ai = clientView.getClientAI(); //TODO ask the user for whether they would like to use an AI or not, and if so what difficulty!
                         this.createNewBoard(arguments);
                     }   else {
                         throw new UnexpectedResponseException();
@@ -187,6 +192,9 @@ public class Client implements ClientProtocol, NetworkEntity {
         } catch (InvalidMoveException | CommandException e) {
             clientView.showMessage(e.getMessage());
         }
+//        catch (UserExit userExit) {
+//            userExit.printStackTrace(); //TODO added because of clientView.getClientAI and not sure how to deal with this exception
+//        }
     }
 
     //Outgoing messages. Updates state
