@@ -8,6 +8,11 @@ public class Move {
     private Integer move1 = null;
     private Integer move2 = null;
 
+    public Move(Move move){
+        this.move1 = move.getMove1();
+        this.move2 = move.getMove2();
+    }
+
     public Move(int move1){
         this.move1 = move1;
     }

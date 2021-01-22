@@ -85,10 +85,10 @@ public class Board {
         if(move < this.boardSize) { // < 7
             rows.get(move).shiftLeftOrUp();
         } else if( move < (2 * this.boardSize)) { //< 14
-            columns.get((2 * this.boardSize) - move - 1).shiftLeftOrUp();
-            changedColumn = true;
+            rows.get(move - this.boardSize).shiftRightOrdown();
         } else if( move < (3 * this.boardSize)) { //<21
-            rows.get((3 * this.boardSize) - move - 1).shiftRightOrdown();
+            columns.get(move - (2 * this.boardSize)).shiftLeftOrUp();
+            changedColumn = true;
         } else if( move < (4 * this.boardSize)) { //<28
             columns.get( move - (3 * this.boardSize)).shiftRightOrdown();
             changedColumn = true;
