@@ -26,7 +26,7 @@ public class ClientGUI extends JFrame implements ClientView {
     public void start() {
 
         while(true) {
-            new Server_prompt();
+            new Server_prompt(this.client);
             try {
                 this.client.createConnection();
                 break;

@@ -1,8 +1,12 @@
 package dt.collectoClient.GUI;
 
+import dt.collectoClient.Client;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import java.awt.event.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class Server_prompt extends JDialog {
     private JPanel contentPane;
@@ -11,8 +15,10 @@ public class Server_prompt extends JDialog {
     private JTextField textField1;
     private JTextField textField2;
     private JCheckBox useDefaultCheckBox;
+    private Client client;
 
-    public Server_prompt() {
+    public Server_prompt(Client client) {
+        this.client = client;
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -67,8 +73,14 @@ public class Server_prompt extends JDialog {
     }
 
     private void onOK() {
-        // add your code here
+        System.out.println(textField1.getText());
+        try {
+            this.client.setIp(InetAddress.getByName(textField1.getText()));
+        } catch (UnknownHostException e) {
+e.printStackTrace();        }
+        this.client.setPort(Integer.parseInt(textField2.getText()));
         dispose();
+
     }
 
     private void onCancel() {
