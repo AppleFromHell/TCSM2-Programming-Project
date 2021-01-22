@@ -406,8 +406,8 @@ public class Client implements ClientProtocol, NetworkEntity {
     }
 
     @Override
-    public void handlePeerShutdown() {
-        this.clientView.showMessage("Server shutdown");
+    public void handlePeerShutdown(boolean clientShutdown) {
+        if(!clientShutdown)this.clientView.showMessage("Server shutdown");
 
         try {
             this.clientView.reconnect();

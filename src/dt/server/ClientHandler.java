@@ -282,7 +282,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
 
 
     @Override
-    public void handlePeerShutdown() {
+    public void handlePeerShutdown(boolean shutDown) {
         this.view.showMessage("["+ this.name + "] Disconnected");
         if(this.game != null){
             this.game.playerDisconnected(this);

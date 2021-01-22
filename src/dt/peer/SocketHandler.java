@@ -11,6 +11,7 @@ public class SocketHandler implements Runnable {
     private BufferedWriter socketOut;
     private String name;
     private boolean debug = false;
+    private boolean shutDown =false;
 
     public void run() {
         readSocketInput();
@@ -29,7 +30,7 @@ public class SocketHandler implements Runnable {
         try {
             socketOut = new BufferedWriter(new PrintWriter(socket.getOutputStream()));
         } catch (IOException e) {
-            networkEntity.handlePeerShutdown();
+            networkEntity.handlePeerShutdown(this.shutDown);
         }
     }
 
@@ -44,7 +45,7 @@ public class SocketHandler implements Runnable {
                 networkEntity.handleMessage(msg);
             }
         } catch (IOException e) {
-            networkEntity.handlePeerShutdown();
+            networkEntity.handlePeerShutdown(shutDown);
         }
     }
 
@@ -56,7 +57,7 @@ public class SocketHandler implements Runnable {
                 socketOut.newLine();
                 socketOut.flush();
             } catch (IOException e) {
-                networkEntity.handlePeerShutdown();
+                networkEntity.handlePeerShutdown(shutDown);
             }
         }
     }
@@ -64,6 +65,7 @@ public class SocketHandler implements Runnable {
         this.name = name;
     }
     public void shutDown() {
+        this.shutDown = true;
         try {
             this.socketIn = null;
             this.socketOut = null;

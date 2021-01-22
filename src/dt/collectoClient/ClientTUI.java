@@ -119,7 +119,6 @@ public class ClientTUI extends SimpleTUI implements ClientView {
     }
 
     public void reconnect() throws UserExit {
-
         if(getBoolean("Reconnect to server? (y/n)")) {
             createConnection();
         } else {
