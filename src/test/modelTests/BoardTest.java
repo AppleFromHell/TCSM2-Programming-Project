@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,7 +46,7 @@ class BoardTest {
 
         assertEquals(0, boardState[middle]);
         HashMap<BallType, Integer> yield = board.getYield();
-        assertEquals(0, yield.values().stream().reduce(0, Integer::sum));
+        assertEquals(0, yield.size());
         assertNotEquals(Collections.emptyList(), board.findValidMoves());
     }
 
@@ -53,6 +54,75 @@ class BoardTest {
     void testSetupForConsistency() {
         for(int i = 0; i < 10000; i++){
             testSetup();
+        }
+    }
+
+    @Test
+    void testIsSwapable(){
+//        if(swapfiets) yes;
+        BallType[] testArray = {
+                BallType.ORANGE, //0
+                BallType.PINK,
+                BallType.ORANGE, //2
+                BallType.PINK,
+                BallType.ORANGE, //4
+                BallType.PINK,
+                BallType.ORANGE, //6
+
+                BallType.BLUE, //7
+                BallType.RED,
+                BallType.BLUE, //9
+                BallType.RED,
+                BallType.BLUE, //11
+                BallType.RED,
+                BallType.BLUE }; //13
+
+        assertFalse(board.isSwapable(testArray, 2, BallType.PINK)); //Check left and right neighbour
+        assertTrue(board.isSwapable(testArray, 2, BallType.RED));
+
+        assertFalse(board.isSwapable(testArray, 11, BallType.ORANGE)); //Check up neighbour
+        assertTrue(board.isSwapable(testArray, 11, BallType.PINK));
+
+        assertFalse(board.isSwapable(testArray, 1, BallType.RED)); //Check up neighbour
+        assertTrue(board.isSwapable(testArray, 1, BallType.BLUE));
+
+
+    }
+
+    @Test
+    void testSwap(){
+        BallType[] testArray = {BallType.EMPTY, BallType.BLUE, BallType.RED};
+
+        board.swap(testArray, 0, 2);
+        BallType[] postSwap = {BallType.RED, BallType.BLUE, BallType.EMPTY};
+
+        assertTrue(postSwap.equals(postSwap));
+    }
+
+    @Test
+    void testCreateBoard() {
+        board.setupBoardTest();
+        assertEquals(0, board.getYield().size());
+        assertTrue(board.findValidMoves().size() > 0);
+        int[] boardState = board.getBoardState();
+
+        List<Integer> state = Arrays.stream(boardState).boxed().collect(Collectors.toList());
+
+        for(int i = 1 ; i <= 6; i++){ //balls
+            int colourAmount = 0;
+            for(Integer num : state){
+                if(num == i){
+                    colourAmount += 1;
+                }
+            }
+            assertEquals(8, colourAmount);
+        }
+    }
+
+    @Test
+    void testCreateBoardForConsistency() {
+        for (int i = 0; i < 100000; i++) {
+            testCreateBoard();
         }
     }
 
