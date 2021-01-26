@@ -81,12 +81,29 @@ class BoardTest {
         boardState[3] = 1;
         boardState[13] = 1;
         testBoard.fillBoard(boardState);
-        testBoard.makeMove(new Move(20));
+        testBoard.makeMove(new Move(7));
         int[] targetBordState = emptyBoardState.clone();
         targetBordState[5] = 2;
         targetBordState[4] = 1;
         assertArrayEquals(targetBordState, testBoard.getBoardState());
 
+        boardState = emptyBoardState.clone();
+        boardState[14] = 1;
+        boardState[19] = 1;
+        testBoard.fillBoard(boardState);
+        testBoard.makeMove(new Move(9));
+
+        boardState = emptyBoardState.clone();
+        boardState[44] = 1;
+        boardState[16] = 1;
+        testBoard.fillBoard(boardState);
+        testBoard.makeMove(new Move(16));
+
+        boardState = emptyBoardState.clone();
+        boardState[1] = 1;
+        boardState[43] = 1;
+        testBoard.fillBoard(boardState);
+        testBoard.makeMove(new Move(22));
     }
 
     @Test
@@ -96,7 +113,6 @@ class BoardTest {
 
         boardState[0] = 1;
         testBoard.fillBoard(boardState);
-        print();
 
         possibleMoves= testBoard.findPossibleMoves();
 
@@ -110,7 +126,6 @@ class BoardTest {
         boardState = emptyBoardState.clone();
         boardState[3] = 1;
         testBoard.fillBoard(boardState);
-        print();
         possibleMoves= testBoard.findPossibleMoves();
         assertTrue(
                 possibleMoves.contains(new Move(0)) &&
@@ -134,7 +149,6 @@ class BoardTest {
         boardState = emptyBoardState.clone();
         boardState[48] = 1;
         testBoard.fillBoard(boardState);
-        print();
         possibleMoves = testBoard.findPossibleMoves();
         assertTrue(
                 possibleMoves.contains(new Move(6)) &&
@@ -150,7 +164,6 @@ class BoardTest {
         boardState[0] = 1;
         boardState[6] = 1;
         testBoard.fillBoard(boardState);
-        System.out.println(testBoard.getPrettyBoardState());
         validSingleMoves = testBoard.findValidSingleMoves();
 
         assertTrue(
@@ -365,8 +378,8 @@ class BoardTest {
         boardState[0] = 0;
         boardState[6] = 1;
         testBoard.fillBoard(boardState);
-        System.out.println(Arrays.toString(testBoard.getBoardState()));
-        System.out.println(Arrays.toString(boardState));
+
+
 
         assertArrayEquals(boardState, testBoard.getBoardState());
 
@@ -383,9 +396,7 @@ class BoardTest {
         boardState[48] = 0;
         boardState[42] = 1;
         assertArrayEquals(boardState, testBoard.getBoardState());
-        print();
         testBoard.executeMove(14);
-        print();
         boardState[42] = 0;
         boardState[0] = 1;
         assertArrayEquals(boardState, testBoard.getBoardState());
@@ -397,7 +408,6 @@ class BoardTest {
         int[] boardState = emptyBoardState.clone();
         boardState[0] = 1;
         testBoard.fillBoard(boardState);
-        print();
         testBoard.getRows().set(0, new Sequence(Arrays.asList(
                 BallType.EMPTY,
                 BallType.EMPTY,
@@ -407,7 +417,6 @@ class BoardTest {
                 BallType.EMPTY,
                 BallType.BLUE
                 )));
-        print();
         testBoard.synchronize(testBoard.getRows(), testBoard.getColumns());
         assertEquals(new Sequence(Arrays.asList(
                 BallType.BLUE,
@@ -418,7 +427,6 @@ class BoardTest {
                 BallType.EMPTY,
                 BallType.EMPTY
                 )).getBalls(), testBoard.getColumns().get(boardSize-1).getBalls());
-        print();
         testBoard.getColumns().set(boardSize-1, new Sequence(Arrays.asList(
                 BallType.EMPTY,
                 BallType.EMPTY,

@@ -286,6 +286,7 @@ public class Client implements ClientProtocol, NetworkEntity {
 
     //NEWGAME
     private synchronized void createNewBoard(String[] arguments) throws NumberFormatException {
+        //TOdo persoon tegen wie je speelt toevoegen
         int[] boardState = new int[arguments.length-3];
         for(int i = 1; i < arguments.length-2; i++) {
             boardState[i-1] = Integer.parseInt(arguments[i]);
