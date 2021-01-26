@@ -16,8 +16,8 @@ public enum UserCmds {
     CHAT(new String[]{"c", "chat", "say"}, "Sends a chat message to all Clients"),
     WHISPER(new String[]{"w", "whisper", "silentSay", "uWuInThEar"}, "Sends a private chat message to a Clients"),
     EXIT(new String[]{"quit", "exit", "x"}, "Exit. This shuts down the client"),
-    PLAYER(new String[]{"player, playa, ai"}, "Set the player type. Either: " + Arrays.toString(PlayerType.values())),
-    HELP(new String[]{"?", "h", "help"}, "Print a help menu");
+    PLAYER(new String[]{"player", "playa", "ai"}, "Set the player type"),
+    HELP(new String[]{"?", "h", "help"}, "Print a help menu"),;
 
 
     private String[]  cmds;
@@ -58,10 +58,5 @@ public enum UserCmds {
             strB.append(subSTr).append('\n');
         }
         return strB.toString();
-    }
-    private enum PlayerType{
-        HUMAN,
-        GREEDY,
-        RANDOM
     }
 }

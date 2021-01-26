@@ -1,6 +1,7 @@
 package dt.collectoClient.GUI;
 
 import dt.ai.AI;
+import dt.ai.AITypes;
 import dt.collectoClient.Client;
 import dt.collectoClient.ClientStates;
 import dt.collectoClient.ClientView;
@@ -132,8 +133,7 @@ public class ClientGUI extends JFrame implements ClientView {
     }
 
     @Override
-    public AI getClientAI() throws UserExit {
-        return null;
+    public void setClientAI(AITypes types) throws UserExit {
     }
 
 

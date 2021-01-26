@@ -3,6 +3,7 @@ package dt.collectoClient;
 import java.io.*;
 
 import dt.ai.AI;
+import dt.ai.AITypes;
 import dt.collectoClient.GUI.ClientGUI;
 import dt.exceptions.CommandException;
 import dt.exceptions.InvalidMoveException;
@@ -28,6 +29,7 @@ import java.util.List;
 
 /** @author Emiel Rous and Wouter Koning */
 public class Client implements ClientProtocol, NetworkEntity {
+    //TODO client states doesn't work perfectly
 
     private Socket serverSocket;
     private SocketHandler socketHandler;
@@ -142,8 +144,6 @@ public class Client implements ClientProtocol, NetworkEntity {
                     break;
                 case NEWGAME:
                     if(this.state == ClientStates.INQUEUE) { //TODO Sometimes when creating a new game, it doesn't expect the NEWGAME response from the server
-
-                        this.ai = clientView.getClientAI();
                         this.createNewBoard(arguments);
                     }   else {
                         throw new UnexpectedResponseException();
@@ -191,8 +191,6 @@ public class Client implements ClientProtocol, NetworkEntity {
             clientView.showMessage("Unkown command from server. Response: " + msg);
         } catch (InvalidMoveException | CommandException e) {
             clientView.showMessage(e.getMessage());
-        } catch (UserExit userExit) {
-            this.shutDown();
         }
     }
 
@@ -238,11 +236,7 @@ public class Client implements ClientProtocol, NetworkEntity {
         socketHandler.write(ClientMessages.MOVE.constructMessage(move));
         this.ourLastMove = move;
         this.moveConfirmed = false;
-        try {
-            this.wait();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
         if(this.moveConfirmed) {
             makeMove(move);
             clientView.showMessage("Your move was: " + move);
@@ -359,7 +353,7 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.state = ClientStates.INGAME;
     }
     private synchronized void makeMove(Move move) throws InvalidMoveException {
-        board.makeMove(move);
+        board.makeMove(move); //TODO THis is done three times?
         this.clientView.showBoard(this.board);
     }
 
@@ -384,6 +378,7 @@ public class Client implements ClientProtocol, NetworkEntity {
         }
         this.notifyAll();
         this.clientView.clearBoard();
+        this.board = null;
         this.state = ClientStates.IDLE;
         return ret;
     }
@@ -417,11 +412,16 @@ public class Client implements ClientProtocol, NetworkEntity {
 
     @Override
     public void handlePeerShutdown(boolean clientShutdown) {
-        if(!clientShutdown)this.clientView.showMessage("Server shutdown");
+        if(!clientShutdown) {
+            this.clientView.showMessage("Server shutdown");
 
-        try {
-            this.clientView.reconnect();
-        } catch (UserExit e) {
+            try {
+                this.clientView.reconnect();
+
+            } catch (UserExit e) {
+                this.shutDown();
+            }
+        } else {
             this.shutDown();
         }
     }
@@ -468,8 +468,10 @@ public class Client implements ClientProtocol, NetworkEntity {
         return this.myTurn;
     }
 
-
     public AI getAi() {
         return ai;
+    }
+    public void setAI(AITypes type) {
+        this.ai = type.getAIClass();
     }
 }

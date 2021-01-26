@@ -12,7 +12,7 @@ import java.util.List;
 
 /** @author Emiel Rous and Wouter Koning */
 public class Server {
-
+    //TODO in de server zeggen wat er gebeurt
     private Integer port;
     private List<ClientHandler> connectedClients;
     private List<String> loggedinUsers;

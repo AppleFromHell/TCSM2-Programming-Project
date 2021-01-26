@@ -58,16 +58,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
 
                         }
                     } else {
-
-                        try {
-                            synchronized (this) {
-                                if(interrupted) this.wait();
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                            input = getString(); //Wait for user input
+                        input = getString(); //Wait for user input
                     }
                     if(input != null) {
                         handleUserInput(input);
@@ -81,7 +72,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         }
     }
 
-    private void handleUserInput(String input) throws CommandException {
+    private void handleUserInput(String input) throws CommandException, UserExit {
         try {
             String[] arguments = input.split(UserCmds.separators);
             UserCmds cmd = UserCmds.getUserCmd(arguments[0]);
@@ -102,7 +93,11 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                     }
                     break;
                 case HINT:
-                    this.client.provideHint();
+                    if(this.client.getBoard() != null) {
+                        this.client.provideHint();
+                    } else {
+                        throw new CommandException("You're not in a game");
+                    }
                     break;
                 case HELP:
                     printHelpMenu();
@@ -117,6 +112,9 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                     String receiver = splitWhisper[1];
                     String whisperMessage = splitWhisper[2];
                     this.client.doSendWhisper(receiver, whisperMessage);
+                    break;
+                case PLAYER:
+                    this.client.setAI(this.getClientAI());
                     break;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -173,10 +171,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
      * @return A new instance of an AI type. If the return value is null, the person has chosen for manual playing.
      * @throws UserExit if the user decides to exit the program.
      */
-    public synchronized AI getClientAI() throws UserExit {
-        this.interrupted = true;
-        boolean aiEnabled = getBoolean("Would you like to play this game with an AI?");
-        if(aiEnabled){
+    public AITypes getClientAI() throws UserExit {
 
             String question = "What AI difficulty would you like to use for this game? Choose from:"
                     .concat(System.lineSeparator())
@@ -184,20 +179,20 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             String aiString = getString(question);
             while(true) {
                 try {
-                    AITypes aiType = AITypes.valueOf(aiString.toUpperCase());
-                    this.interrupted = false;
-                    this.notify();
-                    return aiType.getAIClass();
+                    AITypes ai = AITypes.valueOf(aiString.toUpperCase());
+                    this.showMessage(ai + " chosen");
+                    return ai;
                 } catch (IllegalArgumentException e) {
                     getString(aiString + " is not a valid AI type. Choose one of the following AI Types: "
                             .concat(System.lineSeparator())
                             .concat(AITypes.allToString()));
                 }
             }
-        }
-        this.interrupted = false;
-        this.notify();
-        return null;
+    }
+
+    @Override
+    public void setClientAI(AITypes type) {
+        this.client.setAI(type);
     }
 
     @Override
