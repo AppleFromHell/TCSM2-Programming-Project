@@ -175,26 +175,47 @@ public class Board {
      */
     public List<Move> findPossibleMoves(){
         List<Move> possibleMoves = new ArrayList<>();
-        for(int rowIndex = 0; rowIndex < this.boardSize; rowIndex++){
+
+        for (int rowIndex = 0; rowIndex < this.boardSize; rowIndex++) {
             Sequence row = this.rows.get(rowIndex);
             List<BallType> balls;
 
-            for(int ballIndex = 0; ballIndex < (balls = row.getBalls()).size(); ballIndex++){
+            for (int ballIndex = 0; ballIndex < (balls = row.getBalls()).size(); ballIndex++) {
                 BallType ball = balls.get(ballIndex);
 
-                if(ball.equals(BallType.EMPTY)){
-                    // Check whether it can move left
-                    if(ballIndex > 0) possibleMoves.add(new Move(rowIndex));
+                List<BallType> rowBalls = row.getBalls();
 
-                    // Check whether it can move right
-                    if(ballIndex < this.boardSize - 1) possibleMoves.add(new Move(rowIndex + this.boardSize));
+                //If the sequence before or after the ball contains an empty ball, add it to the moves
+                if(ball != BallType.EMPTY) {
 
-                    // check whether it can move up
-                    if(rowIndex > 0) possibleMoves.add(new Move(ballIndex + (2 * this.boardSize)));
+                    Move move = new Move(this.boardSize + rowIndex);
+                    //Check the rows and columns for an empty square
+                    //Check from ballindex to right of board -> left to right possible
+                    if(rowBalls.subList(ballIndex, this.boardSize-1).contains(BallType.EMPTY) &&
+                        !possibleMoves.contains(move)) {
+                        possibleMoves.add(move);
+                    }
+                    //Check from left to ballindex -> right to left possible
+                    move = new Move(rowIndex);
+                    if(rowBalls.subList(0, ballIndex).contains(BallType.EMPTY) &&
+                        !possibleMoves.contains(move)) {
+                        possibleMoves.add(move);
+                    }
 
-                    // Check whether it can move down
-                    if(rowIndex < this.boardSize - 1) possibleMoves.add(new Move(ballIndex + (3 * this.boardSize)));
+                    //Check row index to bottom -> top to bottom possible
+                    move = new Move(this.boardSize * 3 + ballIndex);
+                    if(this.columns.get(ballIndex).getBalls().subList(rowIndex, this.boardSize-1).contains(BallType.EMPTY) &&
+                        !possibleMoves.contains(move)) {
+                        possibleMoves.add(move);
+                    }
+                    //Check top to rowindex -> bottom to top possible
+                    move = new Move(2 * this.boardSize + ballIndex);
+                    if(this.columns.get(ballIndex).getBalls().subList(0, rowIndex).contains(BallType.EMPTY) &&
+                        !possibleMoves.contains(move)){
+                        possibleMoves.add(move);
+                    }
                 }
+
             }
         }
         return possibleMoves;
