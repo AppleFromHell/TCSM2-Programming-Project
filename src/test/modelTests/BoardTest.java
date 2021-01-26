@@ -122,6 +122,23 @@ class BoardTest {
         boardState[43] = 1;
         testBoard.fillBoard(boardState);
         testBoard.makeMove(new Move(22));
+
+        boardState = emptyBoardState.clone();
+        boardState[0] = 6;
+        boardState[28] = 2;
+        boardState[42] = 5;
+        boardState[43] = 1;
+        boardState[29] = 5;
+        boardState[9] = 2;
+        boardState[17] = 4;
+        boardState[24] = 6;
+        boardState[31] = 4;
+        testBoard.fillBoard(boardState);
+        print();
+        testBoard.isValidMove(new Move(14, 8));
+        testBoard.makeMove(new Move(14, 8));
+        print();
+
     }
 
     @Test

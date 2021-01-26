@@ -1,13 +1,10 @@
 package dt.collectoClient;
 
-import dt.ai.AI;
 import dt.ai.AITypes;
 import dt.exceptions.CommandException;
 import dt.exceptions.UserExit;
 import dt.model.ClientBoard;
 import dt.util.Move;
-
-import java.net.InetAddress;
 
 /** @author Emiel Rous and Wouter Koning */
 public interface ClientView extends Runnable {
@@ -23,7 +20,7 @@ public interface ClientView extends Runnable {
 
     void displayList(String[] list);
 
-    void reconnect() throws UserExit;
+    boolean reconnect() throws UserExit;
 
     void displayChatMessage(String msg);
 

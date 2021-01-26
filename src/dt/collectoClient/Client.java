@@ -306,7 +306,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                 move = new Move(Integer.parseInt(arguments[1]));
                 break;
             case 3:
-                move = new Move(Integer.parseInt(arguments[1]), Integer.parseInt(arguments[1]));
+                move = new Move(Integer.parseInt(arguments[1]), Integer.parseInt(arguments[2]));
                 break;
             default:
                 throw new ProtocolException("Too many arguments");
@@ -424,7 +424,9 @@ public class Client implements ClientProtocol, NetworkEntity {
             this.clientView.showMessage("Server shutdown");
 
             try {
-                this.clientView.reconnect();
+                if(this.clientView.reconnect()) {
+                    new Thread(clientView).start();
+                }
 
             } catch (UserExit e) {
                 this.shutDown();

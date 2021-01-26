@@ -1,6 +1,5 @@
 package dt.collectoClient.GUI;
 
-import dt.ai.AI;
 import dt.ai.AITypes;
 import dt.collectoClient.Client;
 import dt.collectoClient.ClientStates;
@@ -113,8 +112,8 @@ public class ClientGUI extends JFrame implements ClientView {
     }
 
     @Override
-    public void reconnect() throws UserExit {
-
+    public boolean reconnect() throws UserExit {
+        return false;
     }
 
     @Override

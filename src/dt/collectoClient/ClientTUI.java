@@ -1,18 +1,15 @@
 package dt.collectoClient;
 
-import dt.ai.AI;
 import dt.ai.AITypes;
 import dt.exceptions.CommandException;
 import dt.exceptions.InvalidMoveException;
 import dt.exceptions.UserExit;
 import dt.model.ClientBoard;
 import dt.util.SimpleTUI;
-import dt.util.Move;
 
 import java.net.InetAddress;
 import java.net.ProtocolException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 
 /** @author Emiel Rous and Wouter Koning */
 public class ClientTUI extends SimpleTUI implements ClientView {
@@ -127,12 +124,8 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         return getString("What username would you like to have?");
     }
 
-    public void reconnect() throws UserExit {
-        if(getBoolean("Reconnect to server? (y/n)")) {
-            createConnection();
-        } else {
-            throw new UserExit();
-        }
+    public boolean reconnect() throws UserExit {
+        return getBoolean("Reconnect to server? (y/n)");
     }
 
     private void createConnection() throws UserExit{
