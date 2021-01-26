@@ -130,11 +130,11 @@ public class ServerClientIntegrationTest {
         System.out.println(client1.getState());
         System.out.println(client2.getState());
 
-        assertTrue(client1.getState() == dt.collectoClient.ClientStates.AWAITMOVERESPONSE ||
-                client1.getState() == dt.collectoClient.ClientStates.AWAITNGTHEIRMOVE);
+        assertTrue(client1.getState() == dt.collectoClient.ClientStates.WAITOURMOVE ||
+                client1.getState() == dt.collectoClient.ClientStates.WAITTHEIRMOVE);
 
-        assertTrue(client2.getState() == dt.collectoClient.ClientStates.AWAITMOVERESPONSE ||
-                client2.getState() == dt.collectoClient.ClientStates.AWAITNGTHEIRMOVE);
+        assertTrue(client2.getState() == dt.collectoClient.ClientStates.WAITOURMOVE ||
+                client2.getState() == dt.collectoClient.ClientStates.WAITTHEIRMOVE);
 
         int[] serverBoardState = server.getClientHandler(client1Name).getGame().getBoard().getBoardState();
         int[] clientBoardState = client1.getBoard().getBoardState();

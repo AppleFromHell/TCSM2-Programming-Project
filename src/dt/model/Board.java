@@ -119,7 +119,7 @@ public class Board {
             if (!move.isDoubleMove()) { //If it is a single move
                 validity = findValidSingleMoves().contains(move);
             } else if (move.isDoubleMove()) { //If it is a double move
-                if(this.singleMoveAvailable)
+                if(!findValidSingleMoves().isEmpty())
                     throw new InvalidMoveException("You tried to make a double move, while a single move is still available.");
                 validity = findValidDoubleMoves().contains(move);
             }
@@ -162,7 +162,6 @@ public class Board {
             if(!yield.values().isEmpty()){
                 //throw a party and lets go to the casino because we've got a valid move on our hands bois
                 validMoves.add(move);
-                this.singleMoveAvailable = true;
             }
         }
 

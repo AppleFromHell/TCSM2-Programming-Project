@@ -1,17 +1,15 @@
 package dt.collectoClient;
 
-import dt.ai.AI;
 import dt.ai.AITypes;
 import dt.exceptions.CommandException;
 import dt.exceptions.InvalidMoveException;
 import dt.exceptions.UserExit;
 import dt.model.ClientBoard;
 import dt.util.SimpleTUI;
-import dt.util.Move;
 
 import java.net.InetAddress;
+import java.net.ProtocolException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 
 /** @author Emiel Rous and Wouter Koning */
 public class ClientTUI extends SimpleTUI implements ClientView {
@@ -38,7 +36,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             while (true) {
                 try {
                     synchronized (this) {
-                        this.wait();
+                        this.wait(); //Wait for login from server
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -52,23 +50,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             while (true) {
                 try {
                     String input = "";
-                    if (this.client.getState() == ClientStates.INGAME) {
-                        if(this.client.getAi() == null){ // If the human has decided to play for themselves.
-                            input = getString("Next Move:");
-
-                        }
-                    } else {
-
-                        try {
-                            synchronized (this) {
-                                if(interrupted) this.wait();
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                            input = getString(); //Wait for user input
-                    }
+                    input = getString(); //Wait for user input
                     if(input != null) {
                         handleUserInput(input);
                     }
@@ -81,7 +63,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         }
     }
 
-    private void handleUserInput(String input) throws CommandException {
+    private void handleUserInput(String input) throws CommandException, UserExit {
         try {
             String[] arguments = input.split(UserCmds.separators);
             UserCmds cmd = UserCmds.getUserCmd(arguments[0]);
@@ -95,14 +77,20 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                     this.client.doEnterQueue();
                     break;
                 case MOVE:
-                    if(client.getAi() == null) {
-                        this.client.doMove(parseMove(arguments));
-                    } else {
-                        this.client.doMove(client.getAi().findBestMove(this.client.getBoard()));
+                    if(this.client.getState() == ClientStates.WAITOURMOVE) {
+                        if(this.client.getAi() == null) {
+                            this.client.doMove(this.client.createMove(arguments));
+                        } else {
+                            this.client.doAIMove();
+                        }
                     }
                     break;
                 case HINT:
-                    this.client.provideHint();
+                    if(this.client.getBoard() != null) {
+                        this.client.provideHint();
+                    } else {
+                        throw new CommandException("You're not in a game");
+                    }
                     break;
                 case HELP:
                     printHelpMenu();
@@ -118,12 +106,15 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                     String whisperMessage = splitWhisper[2];
                     this.client.doSendWhisper(receiver, whisperMessage);
                     break;
+                case PLAYER:
+                    this.client.setAI(this.getClientAI());
+                    break;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new CommandException("Invalid number of arguments give");
         } catch (NumberFormatException e) {
             throw new CommandException(NOTINTEGERMOVE);
-        } catch (InvalidMoveException e) {
+        } catch (InvalidMoveException | ProtocolException e) {
             throw new CommandException(e.getMessage());
         }
 
@@ -133,12 +124,8 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         return getString("What username would you like to have?");
     }
 
-    public void reconnect() throws UserExit {
-        if(getBoolean("Reconnect to server? (y/n)")) {
-            createConnection();
-        } else {
-            throw new UserExit();
-        }
+    public boolean reconnect() throws UserExit {
+        return getBoolean("Reconnect to server? (y/n)");
     }
 
     private void createConnection() throws UserExit{
@@ -173,10 +160,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
      * @return A new instance of an AI type. If the return value is null, the person has chosen for manual playing.
      * @throws UserExit if the user decides to exit the program.
      */
-    public synchronized AI getClientAI() throws UserExit {
-        this.interrupted = true;
-        boolean aiEnabled = getBoolean("Would you like to play this game with an AI?");
-        if(aiEnabled){
+    public AITypes getClientAI() throws UserExit {
 
             String question = "What AI difficulty would you like to use for this game? Choose from:"
                     .concat(System.lineSeparator())
@@ -184,20 +168,20 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             String aiString = getString(question);
             while(true) {
                 try {
-                    AITypes aiType = AITypes.valueOf(aiString.toUpperCase());
-                    this.interrupted = false;
-                    this.notify();
-                    return aiType.getAIClass();
+                    AITypes ai = AITypes.valueOf(aiString.toUpperCase());
+                    this.showMessage(ai + " chosen");
+                    return ai;
                 } catch (IllegalArgumentException e) {
                     getString(aiString + " is not a valid AI type. Choose one of the following AI Types: "
                             .concat(System.lineSeparator())
                             .concat(AITypes.allToString()));
                 }
             }
-        }
-        this.interrupted = false;
-        this.notify();
-        return null;
+    }
+
+    @Override
+    public void setClientAI(AITypes type) {
+        this.client.setAI(type);
     }
 
     @Override

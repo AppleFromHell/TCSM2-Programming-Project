@@ -1,17 +1,15 @@
 package dt.collectoClient;
 
-import dt.ai.AI;
+import dt.ai.AITypes;
 import dt.exceptions.CommandException;
 import dt.exceptions.UserExit;
 import dt.model.ClientBoard;
 import dt.util.Move;
 
-import java.net.InetAddress;
-
 /** @author Emiel Rous and Wouter Koning */
 public interface ClientView extends Runnable {
 
-    String UNKOWNCOMMAND = "Unkown command: %s. For a list of valid commands type h";
+    String UNKOWNCOMMAND = "Unkown command: '%s' For a list of valid commands type h";
     String NOTINTEGERMOVE = "Move was not an integer";
 
     void start();
@@ -22,7 +20,7 @@ public interface ClientView extends Runnable {
 
     void displayList(String[] list);
 
-    void reconnect() throws UserExit;
+    boolean reconnect() throws UserExit;
 
     void displayChatMessage(String msg);
 
@@ -36,7 +34,7 @@ public interface ClientView extends Runnable {
         }
     }
 
-    AI getClientAI() throws UserExit;
+    void setClientAI(AITypes type) throws UserExit;
 
     void clearBoard();
 

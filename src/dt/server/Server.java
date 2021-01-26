@@ -1,6 +1,7 @@
 package dt.server;
 
 
+import dt.collectoClient.GUI.ClientGUI;
 import dt.exceptions.UserExit;
 
 import java.io.IOException;
@@ -8,11 +9,12 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /** @author Emiel Rous and Wouter Koning */
 public class Server {
-
+    //TODO in de server zeggen wat er gebeurt
     private Integer port;
     private List<ClientHandler> connectedClients;
     private List<String> loggedinUsers;
@@ -24,6 +26,7 @@ public class Server {
     private boolean rankEnabled;
     private boolean cryptEnabled;
     private boolean authEnabled;
+    private boolean debug;
 
     private Server() {
         this.view = new ServerTUI(this);
@@ -35,12 +38,22 @@ public class Server {
         this.rankEnabled = false;
         this.cryptEnabled = false;
         this.authEnabled = false;
+        this.debug = false;
     }
     /** Starts a Server-application. */
     public static void main(String[] args) {
         Server server = new Server();
-        if(args.length != 0) server.setPort(Integer.parseInt(args[0]));
+        if(args.length != 0) {
+            server.setPort(Integer.parseInt(args[0]));
+            if(Arrays.asList(args).contains("debug")) {
+                server.setDebug(true);
+            }
+        }
         server.start();
+    }
+
+    private void setDebug(boolean b) {
+        this.debug = true;
     }
 
     /**
@@ -64,7 +77,7 @@ public class Server {
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
-                ClientHandler handler = new ClientHandler(this ,this.gameManager, this.view, clientSocket);
+                ClientHandler handler = new ClientHandler(this ,this.gameManager, this.view, clientSocket, this.debug);
                 this.connectedClients.add(handler);
                 view.showMessage("New client: [" + handler.getName() + "] connected!");
             } catch (IOException  e) {
@@ -225,7 +238,7 @@ public class Server {
      * Disconnects all clients using {@link ClientHandler#shutDown()}. It then shuts down the server and exits the program with exit code 69.
      */
     public void shutDown() {
-        this.connectedClients.forEach(ClientHandler::shutDown);
+        //this.connectedClients.forEach(ClientHandler::shutDown); //TODO server shutdown regelen
         this.view.showMessage("Server is shutting down. Cya lator aligator");
         System.exit(69);
     }

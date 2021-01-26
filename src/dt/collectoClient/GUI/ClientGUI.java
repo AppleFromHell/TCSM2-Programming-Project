@@ -1,6 +1,6 @@
 package dt.collectoClient.GUI;
 
-import dt.ai.AI;
+import dt.ai.AITypes;
 import dt.collectoClient.Client;
 import dt.collectoClient.ClientStates;
 import dt.collectoClient.ClientView;
@@ -13,6 +13,7 @@ import dt.model.ClientBoard;
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.net.ProtocolException;
 //TODO hint doen
 /** @author Emiel Rous and Wouter Koning */
 public class ClientGUI extends JFrame implements ClientView {
@@ -111,8 +112,8 @@ public class ClientGUI extends JFrame implements ClientView {
     }
 
     @Override
-    public void reconnect() throws UserExit {
-
+    public boolean reconnect() throws UserExit {
+        return false;
     }
 
     @Override
@@ -132,8 +133,7 @@ public class ClientGUI extends JFrame implements ClientView {
     }
 
     @Override
-    public AI getClientAI() throws UserExit {
-        return null;
+    public void setClientAI(AITypes types) throws UserExit {
     }
 
 
@@ -143,7 +143,7 @@ public class ClientGUI extends JFrame implements ClientView {
             this.client.doMove(parseMove(arguments));
         } catch (CommandException e) {
             showErrorPopup(String.format(UNKOWNCOMMAND, arguments[0]));
-        } catch (InvalidMoveException e) {
+        } catch (InvalidMoveException | ProtocolException e) {
             showErrorPopup(e.getMessage());
         }
     }

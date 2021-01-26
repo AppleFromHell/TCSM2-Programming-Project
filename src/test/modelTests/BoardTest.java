@@ -137,6 +137,24 @@ class BoardTest {
     }
 
     @Test
+    void testValidMove() throws InvalidMoveException {
+        int[] boardState = emptyBoardState.clone();
+        boardState[0] = 1;
+        boardState[2] = 1;
+        testBoard.fillBoard(boardState);
+        testBoard.makeMove(new Move(0));
+
+        boardState = emptyBoardState.clone();
+        boardState[0] = 1;
+        boardState[44] = 1;
+        testBoard.fillBoard(boardState);
+        print();
+        assertTrue(testBoard.isValidMove(new Move(21, 13)));
+        assertTrue(testBoard.isValidMove(new Move(21, 6)));
+        assertFalse(testBoard.isValidMove(new Move(21, 16)));
+    }
+
+    @Test
     void testMakeMove() throws InvalidMoveException {
         int[] boardState = emptyBoardState.clone();
         boardState[0] = 1;
@@ -174,6 +192,23 @@ class BoardTest {
         boardState[43] = 1;
         testBoard.fillBoard(boardState);
         testBoard.makeMove(new Move(22));
+
+        boardState = emptyBoardState.clone();
+        boardState[0] = 6;
+        boardState[28] = 2;
+        boardState[42] = 5;
+        boardState[43] = 1;
+        boardState[29] = 5;
+        boardState[9] = 2;
+        boardState[17] = 4;
+        boardState[24] = 6;
+        boardState[31] = 4;
+        testBoard.fillBoard(boardState);
+        print();
+        testBoard.isValidMove(new Move(14, 8));
+        testBoard.makeMove(new Move(14, 8));
+        print();
+
     }
 
     @Test
@@ -255,6 +290,13 @@ class BoardTest {
                         validSingleMoves.contains(new Move(20)) &&
                         validSingleMoves.size() == 2
         );
+
+        boardState = emptyBoardState.clone();
+        boardState[0] = 1;
+        boardState[44] = 1;
+        testBoard.fillBoard(boardState);
+        print();
+        assertEquals(Collections.emptyList(), testBoard.findValidSingleMoves());
     }
 
     @Test
