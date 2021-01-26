@@ -13,7 +13,6 @@ public class GreedyAI implements AI {
 
     }
 
-
     @Override
     public Move findBestMove(Board board) {
         Move bestMove = null;
