@@ -16,7 +16,7 @@ public class RandomAI implements AI {
     @Override
     public Move findBestMove(Board board) {
         List<Move> validMoves = board.findValidMoves();
-        double random = Math.random();
-        return validMoves.get((int) random * validMoves.size() + 1);
+        int randomMove = Board.randomNumber(0, validMoves.size() - 1);
+        return validMoves.get(randomMove);
     }
 }
