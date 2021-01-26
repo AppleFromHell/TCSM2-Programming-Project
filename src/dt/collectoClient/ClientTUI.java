@@ -10,6 +10,7 @@ import dt.util.SimpleTUI;
 import dt.util.Move;
 
 import java.net.InetAddress;
+import java.net.ProtocolException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
@@ -38,7 +39,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             while (true) {
                 try {
                     synchronized (this) {
-                        this.wait();
+                        this.wait(); //Wait for login from server
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -52,14 +53,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             while (true) {
                 try {
                     String input = "";
-                    if (this.client.getState() == ClientStates.INGAME) {
-                        if(this.client.getAi() == null){ // If the human has decided to play for themselves.
-                            input = getString("Next Move:");
-
-                        }
-                    } else {
-                        input = getString(); //Wait for user input
-                    }
+                    input = getString(); //Wait for user input
                     if(input != null) {
                         handleUserInput(input);
                     }
@@ -86,10 +80,12 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                     this.client.doEnterQueue();
                     break;
                 case MOVE:
-                    if(client.getAi() == null) {
-                        this.client.doMove(parseMove(arguments));
-                    } else {
-                        this.client.doMove(client.getAi().findBestMove(this.client.getBoard()));
+                    if(this.client.getState() == ClientStates.WAITOURMOVE) {
+                        if(this.client.getAi() == null) {
+                            this.client.doMove(this.client.createMove(arguments));
+                        } else {
+                            this.client.doAIMove();
+                        }
                     }
                     break;
                 case HINT:
@@ -121,7 +117,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             throw new CommandException("Invalid number of arguments give");
         } catch (NumberFormatException e) {
             throw new CommandException(NOTINTEGERMOVE);
-        } catch (InvalidMoveException e) {
+        } catch (InvalidMoveException | ProtocolException e) {
             throw new CommandException(e.getMessage());
         }
 

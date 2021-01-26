@@ -14,6 +14,7 @@ import dt.model.ClientBoard;
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.net.ProtocolException;
 //TODO hint doen
 /** @author Emiel Rous and Wouter Koning */
 public class ClientGUI extends JFrame implements ClientView {
@@ -143,7 +144,7 @@ public class ClientGUI extends JFrame implements ClientView {
             this.client.doMove(parseMove(arguments));
         } catch (CommandException e) {
             showErrorPopup(String.format(UNKOWNCOMMAND, arguments[0]));
-        } catch (InvalidMoveException e) {
+        } catch (InvalidMoveException | ProtocolException e) {
             showErrorPopup(e.getMessage());
         }
     }

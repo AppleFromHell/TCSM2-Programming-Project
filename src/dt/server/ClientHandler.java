@@ -33,10 +33,11 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     private boolean cryptEnabled;
     private boolean authEnabled;
 
-    ClientHandler(Server server, GameManager gameManager, ServerTUI view, Socket socket) {
+    ClientHandler(Server server, GameManager gameManager, ServerTUI view, Socket socket, boolean debug) {
         this.server = server;
         this.gameManager = gameManager;
         this.socketHandler = new SocketHandler(this, socket, "");
+        if(debug) socketHandler.setDebug(debug);
         new Thread(socketHandler).start();
         this.view = view;
         this.game = null;
