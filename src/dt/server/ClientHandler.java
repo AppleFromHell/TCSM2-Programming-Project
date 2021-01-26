@@ -300,6 +300,10 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         this.server.removeUser(this.name);
     }
 
+    public void serverShutdown() {
+        this.socketHandler.shutDown();
+    }
+
     public SocketHandler getSocketHandler() {
         return socketHandler;
     }

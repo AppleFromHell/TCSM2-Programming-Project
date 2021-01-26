@@ -61,7 +61,6 @@ public class ServerBoard extends Board{
         return availableNumbers.get(randomNumber(0, availableNumbers.size() - 1));
     }
 
-    //TODO Make it so that only 8 balls of every colour exist in the board (use the DistributedRandomNumberGenerator)
     private int[] createBoard() {
         //fill the board up daddy
         int[] newBoard = new int[this.boardSize * this.boardSize];
