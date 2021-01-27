@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class SimpleTUI implements Runnable {
 
     protected SimpleTUI(){}
-    private BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+    private final BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
     private final PrintWriter stdOut = new PrintWriter(System.out, true);
 
     /**

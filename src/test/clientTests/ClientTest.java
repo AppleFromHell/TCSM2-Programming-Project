@@ -19,7 +19,7 @@ public class ClientTest {
     static ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
     private dt.collectoClient.ClientStates ClientStates;
-    private String username = "testUser";
+    private final String username = "testUser";
 
     PrintStream standardOut = System.out;
     @BeforeEach

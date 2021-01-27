@@ -63,7 +63,8 @@ public enum ServerMessages implements ProtocolMessages {
         return this.msg + delimiter + arg1 + delimiter + arg2;
     }
     public String constructMessage(Server server) {return "SERVER ERROR: Invalid access to Enum";}
-    public String constructMessage(int[] boardState, String plyr1, String plyr2) {return "SERVER ERROR: Invalid access to Enum"; };
+    public String constructMessage(int[] boardState, String plyr1, String plyr2) {return "SERVER ERROR: Invalid access to Enum"; }
+
     public String constructMessage(Move move) {
         StringBuilder msg = new StringBuilder(this.msg+delimiter);
         return move.isDoubleMove()?

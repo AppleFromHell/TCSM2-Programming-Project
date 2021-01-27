@@ -14,8 +14,8 @@ import java.util.List;
  * This is the class that that maanages an individual game.*/
 public class Game {
     private final ServerBoard board;
-    private List<Player> players;
-    private GameManager manager;
+    private final List<Player> players;
+    private final GameManager manager;
 
     public Game(GameManager manager, ClientHandler client1, ClientHandler client2) {
         this.board = new ServerBoard();

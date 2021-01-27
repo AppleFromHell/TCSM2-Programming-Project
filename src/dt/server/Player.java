@@ -10,9 +10,9 @@ import java.util.Map;
  */
 public class Player {
     public static final int minBallForScore = 3;
-    private String name;
-    private ClientHandler client;
-    private Map<BallType, Integer> collectedBalls;
+    private final String name;
+    private final ClientHandler client;
+    private final Map<BallType, Integer> collectedBalls;
 
     public Player(ClientHandler client) {
         this.client = client;

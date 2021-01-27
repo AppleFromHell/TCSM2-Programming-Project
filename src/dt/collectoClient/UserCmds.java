@@ -17,8 +17,8 @@ public enum UserCmds {
     RANK(new String[]{"rank", "pikorde"}, "Request the server for a ranking");
 
 
-    private String[]  cmds; //Acceptable user inputs
-    private String description; //Descrpition of the command
+    private final String[]  cmds; //Acceptable user inputs
+    private final String description; //Descrpition of the command
 
     public static String separators = "[ ~+=|-]"; //Possible seperators. All and any can be used
 
@@ -66,7 +66,7 @@ public enum UserCmds {
                 subSTr.append(",").append(cmd.cmds[i]);
             }
             subSTr.append("]");
-            subSTr.append(String.format("[cmd]*%-100s", cmd.separators));
+            subSTr.append(String.format("[cmd]*%-100s", separators));
             subSTr.append(String.format("%10s", cmd.description));
             strB.append(subSTr).append('\n');
         }

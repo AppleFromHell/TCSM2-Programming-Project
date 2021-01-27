@@ -29,10 +29,10 @@ public class MainDisplay extends JPanel{
     private JLabel turnLabel;
     private JButton hintButton;
     private JComboBox selectAi;
-    private ClientGUI view;
+    private final ClientGUI view;
     private String username;
     private String serverName;
-    private Client client;
+    private final Client client;
 
     public MainDisplay(ClientGUI view, Client client) {
         this.add(mainPanel);

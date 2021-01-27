@@ -15,16 +15,16 @@ import java.util.Map.Entry;
  */
 public class Server {
     private Integer port;
-    private List<ClientHandler> connectedClients;
-    private List<String> loggedinUsers;
-    private ServerTUI view;
-    private GameManager gameManager;
+    private final List<ClientHandler> connectedClients;
+    private final List<String> loggedinUsers;
+    private final ServerTUI view;
+    private final GameManager gameManager;
     private ServerSocket serverSocket;
-    private String serverName;
-    private boolean chatEnabled;
-    private boolean rankEnabled;
-    private boolean cryptEnabled;
-    private boolean authEnabled;
+    private final String serverName;
+    private final boolean chatEnabled;
+    private final boolean rankEnabled;
+    private final boolean cryptEnabled;
+    private final boolean authEnabled;
     private boolean debug;
     private final static File rankFile = new File("src/dt/server/Ranking.txt");
 

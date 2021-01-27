@@ -13,8 +13,8 @@ import java.util.Arrays;
  */
 public class GameDisplay extends JPanel {
     private int[] gameState;
-    private String[] balls;
-    private Color[] ballColors;
+    private final String[] balls;
+    private final Color[] ballColors;
     private final Color BACKGROUND;
     private final int BOARDSIZE = 7;
     private int ballSize;

@@ -19,7 +19,7 @@ public class Server_prompt extends JDialog {
     private JTextField textField1;
     private JTextField textField2;
     private JCheckBox useDefaultCheckBox;
-    private Client client;
+    private final Client client;
 
     public Server_prompt(Client client) {
         this.client = client;

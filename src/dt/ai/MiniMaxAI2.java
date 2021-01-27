@@ -11,7 +11,7 @@ import java.util.Map;
  * A minimax algorithm with alpha beta pruning to optimize performance.
  */
 public class MiniMaxAI2 implements AI{
-    private static int DEFAULTDEPTH = 6; // Depth of 7 really seems like a maximum.
+    private static final int DEFAULTDEPTH = 6; // Depth of 7 really seems like a maximum.
 
     private final int depth;
     Map<int[], Integer> dictionary;

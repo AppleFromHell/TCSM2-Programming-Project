@@ -15,8 +15,8 @@ import java.net.UnknownHostException;
  * Handles all interaction with the user
  * @author Emiel Rous and Wouter Koning */
 public class ClientTUI extends SimpleTUI implements ClientView {
-    private boolean interrupted =false;
-    private Client client;
+    private final boolean interrupted =false;
+    private final Client client;
 
     ClientTUI(Client client) {
         this.client = client;

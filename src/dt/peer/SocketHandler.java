@@ -7,8 +7,8 @@ import java.net.Socket;
  * A hanlder of the socket. Sends and receives messages
  * @author Emiel Rous and Wouter Koning */
 public class SocketHandler implements Runnable {
-    private Socket socket;
-    private NetworkEntity networkEntity;
+    private final Socket socket;
+    private final NetworkEntity networkEntity;
     private BufferedReader socketIn;
     private BufferedWriter socketOut;
     private String name;

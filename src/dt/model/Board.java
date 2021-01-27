@@ -11,8 +11,8 @@ import java.util.*;
 public class Board {
     private static final int BOARDSIZE = 7;
 
-    private List<Sequence> rows;
-    private List<Sequence> columns;
+    private final List<Sequence> rows;
+    private final List<Sequence> columns;
     protected int boardSize;
     private boolean singleMoveAvailable;
 

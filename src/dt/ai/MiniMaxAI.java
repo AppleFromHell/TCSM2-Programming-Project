@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class MiniMaxAI implements AI{
 
-    private static int DEFAULTDEPTH = 4;
+    private static final int DEFAULTDEPTH = 4;
 
     private final int depth;
 

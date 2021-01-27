@@ -36,7 +36,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     private boolean rankEnabled;
     private boolean cryptEnabled;
     private boolean authEnabled;
-    private boolean debug;
+    private final boolean debug;
 
     ClientHandler(Server server, GameManager gameManager, ServerTUI view, Socket socket, boolean debug) {
         this.server = server;
