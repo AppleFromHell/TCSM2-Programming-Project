@@ -165,8 +165,9 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             String question = "What AI difficulty would you like to use for this game? Choose from:"
                     .concat(System.lineSeparator())
                     .concat(AITypes.allToString());
-            String aiString = getString(question);
+
             while(true) {
+                String aiString = getString(question);
                 try {
                     AITypes ai = AITypes.valueOf(aiString.toUpperCase());
                     this.showMessage(ai + " chosen");

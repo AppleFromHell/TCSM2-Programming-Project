@@ -43,7 +43,7 @@ public class Game {
         }
     }
 
-    private Player findPlayer(ClientHandler playa) {
+    private synchronized Player findPlayer(ClientHandler playa) {
         for(Player player : players){
             if(player.getClientHandler() == playa){
                 return player;
@@ -84,14 +84,15 @@ public class Game {
         this.manager.removeGame(this);
     }
 
-    public void playerDisconnected(ClientHandler rageQuitter) {
+    public synchronized void playerDisconnected(ClientHandler rageQuitter) {
         Player quitter = findPlayer(rageQuitter);
         for(Player player : this.players) {
             if(player != quitter) sendGameOver(ServerMessages.GameOverReasons.VICTORY, player);
         }
+        this.players.remove(quitter);
     }
 
-    private void sendGameOver(ServerMessages.GameOverReasons reason, Player winner) {
+    private synchronized void sendGameOver(ServerMessages.GameOverReasons reason, Player winner) {
         for(Player player : this.players) {
             player.getClientHandler().gameOver(reason, winner.getClientHandler());
         }

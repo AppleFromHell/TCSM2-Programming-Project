@@ -360,6 +360,7 @@ public class Client implements ClientProtocol, NetworkEntity {
 
     private synchronized void makeMove(Move move) throws InvalidMoveException {
         board.makeMove(move);
+        this.clientView.showMessage(Arrays.toString(this.board.getBoardState()));
         this.clientView.showBoard(this.board);
     }
 
