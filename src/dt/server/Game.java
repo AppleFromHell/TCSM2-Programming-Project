@@ -10,7 +10,8 @@ import dt.util.Move;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Emiel Rous and Wouter Koning */
+/** @author Emiel Rous and Wouter Koning
+ * This is the class that that maanages an individual game.*/
 public class Game {
     private final ServerBoard board;
     private List<Player> players;

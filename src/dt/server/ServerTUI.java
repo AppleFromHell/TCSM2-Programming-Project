@@ -5,13 +5,15 @@ import dt.util.SimpleTUI;
 
 /** @author Emiel Rous and Wouter Koning */
 public class ServerTUI extends SimpleTUI {
-    private Server server;
+    private final Server server;
 
     public ServerTUI(Server server) {
         this.server = server;
     }
 
-
+    /**
+     * Start the ServerTUI in a separate Thread.
+     */
     @Override
     public void start() {
         try {

@@ -15,12 +15,22 @@ public class SimpleTUI implements Runnable {
     private BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
     private final PrintWriter stdOut = new PrintWriter(System.out, true);
 
-
+    /**
+     * Asks the user a question, and then returns the input from the user.
+     * @param question The question to ask the user.
+     * @return The answer that the user has given.
+     * @throws UserExit If the user types the exit command.
+     */
     public String getString(String question) throws UserExit {
         showMessage(question);
         return getString();
     }
 
+    /**
+     * Retrieves a String from the standard in that the user has put in.
+     * @return A String representation of what the user has put in to the system.
+     * @throws UserExit If the user types the exit command.
+     */
     public String getString() throws UserExit {
         String answer = null;
         try {
@@ -36,16 +46,34 @@ public class SimpleTUI implements Runnable {
         }
     }
 
+    /**
+     * A method that is to be overwritten by other methods.
+     */
     public void start(){}
 
+    /**
+     * Show the user a message given as the parameter.
+     * @param message The message to be shown to the user.
+     */
     public void showMessage(String message) {
         stdOut.println(message);
     }
 
+    /**
+     * Returns the port the TUI is using.
+     * @return The port that the TUI is using
+     * @throws UserExit If the user decides to exit the program.
+     */
     public Integer getPort() throws UserExit {
         return getInt("Which Port is the server running on:");
     }
 
+    /**
+     * Gets an int representation of what the user has put into the system.
+     * @param question A question to ask the user.
+     * @return An int representation of what the user has put into the system.
+     * @throws UserExit If the user decides to exit the program.
+     */
     public int getInt(String question) throws UserExit {
         do {
             String answer = getString(question);
@@ -59,6 +87,12 @@ public class SimpleTUI implements Runnable {
         } while (true);
     }
 
+    /**
+     * Gets a boolean representation of what the user has put into the system.
+     * @param question A question to ask the user.
+     * @return A boolean representation of what the user has put into the system.
+     * @throws UserExit If the user decides to exit the program.
+     */
     public boolean getBoolean(String question) throws UserExit {
         do {
             String answer = getString(question);
@@ -72,6 +106,9 @@ public class SimpleTUI implements Runnable {
         } while(true);
     }
 
+    /**
+     * To be overwritten by other classes.
+     */
     public void run() {
         this.start();
     }

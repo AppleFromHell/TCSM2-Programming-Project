@@ -123,7 +123,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     }
 
     private void handleRank() {
-        HashMap<String, Integer> scores = Server.getRankAsHashmap();
+        HashMap<String, Integer> scores = Server.getRankAsHashMap();
 
         List<String> rankList = scores.keySet().stream().map(n -> n + " " + scores.get(n)).collect(Collectors.toList());
         socketHandler.write(ServerMessages.RANK.constructMessage(rankList));
@@ -346,7 +346,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
 
     public void gameOver(ServerMessages.GameOverReasons reason, ClientHandler winner) {
         String name = winner.getName();
-        if(Server.getRankAsHashmap().containsKey(name) && this.userName.equals(name)) {
+        if(Server.getRankAsHashMap().containsKey(name) && this.userName.equals(name)) {
             Server.increaseScore(winner.getName());
         }
         socketHandler.write(ServerMessages.GAMEOVER.constructMessage(reason.toString(), name));
