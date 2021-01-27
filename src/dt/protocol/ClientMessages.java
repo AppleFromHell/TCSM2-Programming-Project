@@ -12,7 +12,8 @@ public enum ClientMessages implements ProtocolMessages {
     MOVE (Messages.MOVE),
     QUEUE (Messages.QUEUE),
     CHAT (Messages.CHAT),
-    WHISPER (Messages.WHISPER);
+    WHISPER (Messages.WHISPER),
+    RANK(Messages.RANK);
 
     private String msg = "";
 

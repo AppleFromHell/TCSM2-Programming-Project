@@ -13,6 +13,9 @@ import javax.security.auth.login.LoginException;
 import java.net.ProtocolException;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ClientHandler implements NetworkEntity, ServerProtocol {
     private final Server server;
@@ -85,6 +88,10 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
                 case WHISPER:
                     this.handleWhisper(msg);
                     break;
+                case RANK:
+                    this.handleRank();
+                    break;
+
             }
         } catch (IllegalArgumentException e) {
             view.showMessage("["+ this.name + "] unknown response. Response: " + msg);
@@ -113,6 +120,13 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
             view.showMessage(e.getMessage());
             socketHandler.write(ServerMessages.ERROR.constructMessage("Could not find you in the list of players. Are you solid snake?"));
         }
+    }
+
+    private void handleRank() {
+        HashMap<String, Integer> scores = Server.getRankAsHashmap();
+
+        List<String> rankList = scores.keySet().stream().map(n -> n + " " + scores.get(n)).collect(Collectors.toList());
+        socketHandler.write(ServerMessages.RANK.constructMessage(rankList));
     }
 
 
@@ -168,6 +182,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
             this.server.addUserToLoggedInList(userName);
         }
         this.state = ClientHandlerStates.LOGGEDIN;
+        Server.addNewPlayer(userName);
     }
 
     @Override
@@ -330,7 +345,11 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
 
 
     public void gameOver(ServerMessages.GameOverReasons reason, ClientHandler winner) {
-        socketHandler.write(ServerMessages.GAMEOVER.constructMessage(reason.toString(), winner.getName()));
+        String name = winner.getName();
+        if(Server.getRankAsHashmap().containsKey(name) && this.userName.equals(name)) {
+            Server.increaseScore(winner.getName());
+        }
+        socketHandler.write(ServerMessages.GAMEOVER.constructMessage(reason.toString(), name));
         this.closeGame();
     }
 }

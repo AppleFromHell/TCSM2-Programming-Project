@@ -1,0 +1,5 @@
+piemels 0
+keta 2
+kaas 0
+rankie 1
+Kaas 0

@@ -193,6 +193,9 @@ public class Client implements ClientProtocol, NetworkEntity {
                     break;
                 case CANNOTWHISPER:
                     throw new CommandException(arguments[1] + "Cannot receive whispers");
+                case RANK:
+                    this.handleRanking(arguments);
+                    break;
             }
         } catch (UnexpectedResponseException e) {
             clientView.showMessage("Unexpected response: " + msg);
@@ -244,6 +247,20 @@ public class Client implements ClientProtocol, NetworkEntity {
         socketHandler.write(ClientMessages.QUEUE.constructMessage());
         clientView.showMessage("Entered queue");
         this.state = ClientStates.INQUEUE;
+    }
+
+    @Override
+    public void doGetRanking() {
+        socketHandler.write(ClientMessages.RANK.constructMessage());
+    }
+
+    public void handleRanking(String[] arguments) throws ArrayIndexOutOfBoundsException{
+        StringBuilder rank = new StringBuilder("Ranking: \nName:            Score:\n");
+        for(int i = 1; i < arguments.length; i++) {
+            String[] list = arguments[i].split(" ");
+            rank.append(String.format("%-10s %10s",list[0],list[1])).append('\n');
+        }
+        clientView.showMessage(rank.toString());
     }
 
     //Parsing response

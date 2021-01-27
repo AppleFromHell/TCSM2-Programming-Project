@@ -38,7 +38,8 @@ public enum ServerMessages implements ProtocolMessages {
     ERROR (Messages.ERROR),
     CHAT (Messages.CHAT),
     WHISPER (Messages.WHISPER),
-    CANNOTWHISPER (Messages.CANNOTWHISPER)
+    CANNOTWHISPER (Messages.CANNOTWHISPER),
+    RANK(Messages.RANK)
     ;
 
     ServerMessages(ProtocolMessages.Messages msg) {

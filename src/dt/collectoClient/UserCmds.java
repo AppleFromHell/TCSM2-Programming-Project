@@ -17,7 +17,8 @@ public enum UserCmds {
     WHISPER(new String[]{"w", "whisper", "silentSay", "uWuInThEar"}, "Sends a private chat message to a Clients"),
     EXIT(new String[]{"quit", "exit", "x"}, "Exit. This shuts down the client"),
     PLAYER(new String[]{"player", "playa", "ai"}, "Set the player type"),
-    HELP(new String[]{"?", "h", "help"}, "Print a help menu"),;
+    HELP(new String[]{"?", "h", "help"}, "Print a help menu"),
+    RANK(new String[]{"rank", "pikorde"}, "Request the server for a ranking");
 
 
     private String[]  cmds;

@@ -3,14 +3,14 @@ package dt.server;
 
 import dt.collectoClient.GUI.ClientGUI;
 import dt.exceptions.UserExit;
+import dt.protocol.ServerMessages;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.Map.Entry;
 
 /** @author Emiel Rous and Wouter Koning */
 public class Server {
@@ -27,6 +27,7 @@ public class Server {
     private boolean cryptEnabled;
     private boolean authEnabled;
     private boolean debug;
+    private final static File rankFile = new File("src/dt/server/Ranking.txt");
 
     private Server() {
         this.view = new ServerTUI(this);
@@ -35,7 +36,7 @@ public class Server {
         this.loggedinUsers = new ArrayList<>();
         this.serverName = "Wouter en Emiels meest awesome server evvur";
         this.chatEnabled = true;
-        this.rankEnabled = false;
+        this.rankEnabled = true;
         this.cryptEnabled = false;
         this.authEnabled = false;
         this.debug = false;
@@ -86,7 +87,47 @@ public class Server {
             }
         }
     }
+    public static  HashMap<String, Integer> getRankAsHashmap() {
 
+        HashMap<String, Integer> scores = new HashMap<>();
+        try {
+            Scanner scanner = new Scanner(new FileInputStream(rankFile));
+            while(scanner.hasNextLine() && scanner.hasNext()) {
+                String name = scanner.next();
+                int wins = scanner.nextInt();
+                scores.putIfAbsent(name, wins);
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return scores;
+    }
+    public static void addNewPlayer(String username) {
+        HashMap<String, Integer> scores = getRankAsHashmap();
+        scores.putIfAbsent(username, 0);
+        storeRanksInFile(scores);
+    }
+    public static void increaseScore(String username) {
+        HashMap<String, Integer> scores = getRankAsHashmap();
+        int wins = scores.get(username);
+        scores.put(username, wins + 1);
+        storeRanksInFile(scores);
+    }
+
+    private static void storeRanksInFile(HashMap<String, Integer> scores) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new PrintWriter(rankFile));
+            for(Entry entry : scores.entrySet()) {
+                writer.write(entry.getKey() + " " + entry.getValue());
+                writer.newLine();
+                writer.flush();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     /**
      * Performs the setup of the server. The user receives feedback at what state of starting up the server is.

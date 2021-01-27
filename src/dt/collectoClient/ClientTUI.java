@@ -109,6 +109,9 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                 case PLAYER:
                     this.client.setAI(this.getClientAI());
                     break;
+                case RANK:
+                    this.client.doGetRanking();
+                    break;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new CommandException("Invalid number of arguments give");
@@ -154,6 +157,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             this.showMessage(list[i]);
         }
     }
+
 
     /**
      *
