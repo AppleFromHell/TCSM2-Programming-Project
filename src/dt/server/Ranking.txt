@@ -1,4 +1,5 @@
 eafse 0
+emel 0
 eawef 1
 piemels 0
 eafw 0
@@ -12,5 +13,6 @@ efawe 1
 efafwa 0
 keta 7
 Emiel 1
+EmielGreed 0
 kaas 0
 rankie 1

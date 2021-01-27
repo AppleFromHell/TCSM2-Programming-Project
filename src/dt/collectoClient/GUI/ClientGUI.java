@@ -82,7 +82,7 @@ public class ClientGUI extends JFrame implements ClientView {
         int delay = 5000; //milliseconds
         ActionListener taskPerformer = evt -> {
             if(this.display != null) {
-                client.doGetRanking();
+                client.doGetList();
             }
         };
         new Timer(delay, taskPerformer).start();
@@ -144,7 +144,9 @@ public class ClientGUI extends JFrame implements ClientView {
 
     @Override
     public void displayChatMessage(String msg) {
-        this.display.displayMessage(msg);
+        if(this.display != null) {
+            this.display.displayMessage(msg);
+        }
     }
 
     @Override
@@ -170,6 +172,7 @@ public class ClientGUI extends JFrame implements ClientView {
     }
 
     public void sendMessage(String text) {
+        this.displayChatMessage(this.client.getUserName()+ ": " +text);
         client.doSendChat(text);
     }
 

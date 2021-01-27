@@ -58,7 +58,7 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.ip = null;
         this.port = null;
         this.chatEnabled = true;
-        this.rankEnabled = false;
+        this.rankEnabled = true;
         this.cryptEnabled = false;
         this.authEnabled = false;
         this.debug = true;
