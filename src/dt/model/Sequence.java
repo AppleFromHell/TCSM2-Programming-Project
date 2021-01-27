@@ -26,8 +26,8 @@ public class Sequence {
     /**
      * A method which shift all the balls towards the end of the list. This is a method both used for when
      * shifting right and when shifting down.
-     * @assures The same number of balls are still in the list, but only the order has changed
-     * @assures The order of the list of balls has changed, such that there is only empty spots at the front of the array
+     * @ensures The same number of balls are still in the list, but only the order has changed
+     * @ensures The order of the list of balls has changed, such that there is only empty spots at the front of the array
      */
     public void shiftRightOrdown(){
         int emptyAmount = findEmptyBallAmount();
@@ -48,8 +48,8 @@ public class Sequence {
     /**
      * A method which shift all the balls towards the beginning of the list. This is a method both used for when
      * shifting up and when shifting left.
-     * @assures The same number of balls are still in the list, but only the order has changed
-     * @assures The order of the list of balls has changed, such that there is only empty spots at the back of the array
+     * @ensures The same number of balls are still in the list, but only the order has changed
+     * @ensures The order of the list of balls has changed, such that there is only empty spots at the back of the array
      */
     public void shiftLeftOrUp(){
         int emptyAmount = findEmptyBallAmount();

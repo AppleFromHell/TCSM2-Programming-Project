@@ -84,10 +84,10 @@ public class Board {
      * @requires the parameter given to not be null.
      * @param move The {@link Move} that is wanted to be made on the board.
      * @return The yield that the board gives after making a move.
-     * @throws InvalidMoveException
-     * @assures oldBoard != newBoard.
-     * @assures that the balls removed from the board are returned.
-     * @assures No more than boardsize * (boardsize - 1) coloured balls can ever be present in a game.
+     * @throws InvalidMoveException When the move made is not a valid move.
+     * @ensures oldBoard != newBoard.
+     * @ensures that the balls removed from the board are returned.
+     * @ensures No more than boardsize * (boardsize - 1) coloured balls can ever be present in a game.
      */
     public HashMap<BallType, Integer> makeMove(Move move) throws InvalidMoveException {
         if (isValidMove(move)) {
@@ -108,8 +108,8 @@ public class Board {
      * @requires The parameter given to the method to be a move that is conform protocol (0 <= move <= 27)
      * @requires The parameter given to the method to be a move that is possible given the current board
      * @param move The move to be executed, conform the protocol.
-     * @assures oldboard != newboard.
-     * @assures rows and columns are synchronized again after a move has been performed.
+     * @ensures oldboard != newboard.
+     * @ensures rows and columns are synchronized again after a move has been performed.
      */
     public void executeMove(int move) {
         boolean changedColumn = false;
@@ -137,7 +137,7 @@ public class Board {
      * A method which synchronizes the rows and columns that this board holds.
      * @param upToDateList The {@link List<Sequence>} that has been changed
      * @param outdatedList The {@link List<Sequence>} that has not been changed and thus needs changing
-     * @assures rows and columns are synchronized again after a move has been performed.
+     * @ensures rows and columns are synchronized again after a move has been performed.
      */
     public void synchronize(List<Sequence> upToDateList, List<Sequence> outdatedList) {
         for (int r = 0; r < this.boardSize; r++){
@@ -159,7 +159,7 @@ public class Board {
      * @return The validity of the move.
      * @throws InvalidMoveException If the move you tried to make is a double move, but a single move is possible.
      * @throws InvalidMoveException If the move is a move that is not conform protocol.
-     * @assures The board is not changed.
+     * @ensures The board is not changed.
      */
     public boolean isValidMove(Move move) throws InvalidMoveException {
         boolean validity = false;
@@ -186,7 +186,7 @@ public class Board {
      * double moves, but not one containing both. If there are no single moves available, it returns a list of
      * double moves.
      * @return A list of the moves which are valid on the current board.
-     * @assures The board is not changed.
+     * @ensures The board is not changed.
      */
     public List<Move> findValidMoves() {
         List<Move> validMoves = findValidSingleMoves();
@@ -199,7 +199,7 @@ public class Board {
     /**
      * A method which returns a list of all valid double moves.
      * @return A {@link List<Move>} of valid double moves.
-     * @assures The board is not changed.
+     * @ensures The board is not changed.
      */
     public List<Move> findValidDoubleMoves(){
         List<Move> validDoubleMoves = new ArrayList<>();
@@ -218,7 +218,7 @@ public class Board {
     /**
      * A method which returns a list of all valid single moves.
      * @return A {@link List<Move>} of valid single moves.
-     * @assures The board is not changed.
+     * @ensures The board is not changed.
      */
     public List<Move> findValidSingleMoves() {
         List<Move> validMoves = new ArrayList<>();
@@ -240,7 +240,7 @@ public class Board {
      * A method that finds the moves that are possible to do. Though, the return value of this is not per
      * say the moves that are valid. This method only finds the moves that are possible on a single move.
      * @return A {@link List<Move>}, indicating the moves that are possible given the current board state.
-     * @assures The board is not changed.
+     * @ensures The board is not changed.
      */
     public List<Move> findPossibleMoves(){
         List<Move> possibleMoves = new ArrayList<>();
@@ -294,7 +294,7 @@ public class Board {
      * Go over all rows and columns and find the type and amount of balls that lie next to each other and then
      * remove those from the board.
      * @return a HashMap<BallType, Integer> with as key the {@link BallType}, and as value the amount of balls the move yielded.
-     * @assures oldBoard != newboard.
+     * @ensures oldBoard != newboard.
      */
     public HashMap<BallType, Integer> getYield(){
         HashMap<BallType, Integer> ballScore = new HashMap<>();
@@ -369,7 +369,7 @@ public class Board {
      * @param index The index of the element to be looking at in the sequence and from which to be finding equal elements.
      * @param ballSequence The amount of balls found that are the same in the sequence
      * @return The amount of balls found that are the same in the sequence
-     * @assures The board is not changed.
+     * @ensures The board is not changed.
      */
     public int sameBallsInSequence(Sequence sequence, int index, int ballSequence){ //first call index should be 0 or BOARDSIZE - 1
         if(ballSequence == 0) ballSequence++; //count the first one
