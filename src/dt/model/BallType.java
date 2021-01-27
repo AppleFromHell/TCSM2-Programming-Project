@@ -1,6 +1,9 @@
 package dt.model;
 
-/** @author Emiel Rous and Wouter Koning */
+/** @author Emiel Rous and Wouter Koning
+ * The enumerator that houses all the possible values the {@link Board} uses, and is ordered in conformance to the
+ * documentation on GitLab of the project.
+ */
 public enum BallType {
 
 //            | Integer | Color   |
