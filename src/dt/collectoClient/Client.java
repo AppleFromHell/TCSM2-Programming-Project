@@ -538,7 +538,6 @@ public class Client implements ClientProtocol, NetworkEntity {
         if(this.clientView instanceof ClientGUI) {
             ClientGUI gui = (ClientGUI) clientView;
             gui.gameOver(ret);
-            gui.clearBoard();
         }
 
 
