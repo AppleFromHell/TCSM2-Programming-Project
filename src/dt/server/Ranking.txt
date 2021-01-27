@@ -23,6 +23,7 @@ TestClient 0
 EMiel 1
 EmielGreed 0
 rankie 1
+REFERENCE_hjkgf 83
 minmmax 0
 player 0
 eafse 0
@@ -40,3 +41,4 @@ kaas 3
 kewerq 0
 kees 0
 asefe 2
+REFERENCE_kiugj 74

@@ -1,4 +1,4 @@
-package clientTests;
+package integrationTest;
 
 import dt.collectoClient.Client;
 import dt.server.Server;

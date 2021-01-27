@@ -225,7 +225,7 @@ public class ServerBoard extends Board {
      * @return whether the parameter ball is suitable at index.
      */
     public boolean isSwapable(BallType[] board, int index, BallType ball) {
-        //TODO check whether it's swapable both ways.
+
         int up = index - 7;
         int down = index + 7;
         int left = index - 1;

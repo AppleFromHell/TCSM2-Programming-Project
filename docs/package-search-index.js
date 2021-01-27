@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"clientTests"},{"l":"dt.ai"},{"l":"dt.collectoClient"},{"l":"dt.collectoClient.GUI"},{"l":"dt.exceptions"},{"l":"dt.model"},{"l":"dt.peer"},{"l":"dt.protocol"},{"l":"dt.server"},{"l":"dt.util"},{"l":"modelTests"},{"l":"serverTests"}]
