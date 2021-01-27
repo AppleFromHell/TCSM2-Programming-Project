@@ -57,7 +57,7 @@ public class ClientGUI extends JFrame implements ClientView {
                 showErrorPopup("Something went wrong, try again");
             }
         }
-        display = new MainDisplay(this);
+        display = new MainDisplay(this, this.client);
         display.setUsername('\n'+client.getUserName());
         display.setServerName('\n'+client.getServerName());
         this.setContentPane(display);
@@ -82,7 +82,7 @@ public class ClientGUI extends JFrame implements ClientView {
         int delay = 5000; //milliseconds
         ActionListener taskPerformer = evt -> {
             if(this.display != null) {
-                client.doGetList();
+                client.doGetRanking();
             }
         };
         new Timer(delay, taskPerformer).start();
@@ -100,7 +100,11 @@ public class ClientGUI extends JFrame implements ClientView {
         }
         start();
     }
-
+    public void gameOver(String msg) {
+        showErrorPopup(msg);
+        this.display.enableQueue();
+        this.display.emptyBoard();
+    }
     @Override
     public void showMessage(String msg) {
         System.out.println(msg);
@@ -111,9 +115,20 @@ public class ClientGUI extends JFrame implements ClientView {
         this.display.updateUserList(list);
     }
 
+
     @Override
     public boolean reconnect() throws UserExit {
-        return false;
+        showErrorPopup("Server Disconnected");
+        return true;
+    }
+    @Override
+    public void showHint(String hint) {
+        showErrorPopup("Hint: " + hint);
+    }
+
+    @Override
+    public void showRank(String rank) {
+        this.display.updateRankingList(rank);
     }
 
     @Override
@@ -133,14 +148,20 @@ public class ClientGUI extends JFrame implements ClientView {
     }
 
     @Override
-    public void setClientAI(AITypes types) throws UserExit {
+    public void setClientAI(AITypes types) {
+        this.client.setAI(types);
     }
 
 
     public void makeMove(String move) {
         String[] arguments = move.split(UserCmds.separators);
+
         try {
-            this.client.doMove(parseMove(arguments));
+            if(client.getAi() == null) {
+                this.client.doMove(parseMove(arguments));
+        } else {
+            this.client.doAIMove();
+        }
         } catch (CommandException e) {
             showErrorPopup(String.format(UNKOWNCOMMAND, arguments[0]));
         } catch (InvalidMoveException | ProtocolException e) {

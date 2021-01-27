@@ -167,7 +167,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                     }
                     break;
                 case GAMEOVER:
-                    this.clientView.showMessage(this.handleGameOver(arguments)); //TODO method maken voor gui met deze dingen
+                    this.clientView.showMessage(this.handleGameOver(arguments));
                     break;
                 case ERROR:
                     clientView.showMessage("Server threw error: " + msg);
@@ -258,9 +258,9 @@ public class Client implements ClientProtocol, NetworkEntity {
         StringBuilder rank = new StringBuilder("Ranking: \nName:            Score:\n");
         for(int i = 1; i < arguments.length; i++) {
             String[] list = arguments[i].split(" ");
-            rank.append(String.format("%-10s %10s",list[0],list[1])).append('\n');
+            rank.append(String.format("%-20s %20s",list[0],list[1])).append('\n');
         }
-        clientView.showMessage(rank.toString());
+        clientView.showRank(rank.toString());
     }
 
     //Parsing response
@@ -404,12 +404,13 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.clientView.clearBoard();
         this.board = null;
         this.state = ClientStates.GAMEOVER;
+        if(this.clientView instanceof ClientGUI) ((ClientGUI) clientView).gameOver(ret);
         if(debug) this.clientView.showMessage("gameOver(): " + this.state);
         return ret;
     }
 
     public void provideHint() {
-        clientView.showMessage(this.board.getAHint().toString());
+        clientView.showHint(this.board.getAHint().toString());
     }
 
 

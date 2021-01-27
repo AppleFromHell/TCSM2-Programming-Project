@@ -1,6 +1,10 @@
 package dt.collectoClient.GUI;
 
+import dt.ai.AITypes;
+import dt.collectoClient.Client;
+
 import javax.swing.*;
+import java.util.Arrays;
 
 public class MainDisplay extends JPanel{
     private JPanel mainPanel;
@@ -8,7 +12,7 @@ public class MainDisplay extends JPanel{
     private JTextPane userList;
     private JPanel chatAndUsers;
     private JButton send;
-    private JTextField chatFIeld;
+    private JTextField chatField;
     private JLabel usersLabel;
     private JPanel textAndSend;
     private JTextPane chatbox;
@@ -19,20 +23,37 @@ public class MainDisplay extends JPanel{
     private JLabel usernameLabel;
     private JLabel servernameLabel;
     private JLabel turnLabel;
+    private JButton hintButton;
+    private JComboBox selectAi;
     private ClientGUI view;
     private String username;
     private String serverName;
+    private Client client;
 
-    public MainDisplay(ClientGUI view) {
+    public MainDisplay(ClientGUI view, Client client) {
         this.add(mainPanel);
         this.view = view;
         send.addActionListener(e -> sendMessage());
-        chatFIeld.addActionListener(e -> sendMessage());
+        chatField.addActionListener(e -> sendMessage());
         confirmButton.addActionListener(e -> makeMove());
         moveField.addActionListener(e -> makeMove());
         queueButton.addActionListener(e -> enterQueue());
+        hintButton.addActionListener(e ->  getHint());
+        this.client = client;
+        selectAi.addActionListener(e -> setAi());
+        Arrays.stream(AITypes.values()).map(AITypes::toString).forEach(selectAi::addItem);
     }
 
+    private void setAi() {
+        this.view.setClientAI(AITypes.valueOf((String)selectAi.getSelectedItem()));
+    }
+
+    private void getHint() {
+        this.client.provideHint();
+    }
+    public void updateRankingList(String ranking) {
+        userList.setText(ranking);
+    }
     public void updateUserList(String[] list) {
         StringBuilder users = new StringBuilder();
         for(String u : list) {
@@ -46,8 +67,8 @@ public class MainDisplay extends JPanel{
             view.makeMove(moveField.getText());
         } catch (NumberFormatException ex) {
             view.showErrorPopup("Enter an integer");
-            moveField.setText("");
         }
+        moveField.setText("");
     }
 
     public void displayMessage(String msg) {
@@ -55,12 +76,12 @@ public class MainDisplay extends JPanel{
     }
 
     private void sendMessage() {
-        view.sendMessage(chatFIeld.getText());
-        chatFIeld.setText("");
+        view.sendMessage(chatField.getText());
+        chatField.setText("");
     }
 
     public static void main(String[] args) {
-        MainDisplay display = new MainDisplay(null);
+        MainDisplay display = new MainDisplay(null, new Client());
         JFrame frame = new JFrame("HI");
         frame.setContentPane(display);
         frame.pack();
@@ -70,6 +91,10 @@ public class MainDisplay extends JPanel{
     private void enterQueue() {
         this.queueButton.setEnabled(false);
         view.enterQueue();
+    }
+
+    public void enableQueue() {
+        this.queueButton.setEnabled(true);
     }
 
     private void createUIComponents() {
@@ -91,11 +116,12 @@ public class MainDisplay extends JPanel{
     }
 
     public void setOurTurn(boolean ourTurn) {
-        this.turnLabel.setText(turnLabel.getText() + (ourTurn? "Ours": "Theirs"));
+        this.turnLabel.setText("Turn: " + (ourTurn? "Ours": "Theirs"));
     }
 
     public void emptyBoard() {
-        this.turnLabel.setText("Turn:");
+        this.turnLabel.setText("Turn: ");
         ((GameDisplay)this.gameDisplay).setEmptyBoard();
+        ((GameDisplay)this.gameDisplay).paintComponent(this.gameDisplay.getGraphics());
     }
 }

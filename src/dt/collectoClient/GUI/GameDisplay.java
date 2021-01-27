@@ -39,6 +39,7 @@ public class GameDisplay extends JPanel {
 
     public void setGameState(int[] state) {
         this.gameState = state;
+        paintComponent(this.getGraphics());
     }
 
     public int getSquareSize() {
@@ -68,7 +69,7 @@ public class GameDisplay extends JPanel {
         }
         for(int i = 0; i < this.BOARDSIZE; i++) {
             g.setColor(Color.BLACK);
-            g.drawString(String.valueOf(this.BOARDSIZE * 2 - i -1), squareSize*i + squareSize/4*3, width + offset/4*3);
+            g.drawString(String.valueOf(this.BOARDSIZE * 2 + i), squareSize*i + squareSize/4*3, width + offset/4*3);
         }
 
         for(int i = 0; i < this.BOARDSIZE; i++) {
@@ -77,7 +78,7 @@ public class GameDisplay extends JPanel {
         }
         for(int i = 0; i < this.BOARDSIZE; i++) {
             g.setColor(Color.BLACK);
-            g.drawString(String.valueOf(this.BOARDSIZE* 3 - i -1), offset/20, squareSize * i + squareSize - offset/2 +3);
+            g.drawString(String.valueOf(this.BOARDSIZE + i), offset/20, squareSize * i + squareSize - offset/2 +3);
         }
 
         g.drawRect(offset/2, offset/2, width-offset/4, width-offset/4);

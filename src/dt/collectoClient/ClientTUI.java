@@ -193,6 +193,17 @@ public class ClientTUI extends SimpleTUI implements ClientView {
     public void clearBoard(){
 
     }
+
+    @Override
+    public void showRank(String rank) {
+        showMessage(rank);
+    }
+
+    @Override
+    public void showHint(String toString) {
+        showMessage(toString);
+    }
+
     @Override
     public void showBoard(ClientBoard board) {
         this.showMessage(board.getPrettyBoardState());
