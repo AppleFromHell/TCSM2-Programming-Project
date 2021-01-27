@@ -9,6 +9,8 @@ Kaas 1
 Kees 0
 asefs 1
 kaase 0
+client2 1
+client1 1
 emiell 0
 kasefj 0
 REFERENCE_kaas 2
@@ -17,6 +19,7 @@ REFERENCE_asfef 1
 efawe 1
 REFERENCE_reference 3
 REFERENCE_emeel 0
+TestClient 0
 EMiel 1
 EmielGreed 0
 rankie 1
@@ -33,6 +36,7 @@ keta 7
 skaefjse 1
 asfase 0
 Emiel 1
-kaas 2
+kaas 3
 kewerq 0
+kees 0
 asefe 2

@@ -29,7 +29,7 @@ public class Server {
     private ServerSocket serverSocket;
     private boolean debug;
 
-    private Server() {
+    public Server() {
         this.view = new ServerTUI(this);
         this.gameManager = new GameManager();
         this.connectedClients = new ArrayList<>();
@@ -56,20 +56,6 @@ public class Server {
         server.start();
     }
 
-    /**
-     * Starts the server application. This is a method exclusively used for testing.
-     *
-     * @param args Arguments given to the server, which should just be the port of the server.
-     * @return The {@link Server} instance it has started, such that it can be used for testing purposes
-     */
-    public static Server testMain(String[] args) {
-        Server server = new Server();
-        if (args.length != 0) {
-            server.setPort(Integer.parseInt(args[0]));
-        }
-        //new Thread(server).start();
-        return server;
-    }
 
     /**
      * This method scans the file in which the rankings are stored, and then puts all of those names and rankings
@@ -329,5 +315,9 @@ public class Server {
      */
     public void removeClientHandler(ClientHandler clientHandler) {
         connectedClients.remove(clientHandler);
+    }
+
+    public Server getServer() {
+        return this;
     }
 }

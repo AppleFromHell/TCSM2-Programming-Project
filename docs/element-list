@@ -1,0 +1,12 @@
+clientTests
+dt.ai
+dt.collectoClient
+dt.collectoClient.GUI
+dt.exceptions
+dt.model
+dt.peer
+dt.protocol
+dt.server
+dt.util
+modelTests
+serverTests

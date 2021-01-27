@@ -20,34 +20,40 @@ public class ServerClientIntegrationTest {
     static ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     Client client = new Client();
     PrintStream standardOut = System.out;
+    static Server  server;
+    static int port = 6969;
+    private final int TIMEOUT = 100;
+
     private dt.collectoClient.ClientStates ClientStates;
 
     @BeforeAll
     static void setup() {
         ServerRunner runner = new ServerRunner();
         new Thread(runner).start();
+        server = runner.getServer();
         System.setOut(new PrintStream(outContent));
     }
 
     @BeforeEach
-    void startup() throws IOException {
+    void startup() throws IOException, InterruptedException {
 
         client.setIp(InetAddress.getByName("localhost"));
-        client.setPort(6969);
+        client.setPort(port);
         client.setUsername(username);
         client.start();
+        timeOut(TIMEOUT); //Let it wait for a response from the server
 
     }
 
     @Test
-    void testDoHello() {
+    void testDoHello() throws InterruptedException {
         assertTrue(outContent.toString().contains("HELLO~"));
     }
 
     @Test
     void testLogin() throws InterruptedException {
         client.doLogin(username);
-        TimeUnit.MILLISECONDS.sleep(500); //Let it wait for a response from the server
+        timeOut(TIMEOUT); //Let it wait for a response from the server
         assertTrue(outContent.toString().contains("LOGIN"));
     }
 
@@ -56,11 +62,11 @@ public class ServerClientIntegrationTest {
         client.doLogin(username);
         Client clientDouble = new Client();
         clientDouble.setIp(InetAddress.getByName("localhost"));
-        clientDouble.setPort(888);
+        clientDouble.setPort(port);
         clientDouble.setUsername(username);
         clientDouble.createConnection();
         clientDouble.doLogin(username);
-        TimeUnit.MILLISECONDS.sleep(500); //Let it wait for a response from the server
+        timeOut(TIMEOUT); //Let it wait for a response from the server
         assertTrue(outContent.toString().contains("ALREADYLOGGEDIN"));
     }
 
@@ -69,7 +75,7 @@ public class ServerClientIntegrationTest {
         client.doLogin(username);
         client.setDebug(false);
         String whisperMessage = "This is a message that is being whispered";
-        TimeUnit.MILLISECONDS.sleep(500); //Let it wait for a response from the server
+        timeOut(TIMEOUT); //Let it wait for a response from the server
 
         client.doSendWhisper(username, whisperMessage);
         assertTrue(outContent.toString().contains(username));
@@ -78,7 +84,7 @@ public class ServerClientIntegrationTest {
 
         outContent.reset();
         client.doSendWhisper("ClientThatIsNotConnected", whisperMessage);
-        TimeUnit.MILLISECONDS.sleep(500); //Let it wait for a response from the server
+        timeOut(TIMEOUT); //Let it wait for a response from the server
 
         assertTrue(outContent.toString().contains(receiver));
         assertTrue(outContent.toString().contains("Cannot receive whispers"));
@@ -87,23 +93,21 @@ public class ServerClientIntegrationTest {
     @Test
     void testClientServerBoardEquality() throws IOException, InterruptedException {
         System.setOut(standardOut);
-        int port = 888;
         InetAddress ip = InetAddress.getByName("localhost");
         String client1Name = "client1";
         String client2Name = "client2";
 
-        Server server = Server.testMain((new String[] {String.valueOf(port)}));
-        TimeUnit.MILLISECONDS.sleep(500); //Let it wait for a response from the server
+        timeOut(TIMEOUT); //Let it wait for a response from the server
         Client client1 = new Client();
         client1.setIp(ip);
         client1.setPort(port);
         client1.setUsername(client1Name);
         client1.createConnection();
-        TimeUnit.MILLISECONDS.sleep(500); //Let it wait for a response from the server
+        timeOut(TIMEOUT); //Let it wait for a response from the server
         client1.doLogin(client1Name);
-        TimeUnit.MILLISECONDS.sleep(500); //Let it wait for a response from the server
+        timeOut(TIMEOUT); //Let it wait for a response from the server
         client1.doEnterQueue();
-        TimeUnit.MILLISECONDS.sleep(500); //Let it wait for a response from the server
+        timeOut(TIMEOUT); //Let it wait for a response from the server
 
 
         Client client2 = new Client();
@@ -111,14 +115,14 @@ public class ServerClientIntegrationTest {
         client2.setPort(port);
         client2.setUsername(client2Name);
         client2.createConnection();
-        TimeUnit.MILLISECONDS.sleep(500); //Let it wait for a response from the server
-        client1.doLogin(client2Name);
-        TimeUnit.MILLISECONDS.sleep(500); //Let it wait for a response from the server
+        timeOut(TIMEOUT); //Let it wait for a response from the server
+        client2.doLogin(client2Name);
+        timeOut(TIMEOUT); //Let it wait for a response from the server
         client2.doEnterQueue();
-        TimeUnit.MILLISECONDS.sleep(500); //Let it wait for a response from the server
+        timeOut(TIMEOUT); //Let it wait for a response from the server
 
         TimeUnit.MILLISECONDS
-            .sleep(1000); //Let it wait for the server to throw both clients into a game.
+            .sleep(TIMEOUT * 10); //Let it wait for the server to throw both clients into a game.
 
         System.out.println(client1.getState());
         System.out.println(client2.getState());
@@ -135,11 +139,20 @@ public class ServerClientIntegrationTest {
 
         assertArrayEquals(serverBoardState, clientBoardState);
     }
-
+    private void timeOut(int wait) throws InterruptedException {
+        TimeUnit.MILLISECONDS.sleep(wait);
+    }
     static class ServerRunner implements Runnable {
-
+        public Server server;
+        public ServerRunner() {
+            this.server = new Server();
+            this.server.setPort(port);
+        }
         public void run() {
-            Server.main(new String[] {"888"});
+            server.start();
+        }
+        public Server getServer(){
+            return this.server.getServer();
         }
     }
 
