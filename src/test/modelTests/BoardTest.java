@@ -127,7 +127,7 @@ class BoardTest {
     }
 
     @Test
-    void testParticularBoardState() throws InvalidMoveException {
+    void testParticularBoardState() throws InvalidMoveException { //These just be boardstates that crashed our game somehow
         board.fillBoard(new int[]{3, 6, 5, 6, 4, 5, 2, 1, 4, 1, 5, 3, 1, 6, 2, 3, 6, 4, 5, 3, 2, 1, 5, 2, 0, 2, 5, 4, 4, 2, 3, 6, 1, 6, 2, 1, 5, 1, 5, 3, 1, 3, 4, 3, 4, 6, 4, 6, 2});
         board.makeMove(new Move(3));
         board.makeMove(new Move(23));
