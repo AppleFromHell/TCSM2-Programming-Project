@@ -80,32 +80,35 @@ public class ServerBoard extends Board{
                 newBoard[i] = BallType.EMPTY;
             } else if (i % this.boardSize != 0 && up >= 0) {   //If it's not on the left edge, and not at the top
                 insertBall = getRandomBallKeyFromMap(availableBalls, newBoard[left], newBoard[up]);
-                decrementAvailableBalls(availableBalls, insertBall);
 
                 if(insertBall == null){ //shit hit the fan, we're gettin' out
                     lastBallsIterator = i;
                     break;
                 }
+                decrementAvailableBalls(availableBalls, insertBall);
+
                 newBoard[i] = insertBall;
 
             } else if (i % this.boardSize != 0 && left >= 0) { //If it's not on the left edge, and at the top
                 insertBall = getRandomBallKeyFromMap(availableBalls, newBoard[left]);
-                decrementAvailableBalls(availableBalls, insertBall);
 
                 if(insertBall == null){ //shit hit the fan, we're gettin' out
                     lastBallsIterator = i;
                     break;
                 }
+                decrementAvailableBalls(availableBalls, insertBall);
+
                 newBoard[i] = insertBall;
 
             } else if (up > 0){ //If it's on the left edge, and not at the top
                 insertBall = getRandomBallKeyFromMap(availableBalls, newBoard[up]);
-                decrementAvailableBalls(availableBalls, insertBall);
 
                 if(insertBall == null){ //shit hit the fan, we're gettin' out
                     lastBallsIterator = i;
                     break;
                 }
+                decrementAvailableBalls(availableBalls, insertBall);
+
                 newBoard[i] = insertBall;
 
             } else { //If it's on the left edge, and at the top
