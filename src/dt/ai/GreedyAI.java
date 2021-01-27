@@ -6,13 +6,19 @@ import dt.util.Move;
 
 import java.util.HashMap;
 
-/** @author Emiel Rous and Wouter Koning */
+/** @author Emiel Rous and Wouter Koning
+ * An AI written that uses a greedy algorithm
+ */
 public class GreedyAI implements AI {
 
     public GreedyAI(){
-
     }
 
+    /**
+     * Finds the best move using a Greedy algorithm.
+     * @param board The {@link Board} on which the AI has to find the best available move.
+     * @return The best available move that the AI could find.
+     */
     @Override
     public Move findBestMove(Board board) {
         Move bestMove = null;
