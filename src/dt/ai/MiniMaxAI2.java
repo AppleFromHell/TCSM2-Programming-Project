@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MiniMaxAI2 implements AI{
-    private static int DEFAULTDEPTH = 5;
+    private static int DEFAULTDEPTH = 7; // Depth of 7 really seems like a maximum.
 
     private final int depth;
     private Player you;

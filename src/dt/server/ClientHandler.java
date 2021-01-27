@@ -258,7 +258,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         this.opponent.setState(ClientHandlerStates.INGAME);
     }
 
-    public void closeGame(){
+    public synchronized void closeGame(){
         this.game = null;
         this.opponent = null;
         this.setState(ClientHandlerStates.LOGGEDIN);
@@ -350,6 +350,11 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
             Server.increaseScore(winner.getName());
         }
         socketHandler.write(ServerMessages.GAMEOVER.constructMessage(reason.toString(), name));
+        this.closeGame();
+    }
+
+    public void gameOver(ServerMessages.GameOverReasons reason) {
+        socketHandler.write(ServerMessages.GAMEOVER.constructMessage(reason.toString()));
         this.closeGame();
     }
 }

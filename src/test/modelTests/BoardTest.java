@@ -101,7 +101,7 @@ class BoardTest {
 
     @Test
     void testCreateBoard() {
-        board.setupBoardTest();
+        board.setupBoard();
         assertEquals(0, board.getYield().size());
         assertTrue(board.findValidMoves().size() > 0);
         int[] boardState = board.getBoardState();
@@ -124,6 +124,25 @@ class BoardTest {
         for (int i = 0; i < 100000; i++) {
             testCreateBoard();
         }
+    }
+
+    @Test
+    void testParticularBoardState() throws InvalidMoveException {
+        board.fillBoard(new int[]{3, 6, 5, 6, 4, 5, 2, 1, 4, 1, 5, 3, 1, 6, 2, 3, 6, 4, 5, 3, 2, 1, 5, 2, 0, 2, 5, 4, 4, 2, 3, 6, 1, 6, 2, 1, 5, 1, 5, 3, 1, 3, 4, 3, 4, 6, 4, 6, 2});
+        board.makeMove(new Move(3));
+        board.makeMove(new Move(23));
+        board.makeMove(new Move(8));
+        board.makeMove(new Move(17));
+        board.makeMove(new Move(1));
+
+        board.makeMove(new Move(18));
+        board.makeMove(new Move(20));
+        board.makeMove(new Move(14));
+
+        board.makeMove(new Move(22));
+        System.out.println(board.getPrettyBoardState());
+
+
     }
 
     @Test
@@ -572,7 +591,6 @@ class BoardTest {
         int[] cBoardState = copy.getBoardState();
         assertTrue(Arrays.equals(original.getBoardState(), copy.getBoardState()));
     }
-
 
     @Test
     void testCalculateBallCoordinates() {

@@ -72,14 +72,12 @@ public class Game {
                 winner = player1;
             } else if(player2Balls > player1Balls){ //Player 2 got more balls than player 1
                 winner = player2;
-            } else { //They got the same amount of balls, so nobody won
-                winner = null;
             }
         }
         if(winner != null) {
-           sendGameOver(ServerMessages.GameOverReasons.VICTORY, winner);
+           sendGameOverWin(winner);
         } else {
-           sendGameOver(ServerMessages.GameOverReasons.DRAW, null);
+           sendGameOverDraw(this.players);
         }
         this.manager.removeGame(this);
     }
@@ -87,14 +85,24 @@ public class Game {
     public synchronized void playerDisconnected(ClientHandler rageQuitter) {
         Player quitter = findPlayer(rageQuitter);
         for(Player player : this.players) {
-            if(player != quitter) sendGameOver(ServerMessages.GameOverReasons.VICTORY, player);
+            if(player != quitter) sendGameOverWin(player);
         }
         this.players.remove(quitter);
     }
 
-    private synchronized void sendGameOver(ServerMessages.GameOverReasons reason, Player winner) {
+    private synchronized void sendGameOverWin(Player winner) {
         for(Player player : this.players) {
-            player.getClientHandler().gameOver(reason, winner.getClientHandler());
+            if(player.getClientHandler() != null) {
+                player.getClientHandler().gameOver(ServerMessages.GameOverReasons.VICTORY, winner.getClientHandler());
+            }
+        }
+    }
+
+    private synchronized void sendGameOverDraw(List<Player> players){
+        for(Player player : players){
+            if(player.getClientHandler() != null){
+                player.getClientHandler().gameOver(ServerMessages.GameOverReasons.DRAW);
+            }
         }
     }
 }

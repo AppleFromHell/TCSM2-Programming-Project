@@ -117,6 +117,7 @@ public class Board {
         if(move.isLegal()) {
             //calling isDoubleMove lowers complexity if it is a single move
             if (!move.isDoubleMove()) { //If it is a single move
+                List<Move> validSingleMoves = findValidSingleMoves();
                 validity = findValidSingleMoves().contains(move);
             } else if (move.isDoubleMove()) { //If it is a double move
                 if(!findValidSingleMoves().isEmpty())
@@ -190,7 +191,7 @@ public class Board {
                     Move move = new Move(this.boardSize + rowIndex);
                     //Check the rows and columns for an empty square
                     //Check from ballindex to right of board -> left to right possible
-                    if(rowBalls.subList(ballIndex, this.boardSize-1).contains(BallType.EMPTY) &&
+                    if(rowBalls.subList(ballIndex, this.boardSize).contains(BallType.EMPTY) &&
                         !possibleMoves.contains(move)) {
                         possibleMoves.add(move);
                     }
@@ -203,7 +204,7 @@ public class Board {
 
                     //Check row index to bottom -> top to bottom possible
                     move = new Move(this.boardSize * 3 + ballIndex);
-                    if(this.columns.get(ballIndex).getBalls().subList(rowIndex, this.boardSize-1).contains(BallType.EMPTY) &&
+                    if(this.columns.get(ballIndex).getBalls().subList(rowIndex, this.boardSize).contains(BallType.EMPTY) &&
                         !possibleMoves.contains(move)) {
                         possibleMoves.add(move);
                     }
@@ -243,7 +244,7 @@ public class Board {
                         for(int offset = 0; offset < sameBallsInARow; offset++) {
                             toBeRemovedBalls.putIfAbsent(calculateBallCoordinates(sequenceList, seq, element + offset), thisBall);
                         }
-                        element += sameBallsInARow; //Update the value of the iterator
+                        element += sameBallsInARow - 1; //Update the value of the iterator
 
                         //Save the ball and the amount of its neighbours to a HashMap for adding player score.
                     }
@@ -346,7 +347,8 @@ public class Board {
                 board.append(System.lineSeparator()).append(rowSeperator).append(System.lineSeparator());
             }
         }
-        return board.toString();
+        return board.toString().replace("0", " ");
+//        return board.toString();
     }
 
     public boolean isGameOver() {
