@@ -1,32 +1,28 @@
 package dt.ai;
 
 import dt.model.Board;
-import dt.server.Player;
 import dt.util.Move;
 
 import java.util.List;
 
-/** @author Emiel Rous and Wouter Koning */
+/** @author Emiel Rous and Wouter Koning
+ * A minimax algorithm with a default depth of 4 to keep moves under 20 seconds.
+ */
 public class MiniMaxAI implements AI{
 
     private static int DEFAULTDEPTH = 4;
 
     private final int depth;
-    private Player you;
 
     public MiniMaxAI(){
         this.depth = DEFAULTDEPTH;
     }
 
-    public MiniMaxAI(int depth){
-        this.depth = depth;
-    }
-
-    public MiniMaxAI(int depth, Player you){
-        this.depth = depth;
-        this.you = you;
-    }
-
+    /**
+     * Finds the best move using a MiniMAx algorithm.
+     * @param board The {@link Board} on which the AI has to find the best available move.
+     * @return The best available move that the AI could find.
+     */
     @Override
     public Move findBestMove(Board board) {
         int bestScore = Integer.MIN_VALUE;
@@ -42,6 +38,14 @@ public class MiniMaxAI implements AI{
         return bestMove;
     }
 
+    /**
+     * The minimizer, which mimics the enemy player.
+     * @param board The board you're playing on
+     * @param move The last move performed, and thus the new board that you're playing on.
+     * @param depth The depth of the minimax algorithm.
+     * @param score The score you're keeping track of and want to maximize in the end.
+     * @return the score that it has assigned this board.
+     */
     private int minimizer(Board board, Move move, int depth, int score){
         Board nextBoard = board.deepCopy();
         this.executeMove(nextBoard, move);
@@ -67,6 +71,14 @@ public class MiniMaxAI implements AI{
         return minScore;
     }
 
+    /**
+     * The maximizer, which mimics the enemy player.
+     * @param board The board you're playing on
+     * @param move The last move performed, and thus the new board that you're playing on.
+     * @param depth The depth of the minimax algorithm.
+     * @param score The score you're keeping track of and want to maximize in the end.
+     * @return the score that it has assigned this board.
+     */
     private int maximizer(Board board, Move move, int depth, int score){
         Board nextBoard = board.deepCopy();
         this.executeMove(nextBoard, move);
@@ -95,6 +107,12 @@ public class MiniMaxAI implements AI{
         return maxScore;
     }
 
+    /**
+     * A method introduced to keep the {@link MiniMaxAI#maximizer(Board, Move, int, int)} and
+     * {@link MiniMaxAI#minimizer(Board, Move, int, int)} as clean as possible.
+     * @param board The board you're playing on
+     * @param move The last move performed, and thus the new board that you're playing on.
+     */
     private void executeMove(Board board, Move move){
         board.executeMove(move.getMove1());
         if(move.isDoubleMove()){
