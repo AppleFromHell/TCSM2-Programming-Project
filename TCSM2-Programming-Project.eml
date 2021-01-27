@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component LANGUAGE_LEVEL="JDK_11" jdk="11" jdk_type="JavaSDK">
+	<output-test url="file://$MODULE_DIR$/out/test/TCSM2-Programming-Project"/>
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$">
+		<testFolder url="file://$MODULE_DIR$/src/test"/>
+	</contentEntry>
+	<levels>
+		<level name="lib" value="project"/>
+	</levels>
+</component>

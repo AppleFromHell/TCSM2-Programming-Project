@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="lib">
+    <archive path="C:/Users/PC/Documents/Studie/CS - Module 2/TCSM2-Programming-Project/lib/opentest4j-1.1.1.jar" />
+    <archive path="C:/Users/PC/Documents/Studie/CS - Module 2/TCSM2-Programming-Project/lib/junit-jupiter-5.4.2.jar" />
+    <archive path="C:/Users/PC/Documents/Studie/CS - Module 2/TCSM2-Programming-Project/lib/apiguardian-api-1.0.0.jar" />
+    <archive path="C:/Users/PC/Documents/Studie/CS - Module 2/TCSM2-Programming-Project/lib/junit-jupiter-api-5.4.2.jar" />
+    <archive path="C:/Users/PC/Documents/Studie/CS - Module 2/TCSM2-Programming-Project/lib/junit-jupiter-engine-5.4.2.jar" />
+    <archive path="C:/Users/PC/Documents/Studie/CS - Module 2/TCSM2-Programming-Project/lib/junit-jupiter-params-5.4.2.jar" />
+    <archive path="C:/Users/PC/Documents/Studie/CS - Module 2/TCSM2-Programming-Project/lib/junit-platform-engine-1.4.2.jar" />
+    <archive path="C:/Users/PC/Documents/Studie/CS - Module 2/TCSM2-Programming-Project/lib/junit-platform-commons-1.4.2.jar" />
+  </library>
+</eclipse-userlibraries>
+

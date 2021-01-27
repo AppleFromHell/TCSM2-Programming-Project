@@ -14,7 +14,7 @@ public class SocketHandler implements Runnable {
     private BufferedReader socketIn;
     private BufferedWriter socketOut;
     private String name;
-    private boolean debug = true;
+    private boolean debug = false;
     private boolean shutDown = false;
 
     public SocketHandler(NetworkEntity networkEntity, Socket socket, String name) {
