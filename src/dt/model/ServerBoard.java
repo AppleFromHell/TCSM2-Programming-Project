@@ -21,7 +21,7 @@ public class ServerBoard extends Board{
     /**
      * The method to be called when you want to create a new board.
      * @return A valid board in the shape of {@link int[]}.
-     * @assures The board created will hold to the rules that there are 6 balls of which each 8 colours, none of
+     * @ensures The board created will hold to the rules that there are 6 balls of which each 8 colours, none of
      * which lie next to to each other.
      */
     public int[] createBoard(){
@@ -80,6 +80,8 @@ public class ServerBoard extends Board{
                 newBoard[i] = BallType.EMPTY;
             } else if (i % this.boardSize != 0 && up >= 0) {   //If it's not on the left edge, and not at the top
                 insertBall = getRandomBallKeyFromMap(availableBalls, newBoard[left], newBoard[up]);
+                decrementAvailableBalls(availableBalls, insertBall);
+
                 if(insertBall == null){ //shit hit the fan, we're gettin' out
                     lastBallsIterator = i;
                     break;
@@ -88,6 +90,8 @@ public class ServerBoard extends Board{
 
             } else if (i % this.boardSize != 0 && left >= 0) { //If it's not on the left edge, and at the top
                 insertBall = getRandomBallKeyFromMap(availableBalls, newBoard[left]);
+                decrementAvailableBalls(availableBalls, insertBall);
+
                 if(insertBall == null){ //shit hit the fan, we're gettin' out
                     lastBallsIterator = i;
                     break;
@@ -96,6 +100,8 @@ public class ServerBoard extends Board{
 
             } else if (up > 0){ //If it's on the left edge, and not at the top
                 insertBall = getRandomBallKeyFromMap(availableBalls, newBoard[up]);
+                decrementAvailableBalls(availableBalls, insertBall);
+
                 if(insertBall == null){ //shit hit the fan, we're gettin' out
                     lastBallsIterator = i;
                     break;
@@ -104,10 +110,9 @@ public class ServerBoard extends Board{
 
             } else { //If it's on the left edge, and at the top
                 insertBall = getRandomBallKeyFromMap(availableBalls);
+                decrementAvailableBalls(availableBalls, insertBall);
                 newBoard[i] = insertBall;
             }
-
-            decrementAvailableBalls(availableBalls, insertBall);
         }
 
         while(availableBalls.size() != 0){ //Shit hit the fan at iteration i, preparing the squad we're moving in
@@ -149,7 +154,7 @@ public class ServerBoard extends Board{
      * Iterates through all of the positions of the board, and sees whether any of them need any fixing up. If they do,
      * it tries to swap them with a position that they can go to, and the other ball can come back to.
      * @param board The board that needs an additional check and possibly some fixing.
-     * @assures That that the {@link BallType[]} is now a valid board.
+     * @ensures That that the {@link BallType[]} is now a valid board.
      */
     private void fixNeighbouringBalls(BallType[] board){
         boolean validBoard = true;
@@ -235,7 +240,7 @@ public class ServerBoard extends Board{
      * @param array The array which has the swapping going on.
      * @param b1 Index 1 of the swapping
      * @param b2 Index 2 of the swapping.
-     * @assures That the elements at the two indexes are now swapped, and nothing else has changed.
+     * @ensures That the elements at the two indexes are now swapped, and nothing else has changed.
      */
     public void swap(BallType[] array, int b1, int b2){
         BallType temp = array[b2];
