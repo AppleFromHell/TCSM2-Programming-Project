@@ -32,7 +32,7 @@ public class MiniMaxAI implements AI{
         int bestScore = Integer.MIN_VALUE;
         Move bestMove = null;
         for(Move nextMove : board.findValidMoves()){
-            int nextScore = this.maximizer(board, nextMove, this.depth, 0);
+            int nextScore = this.minimizer(board, nextMove, this.depth, 0);
             if(nextScore > bestScore){
                 bestScore = nextScore;
                 bestMove = nextMove;
