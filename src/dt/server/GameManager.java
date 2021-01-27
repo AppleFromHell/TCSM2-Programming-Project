@@ -34,4 +34,8 @@ public class GameManager {
     public synchronized void removeGame(Game game){
         this.activeGames.remove(game);
     }
+
+    public void removePlayer(ClientHandler clientHandler) {
+        queue.remove(clientHandler);
+    }
 }

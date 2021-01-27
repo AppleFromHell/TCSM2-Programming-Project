@@ -28,7 +28,6 @@ import java.util.List;
 
 /** @author Emiel Rous and Wouter Koning */
 public class Client implements ClientProtocol, NetworkEntity {
-    //TODO client states doesn't work perfectly
 
     private Socket serverSocket;
     private SocketHandler socketHandler;
@@ -142,7 +141,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                         this.clientView.displayList(parseListResponse(arguments));
                     break;
                 case NEWGAME:
-                    if(this.state == ClientStates.INQUEUE) { //TODO Sometimes when creating a new game, it doesn't expect the NEWGAME response from the server
+                    if(this.state == ClientStates.INQUEUE) {
                         this.createNewBoard(arguments);
                     }   else {
                         throw new UnexpectedResponseException();
@@ -361,6 +360,7 @@ public class Client implements ClientProtocol, NetworkEntity {
 
     private synchronized void makeMove(Move move) throws InvalidMoveException {
         board.makeMove(move);
+        this.clientView.showMessage(Arrays.toString(this.board.getBoardState()));
         this.clientView.showBoard(this.board);
     }
 

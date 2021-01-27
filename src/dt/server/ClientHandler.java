@@ -12,6 +12,7 @@ import dt.util.Move;
 import javax.security.auth.login.LoginException;
 import java.net.ProtocolException;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class ClientHandler implements NetworkEntity, ServerProtocol {
     private final Server server;
@@ -32,6 +33,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     private boolean rankEnabled;
     private boolean cryptEnabled;
     private boolean authEnabled;
+    private boolean debug;
 
     ClientHandler(Server server, GameManager gameManager, ServerTUI view, Socket socket, boolean debug) {
         this.server = server;
@@ -41,6 +43,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         new Thread(socketHandler).start();
         this.view = view;
         this.game = null;
+        this.debug = debug;
     }
 
     @Override
@@ -262,14 +265,17 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
                 throw new ProtocolException("Too many arguments");
         }
         if(this.myTurn) {
+            view.showMessage(this.userName + "Moves: " + move);
             this.makeMove(move);
             this.myTurn = false;
             if(opponent != null) {
                 opponent.setMyTurn(true);
             }
             String moveMsg = ServerMessages.MOVE.constructMessage(move);
-            socketHandler.write(moveMsg);
-            opponent.getSocketHandler().write(moveMsg);
+            if(this.game != null && this.game.getBoard() != null && !this.game.getBoard().isGameOver()) {
+                socketHandler.write(moveMsg);
+                opponent.getSocketHandler().write(moveMsg);
+            }
         } else {
             throw new NotYourTurnException("Not your turn");
         }
@@ -281,6 +287,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
 
     private void makeMove(Move move) throws NumberFormatException, InvalidMoveException, ClientHandlerNotFoundException {
         this.game.makeMove(move, this);
+        if(this.debug && this.getGame() != null&& this.getGame().getBoard() != null) view.showMessage(Arrays.toString(this.game.getBoard().getBoardState()));
     }
 
 
@@ -290,6 +297,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         if(this.game != null){
             this.game.playerDisconnected(this);
         }
+        this.gameManager.removePlayer(this);
         this.socketHandler.shutDown();
         this.shutDown();
     }
@@ -298,6 +306,10 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     public void shutDown() {
         this.server.removeClientHandler(this);
         this.server.removeUser(this.name);
+    }
+
+    public void serverShutdown() {
+        this.socketHandler.shutDown();
     }
 
     public SocketHandler getSocketHandler() {

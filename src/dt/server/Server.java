@@ -238,7 +238,7 @@ public class Server {
      * Disconnects all clients using {@link ClientHandler#shutDown()}. It then shuts down the server and exits the program with exit code 69.
      */
     public void shutDown() {
-        //this.connectedClients.forEach(ClientHandler::shutDown); //TODO server shutdown regelen
+        this.connectedClients.forEach(ClientHandler::serverShutdown);
         this.view.showMessage("Server is shutting down. Cya lator aligator");
         System.exit(69);
     }
