@@ -120,6 +120,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                     if (this.state == ClientStates.PENDINGLOGIN) {
                         this.state = ClientStates.LOGGEDIN;
                         this.clientView.showMessage("Successfully logged in!");
+                        this.clientView.showMessage("Mane menu. Enter a command.");
                         synchronized (clientView) {
                             this.clientView.notifyAll();
                         }
@@ -147,6 +148,8 @@ public class Client implements ClientProtocol, NetworkEntity {
                         throw new UnexpectedResponseException();
                     }
                     this.clientView.showBoard(this.board);
+                    this.clientView.showMessage("Your move: ");
+
                     break;
                 case MOVE:
                     if (this.state == ClientStates.WAITVERIFYMOVE) {
@@ -168,6 +171,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                     break;
                 case GAMEOVER:
                     this.clientView.showMessage(this.handleGameOver(arguments));
+                    this.clientView.showMessage("Mane menu. Enter a command.");
                     break;
                 case ERROR:
                     clientView.showMessage("Server threw error: " + msg);
@@ -370,6 +374,7 @@ public class Client implements ClientProtocol, NetworkEntity {
     public synchronized void makeTheirMove(Move move) throws InvalidMoveException {
         this.makeMove(move);
         this.clientView.showMessage("Their move on board was: "+ move);
+        this.clientView.showMessage("Your move: ");
         this.state = ClientStates.WAITOURMOVE;
         if(debug) this.clientView.showMessage("makeTheirMove(): " + this.state);
         this.myTurn = true;

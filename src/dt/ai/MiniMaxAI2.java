@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MiniMaxAI2 implements AI{
-    private static int DEFAULTDEPTH = 5; // Depth of 7 really seems like a maximum.
+    private static int DEFAULTDEPTH = 6; // Depth of 7 really seems like a maximum.
 
     private final int depth;
     private Player you;
@@ -33,6 +33,7 @@ public class MiniMaxAI2 implements AI{
 
     @Override
     public Move findBestMove(Board board) {
+        long millis = System.currentTimeMillis();
         int bestScore = Integer.MIN_VALUE;
         Move bestMove = null;
         for(Move nextMove : board.findValidMoves()){
@@ -42,7 +43,7 @@ public class MiniMaxAI2 implements AI{
                 bestMove = nextMove;
             }
         }
-
+        System.out.println("Time: "+ (System.currentTimeMillis()-millis)/1000);
         return bestMove;
     }
 
