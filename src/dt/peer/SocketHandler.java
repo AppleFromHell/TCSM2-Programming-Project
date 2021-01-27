@@ -3,7 +3,9 @@ package dt.peer;
 import java.io.*;
 import java.net.Socket;
 
-/** @author Emiel Rous and Wouter Koning */
+/**
+ * A hanlder of the socket. Sends and receives messages
+ * @author Emiel Rous and Wouter Koning */
 public class SocketHandler implements Runnable {
     private Socket socket;
     private NetworkEntity networkEntity;
@@ -34,6 +36,10 @@ public class SocketHandler implements Runnable {
         }
     }
 
+    /**
+     * Read the line from the socket.
+     * @ensures A shutdown from either side results in a neat shutdown of the {@link NetworkEntity}
+     */
     private void readSocketInput() {
         try {
             while(!socket.isClosed() && socketIn != null ) {
@@ -49,6 +55,10 @@ public class SocketHandler implements Runnable {
         }
     }
 
+    /**
+     * Write a line to the socket.
+     * @ensures A shutdown from either side results in a neat shutdown of the {@link NetworkEntity}
+     */
     public void write(String msg) {
         if(!socket.isClosed()) {
             try {
@@ -64,6 +74,10 @@ public class SocketHandler implements Runnable {
     public void setName(String name) {
         this.name = name;
     }
+
+    /**
+     * Neatly handles a shutdown
+     */
     public void shutDown() {
         this.shutDown = true;
         try {
