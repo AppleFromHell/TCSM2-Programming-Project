@@ -22,6 +22,13 @@ public enum AITypes {
                 public AI getAIClass(){
                     return new MiniMaxAI();
                 }
+            },
+    MINIMAX2
+            {
+                @Override
+                public AI getAIClass(){
+                    return new MiniMaxAI2();
+                }
             };
 
     static public String allToString(){
