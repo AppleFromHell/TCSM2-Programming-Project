@@ -42,6 +42,7 @@ public class MainDisplay extends JPanel{
         this.client = client;
         selectAi.addActionListener(e -> setAi());
         Arrays.stream(AITypes.values()).map(AITypes::toString).forEach(selectAi::addItem);
+        this.hintButton.setEnabled(false);
     }
 
     private void setAi() {
@@ -102,6 +103,7 @@ public class MainDisplay extends JPanel{
     }
 
     public void showBoard(int[] boardState) {
+        this.hintButton.setEnabled(true);
         ((GameDisplay) gameDisplay).setGameState(boardState);
     }
 
@@ -120,6 +122,7 @@ public class MainDisplay extends JPanel{
     }
 
     public void emptyBoard() {
+        this.hintButton.setEnabled(false);
         this.turnLabel.setText("Turn: ");
         ((GameDisplay)this.gameDisplay).setEmptyBoard();
         ((GameDisplay)this.gameDisplay).paintComponent(this.gameDisplay.getGraphics());
