@@ -3,23 +3,26 @@ package dt.collectoClient.GUI;
 import dt.collectoClient.Client;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import java.awt.event.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
  * The popup for the server Ip and port
+ *
  * @author Wouter Koning and Emiel Rous
  */
 public class Server_prompt extends JDialog {
+    private final Client client;
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
     private JTextField textField1;
     private JTextField textField2;
     private JCheckBox useDefaultCheckBox;
-    private final Client client;
 
     public Server_prompt(Client client) {
         this.client = client;
@@ -44,7 +47,7 @@ public class Server_prompt extends JDialog {
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         useDefaultCheckBox.addItemListener(e -> {
-            if(e.getStateChange() == ItemEvent.SELECTED) {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
                 textField1.setText("localhost");
                 textField1.setEditable(false);
                 textField2.setText("6969");
@@ -61,6 +64,7 @@ public class Server_prompt extends JDialog {
 
     /**
      * Set the ip and the port of the client
+     *
      * @ensures dialog is closed
      */
     private void onOK() {

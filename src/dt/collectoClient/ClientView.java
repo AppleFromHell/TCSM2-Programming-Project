@@ -8,7 +8,9 @@ import dt.util.Move;
 
 /**
  * Interface used by both GUI and TUI
- * @author Emiel Rous and Wouter Koning */
+ *
+ * @author Emiel Rous and Wouter Koning
+ */
 public interface ClientView extends Runnable {
 
     String UNKOWNCOMMAND = "Unkown command: '%s' For a list of valid commands type h";
@@ -20,6 +22,7 @@ public interface ClientView extends Runnable {
 
     /**
      * Show a message in the console
+     *
      * @param msg
      */
     void showMessage(String msg);
@@ -28,6 +31,7 @@ public interface ClientView extends Runnable {
 
     /**
      * Prompt the user to reconnect
+     *
      * @return
      * @throws UserExit
      */
@@ -38,10 +42,11 @@ public interface ClientView extends Runnable {
 
     /**
      * Parse the arguments into a move
-     * @requires the arguments to be integers and valid moves given the boardsize
+     *
      * @param arguments
      * @return
      * @throws CommandException
+     * @requires the arguments to be integers and valid moves given the boardsize
      */
     default Move parseMove(String[] arguments) throws CommandException {
         if (arguments.length == 2) {

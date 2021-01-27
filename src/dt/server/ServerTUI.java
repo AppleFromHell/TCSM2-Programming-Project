@@ -3,7 +3,9 @@ package dt.server;
 import dt.exceptions.UserExit;
 import dt.util.SimpleTUI;
 
-/** @author Emiel Rous and Wouter Koning */
+/**
+ * @author Emiel Rous and Wouter Koning
+ */
 public class ServerTUI extends SimpleTUI {
     private final Server server;
 

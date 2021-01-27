@@ -3,7 +3,9 @@ package dt.collectoClient;
 
 /**
  * These are the states the {@link Client} can be in
- * @author Emiel Rous and Wouter Koning */
+ *
+ * @author Emiel Rous and Wouter Koning
+ */
 public enum ClientStates {
     STARTINGUP,
     PENDINGHELLO,
@@ -15,7 +17,6 @@ public enum ClientStates {
     WAITOURMOVE,
     WAITVERIFYMOVE,
     GAMEOVER,
-
 
 
 }

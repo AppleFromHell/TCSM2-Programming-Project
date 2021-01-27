@@ -5,7 +5,9 @@ import java.net.Socket;
 
 /**
  * A hanlder of the socket. Sends and receives messages
- * @author Emiel Rous and Wouter Koning */
+ *
+ * @author Emiel Rous and Wouter Koning
+ */
 public class SocketHandler implements Runnable {
     private final Socket socket;
     private final NetworkEntity networkEntity;
@@ -13,11 +15,7 @@ public class SocketHandler implements Runnable {
     private BufferedWriter socketOut;
     private String name;
     private boolean debug = true;
-    private boolean shutDown =false;
-
-    public void run() {
-        readSocketInput();
-    }
+    private boolean shutDown = false;
 
     public SocketHandler(NetworkEntity networkEntity, Socket socket, String name) {
         this.networkEntity = networkEntity;
@@ -36,16 +34,21 @@ public class SocketHandler implements Runnable {
         }
     }
 
+    public void run() {
+        readSocketInput();
+    }
+
     /**
      * Read the line from the socket.
+     *
      * @ensures A shutdown from either side results in a neat shutdown of the {@link NetworkEntity}
      */
     private void readSocketInput() {
         try {
-            while(!socket.isClosed() && socketIn != null ) {
+            while (!socket.isClosed() && socketIn != null) {
                 String msg = socketIn.readLine();
-                if(debug) System.out.println("[IN]:" +msg);
-                if(msg == null){
+                if (debug) System.out.println("[IN]:" + msg);
+                if (msg == null) {
                     throw new IOException();
                 }
                 networkEntity.handleMessage(msg);
@@ -57,12 +60,13 @@ public class SocketHandler implements Runnable {
 
     /**
      * Write a line to the socket.
+     *
      * @ensures A shutdown from either side results in a neat shutdown of the {@link NetworkEntity}
      */
     public void write(String msg) {
-        if(!socket.isClosed()) {
+        if (!socket.isClosed()) {
             try {
-                if(debug) System.out.println("[OUT]:" + msg);
+                if (debug) System.out.println("[OUT]:" + msg);
                 socketOut.write(msg);
                 socketOut.newLine();
                 socketOut.flush();
@@ -71,6 +75,7 @@ public class SocketHandler implements Runnable {
             }
         }
     }
+
     public void setName(String name) {
         this.name = name;
     }

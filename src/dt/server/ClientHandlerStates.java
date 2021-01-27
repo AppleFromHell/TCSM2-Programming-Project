@@ -1,6 +1,7 @@
 package dt.server;
 
-/** @author Emiel Rous and Wouter Koning
+/**
+ * @author Emiel Rous and Wouter Koning
  * The various states the ClientHandler can be in.
  */
 public enum ClientHandlerStates {

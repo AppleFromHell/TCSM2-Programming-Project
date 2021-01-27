@@ -7,7 +7,6 @@ import dt.model.ServerBoard;
 import dt.util.Move;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,14 +22,14 @@ class BoardTest {
 
 
     @BeforeEach
-    void setup(){
+    void setup() {
         board = new ServerBoard();
         board.setupBoard();
         boardSize = board.getBoardSize();
 
-        emptyBoardState = new int[boardSize*boardSize];
+        emptyBoardState = new int[boardSize * boardSize];
         testBoard = new ServerBoard();
-        for(int i =0; i < boardSize * boardSize; i++) {
+        for (int i = 0; i < boardSize * boardSize; i++) {
             emptyBoardState[i] = 0;
         }
     }
@@ -52,13 +51,13 @@ class BoardTest {
 
     @Test
     void testSetupForConsistency() {
-        for(int i = 0; i < 10000; i++){
+        for (int i = 0; i < 10000; i++) {
             testSetup();
         }
     }
 
     @Test
-    void testIsSwapable(){
+    void testIsSwapable() {
 //        if(swapfiets) yes;
         BallType[] testArray = {
                 BallType.ORANGE, //0
@@ -75,7 +74,7 @@ class BoardTest {
                 BallType.RED,
                 BallType.BLUE, //11
                 BallType.RED,
-                BallType.BLUE }; //13
+                BallType.BLUE}; //13
 
         assertFalse(board.isSwapable(testArray, 2, BallType.PINK)); //Check left and right neighbour
         assertTrue(board.isSwapable(testArray, 2, BallType.RED));
@@ -90,7 +89,7 @@ class BoardTest {
     }
 
     @Test
-    void testSwap(){
+    void testSwap() {
         BallType[] testArray = {BallType.EMPTY, BallType.BLUE, BallType.RED};
 
         board.swap(testArray, 0, 2);
@@ -108,10 +107,10 @@ class BoardTest {
 
         List<Integer> state = Arrays.stream(boardState).boxed().collect(Collectors.toList());
 
-        for(int i = 1 ; i <= 6; i++){ //balls
+        for (int i = 1; i <= 6; i++) { //balls
             int colourAmount = 0;
-            for(Integer num : state){
-                if(num == i){
+            for (Integer num : state) {
+                if (num == i) {
                     colourAmount += 1;
                 }
             }
@@ -151,8 +150,8 @@ class BoardTest {
         boardState[0] = 1;
         boardState[5] = 2;
         testBoard.fillBoard(boardState);
-        assertThrows(InvalidMoveException.class, () ->  testBoard.makeMove(new Move(0)));
-        assertThrows(InvalidMoveException.class, () ->  testBoard.makeMove(new Move(20)));
+        assertThrows(InvalidMoveException.class, () -> testBoard.makeMove(new Move(0)));
+        assertThrows(InvalidMoveException.class, () -> testBoard.makeMove(new Move(20)));
     }
 
     @Test
@@ -238,19 +237,19 @@ class BoardTest {
         boardState[0] = 1;
         testBoard.fillBoard(boardState);
 
-        possibleMoves= testBoard.findPossibleMoves();
+        possibleMoves = testBoard.findPossibleMoves();
 
         assertTrue(
                 possibleMoves.contains(new Move(21)) &&
                         possibleMoves.contains(new Move(7)) &&
-                        possibleMoves.size() ==2
+                        possibleMoves.size() == 2
 
-                        );
+        );
 
         boardState = emptyBoardState.clone();
         boardState[3] = 1;
         testBoard.fillBoard(boardState);
-        possibleMoves= testBoard.findPossibleMoves();
+        possibleMoves = testBoard.findPossibleMoves();
         assertTrue(
                 possibleMoves.contains(new Move(0)) &&
                         possibleMoves.contains(new Move(7)) &&
@@ -261,7 +260,7 @@ class BoardTest {
         boardState = emptyBoardState.clone();
         boardState[24] = 1;
         testBoard.fillBoard(boardState);
-        possibleMoves= testBoard.findPossibleMoves();
+        possibleMoves = testBoard.findPossibleMoves();
         assertTrue(
                 possibleMoves.contains(new Move(3)) &&
                         possibleMoves.contains(new Move(17)) &&
@@ -324,7 +323,7 @@ class BoardTest {
         boardState[0] = 1;
         boardState[48] = 1;
         testBoard.fillBoard(boardState);
-        assertEquals(Collections.emptyList() ,testBoard.findValidSingleMoves());
+        assertEquals(Collections.emptyList(), testBoard.findValidSingleMoves());
         List<Move> validDoubleMoves = testBoard.findValidDoubleMoves();
         assertTrue(
                 validDoubleMoves.contains(new Move(7, 27)) &&
@@ -338,14 +337,14 @@ class BoardTest {
                         validDoubleMoves.size() == 8);
         boardState[6] = 2;
         testBoard.fillBoard(boardState);
-        assertEquals(Collections.emptyList() ,testBoard.findValidSingleMoves());
+        assertEquals(Collections.emptyList(), testBoard.findValidSingleMoves());
         validDoubleMoves = testBoard.findValidDoubleMoves();
         assertTrue(
-                validDoubleMoves.contains(new Move(21,13)) &&
+                validDoubleMoves.contains(new Move(21, 13)) &&
                         validDoubleMoves.contains(new Move(21, 6)) &&
-                        validDoubleMoves.contains(new Move(6,14)) &&
+                        validDoubleMoves.contains(new Move(6, 14)) &&
                         validDoubleMoves.contains(new Move(6, 21)) &&
-                        validDoubleMoves.contains(new Move(7,26)) &&
+                        validDoubleMoves.contains(new Move(7, 26)) &&
                         validDoubleMoves.contains(new Move(20, 1)) &&
                         validDoubleMoves.size() == 6
         );
@@ -495,7 +494,7 @@ class BoardTest {
                 BallType.EMPTY,
                 BallType.EMPTY,
                 BallType.EMPTY
-                ));
+        ));
         assertEquals(thirdColumn.getBalls(), testBoard.getColumns().get(2).getBalls());
     }
 
@@ -509,7 +508,6 @@ class BoardTest {
         boardState[0] = 0;
         boardState[6] = 1;
         testBoard.fillBoard(boardState);
-
 
 
         assertArrayEquals(boardState, testBoard.getBoardState());
@@ -547,7 +545,7 @@ class BoardTest {
                 BallType.EMPTY,
                 BallType.EMPTY,
                 BallType.BLUE
-                )));
+        )));
         testBoard.synchronize(testBoard.getRows(), testBoard.getColumns());
         assertEquals(new Sequence(Arrays.asList(
                 BallType.BLUE,
@@ -557,8 +555,8 @@ class BoardTest {
                 BallType.EMPTY,
                 BallType.EMPTY,
                 BallType.EMPTY
-                )).getBalls(), testBoard.getColumns().get(boardSize-1).getBalls());
-        testBoard.getColumns().set(boardSize-1, new Sequence(Arrays.asList(
+        )).getBalls(), testBoard.getColumns().get(boardSize - 1).getBalls());
+        testBoard.getColumns().set(boardSize - 1, new Sequence(Arrays.asList(
                 BallType.EMPTY,
                 BallType.EMPTY,
                 BallType.EMPTY,
@@ -566,7 +564,7 @@ class BoardTest {
                 BallType.EMPTY,
                 BallType.EMPTY,
                 BallType.BLUE
-                )));
+        )));
         testBoard.synchronize(testBoard.getColumns(), testBoard.getRows());
         assertEquals(new Sequence(Arrays.asList(
                 BallType.EMPTY,
@@ -576,7 +574,7 @@ class BoardTest {
                 BallType.EMPTY,
                 BallType.EMPTY,
                 BallType.BLUE
-        )).getBalls(), testBoard.getRows().get(boardSize-1).getBalls());
+        )).getBalls(), testBoard.getRows().get(boardSize - 1).getBalls());
 
     }
 
@@ -596,13 +594,13 @@ class BoardTest {
     void testCalculateBallCoordinates() {
 
         assertEquals(0, testBoard.calculateBallCoordinates(testBoard.getColumns(), 0, 0));
-        assertEquals(0,testBoard.calculateBallCoordinates(testBoard.getRows(), 0, 0));
+        assertEquals(0, testBoard.calculateBallCoordinates(testBoard.getRows(), 0, 0));
 
         assertEquals(6, testBoard.calculateBallCoordinates(testBoard.getColumns(), 6, 0));
-        assertEquals(6,testBoard.calculateBallCoordinates(testBoard.getRows(), 0, 6));
+        assertEquals(6, testBoard.calculateBallCoordinates(testBoard.getRows(), 0, 6));
 
         assertEquals(48, testBoard.calculateBallCoordinates(testBoard.getColumns(), 6, 6));
-        assertEquals(48,testBoard.calculateBallCoordinates(testBoard.getRows(), 6, 6));
+        assertEquals(48, testBoard.calculateBallCoordinates(testBoard.getRows(), 6, 6));
     }
 
     @Test
@@ -632,9 +630,9 @@ class BoardTest {
         balls.add(BallType.EMPTY);  //6
         Sequence sequence = new Sequence(balls);
         int score = 0;
-        for(int i = 0; i < boardSize; i++){
+        for (int i = 0; i < boardSize; i++) {
             int sameBalls = board.sameBallsInSequence(sequence, i, 1);
-            if(sameBalls > 1){
+            if (sameBalls > 1) {
                 i += sameBalls - 1;
                 score += sameBalls;
             }
@@ -656,9 +654,9 @@ class BoardTest {
         Sequence sequence = new Sequence(balls);
 
         int score = 0;
-        for(int i = 0; i < boardSize; i++){
+        for (int i = 0; i < boardSize; i++) {
             int sameBalls = board.sameBallsInSequence(sequence, i, 1);
-            if(sameBalls > 1){
+            if (sameBalls > 1) {
                 i += sameBalls - 1;
                 score += sameBalls;
             }
@@ -680,9 +678,9 @@ class BoardTest {
         Sequence sequence = new Sequence(balls);
 
         int score = 0;
-        for(int i = 0; i < balls.size(); i++){
+        for (int i = 0; i < balls.size(); i++) {
             int sameBalls = board.sameBallsInSequence(sequence, i, 1);
-            if(sameBalls > 1){
+            if (sameBalls > 1) {
                 i += sameBalls - 1;
                 score += sameBalls;
             }
@@ -691,7 +689,7 @@ class BoardTest {
     }
 
     @Test
-    void sameBallsInSequenceWithWrongDifferentSequenceSize(){
+    void sameBallsInSequenceWithWrongDifferentSequenceSize() {
         List<BallType> balls = new ArrayList<>();
         balls.add(BallType.ORANGE);
         balls.add(BallType.BLUE);

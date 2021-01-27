@@ -20,29 +20,25 @@ import java.util.stream.Collectors;
 public class ClientHandler implements NetworkEntity, ServerProtocol {
     private final Server server;
     private final GameManager gameManager;
-    private Game game;
-
     private final SocketHandler socketHandler;
-    private ClientHandler opponent;
     private final ServerTUI view;
-
+    private final boolean debug;
+    private Game game;
+    private ClientHandler opponent;
     private String name;
     private String userName;
-
     private ClientHandlerStates state;
-
     private boolean myTurn;
     private boolean chatEnabled;
     private boolean rankEnabled;
     private boolean cryptEnabled;
     private boolean authEnabled;
-    private final boolean debug;
 
     ClientHandler(Server server, GameManager gameManager, ServerTUI view, Socket socket, boolean debug) {
         this.server = server;
         this.gameManager = gameManager;
         this.socketHandler = new SocketHandler(this, socket, "");
-        if(debug) socketHandler.setDebug(debug);
+        if (debug) socketHandler.setDebug(debug);
         new Thread(socketHandler).start();
         this.view = view;
         this.game = null;
@@ -77,7 +73,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
                     break;
                 case MOVE:
                     if (this.state == ClientHandlerStates.INGAME) {
-                       this.handleMove(arguments);
+                        this.handleMove(arguments);
                     } else {
                         throw new UnexpectedResponseException("You're not in a game");
                     }
@@ -94,15 +90,15 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
 
             }
         } catch (IllegalArgumentException e) {
-            view.showMessage("["+ this.name + "] unknown response. Response: " + msg);
+            view.showMessage("[" + this.name + "] unknown response. Response: " + msg);
             if (!e.getMessage().equals("")) view.showMessage("Reason: " + e.getMessage());
             socketHandler.write(ServerMessages.ERROR.constructMessage("Unknown command. Received: " + msg));
         } catch (ProtocolException e) {
-            view.showMessage("["+ this.name + "] response invalid. Response: " + msg);
+            view.showMessage("[" + this.name + "] response invalid. Response: " + msg);
             if (!e.getMessage().equals("")) view.showMessage("Reason: " + e.getMessage());
             socketHandler.write(ServerMessages.ERROR.constructMessage("Invalid command. Received: " + msg));
         } catch (NotYourTurnException e) {
-            view.showMessage("["+ this.name + "] tried to move before his turn");
+            view.showMessage("[" + this.name + "] tried to move before his turn");
             socketHandler.write(ServerMessages.ERROR.constructMessage("It's not your turn"));
         } catch (LoginException e) {
             view.showMessage("[" + this.name + "] tried to access the Queue without loggin in first");
@@ -135,9 +131,9 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         try {
             this.name = arguments[1];
 
-            if(arguments.length > 2){ //Enable any extensions for this Client
-                for(int i = 2; i < arguments.length; i++){
-                    switch(arguments[i]){
+            if (arguments.length > 2) { //Enable any extensions for this Client
+                for (int i = 2; i < arguments.length; i++) {
+                    switch (arguments[i]) {
                         case "CHAT":
                             this.chatEnabled = true;
                             break;
@@ -172,7 +168,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new ProtocolException("Invalid number of arguments");
         }
-        if(this.server.isUserLoggedIn(userName)) {
+        if (this.server.isUserLoggedIn(userName)) {
             socketHandler.write(ServerMessages.ALREADYLOGGEDIN.constructMessage());
         } else {
             socketHandler.write(ServerMessages.LOGIN.constructMessage());
@@ -191,10 +187,10 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
             String[] arguments = msg.split(ProtocolMessages.delimiter, 2);
             String sender = this.name;
             String message = ServerMessages.CHAT.constructMessage(sender, arguments[1]);
-            for (ClientHandler handler : server.getAllClientHandler()){
+            for (ClientHandler handler : server.getAllClientHandler()) {
                 handler.getSocketHandler().write(message);
             }
-        } catch (ArrayIndexOutOfBoundsException e){
+        } catch (ArrayIndexOutOfBoundsException e) {
             throw new ProtocolException("Invalid number of arguments");
         }
     }
@@ -209,17 +205,17 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
             String message = ServerMessages.WHISPER.constructMessage(sender, arguments[2]);
 
             receivingHandler = server.getClientHandler(recipient);
-            if(receivingHandler != null){
-                if(receivingHandler.chatEnabled) { //Checks whether the client has chatting enabled.
+            if (receivingHandler != null) {
+                if (receivingHandler.chatEnabled) { //Checks whether the client has chatting enabled.
                     receivingHandler.getSocketHandler().write(message);
-                    if(!(receivingHandler == this)){ //But don't write the message to yourself twice.
+                    if (!(receivingHandler == this)) { //But don't write the message to yourself twice.
                         socketHandler.write(message);
                     }
                 }
             } else { //If the recipient could not be found, send an error message to the client.
                 socketHandler.write(ServerMessages.CANNOTWHISPER.constructMessage(recipient));
             }
-        } catch (ArrayIndexOutOfBoundsException e){
+        } catch (ArrayIndexOutOfBoundsException e) {
             throw new ProtocolException("Invalid number of arguments");
         }
     }
@@ -239,7 +235,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
     public void startGame(boolean startsFirst, ClientHandler opponent, Game game) {
         this.game = game;
         this.opponent = opponent;
-        if(startsFirst) {
+        if (startsFirst) {
             socketHandler.write(ServerMessages.NEWGAME
                     .constructMessage(
                             game.getBoard().getBoardState(),
@@ -258,7 +254,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         this.opponent.setState(ClientHandlerStates.INGAME);
     }
 
-    public synchronized void closeGame(){
+    public synchronized void closeGame() {
         this.game = null;
         this.opponent = null;
         this.setState(ClientHandlerStates.LOGGEDIN);
@@ -279,15 +275,15 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
             default:
                 throw new ProtocolException("Too many arguments");
         }
-        if(this.myTurn) {
+        if (this.myTurn) {
             view.showMessage(this.userName + "Moves: " + move);
             this.makeMove(move);
             this.myTurn = false;
-            if(opponent != null) {
+            if (opponent != null) {
                 opponent.setMyTurn(true);
             }
             String moveMsg = ServerMessages.MOVE.constructMessage(move);
-            if(this.game != null && this.game.getBoard() != null && !this.game.getBoard().isGameOver()) {
+            if (this.game != null && this.game.getBoard() != null && !this.game.getBoard().isGameOver()) {
                 socketHandler.write(moveMsg);
                 opponent.getSocketHandler().write(moveMsg);
             }
@@ -302,14 +298,15 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
 
     private void makeMove(Move move) throws NumberFormatException, InvalidMoveException, ClientHandlerNotFoundException {
         this.game.makeMove(move, this);
-        if(this.debug && this.getGame() != null&& this.getGame().getBoard() != null) view.showMessage(Arrays.toString(this.game.getBoard().getBoardState()));
+        if (this.debug && this.getGame() != null && this.getGame().getBoard() != null)
+            view.showMessage(Arrays.toString(this.game.getBoard().getBoardState()));
     }
 
 
     @Override
     public void handlePeerShutdown(boolean shutDown) {
-        this.view.showMessage("["+ this.name + "] Disconnected");
-        if(this.game != null){
+        this.view.showMessage("[" + this.name + "] Disconnected");
+        if (this.game != null) {
             this.game.playerDisconnected(this);
         }
         this.gameManager.removePlayer(this);
@@ -335,7 +332,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
         return this.name;
     }
 
-    public Game getGame(){
+    public Game getGame() {
         return this.game;
     }
 
@@ -346,7 +343,7 @@ public class ClientHandler implements NetworkEntity, ServerProtocol {
 
     public void gameOver(ServerMessages.GameOverReasons reason, ClientHandler winner) {
         String name = winner.getName();
-        if(Server.getRankAsHashMap().containsKey(name) && this.userName.equals(name)) {
+        if (Server.getRankAsHashMap().containsKey(name) && this.userName.equals(name)) {
             Server.increaseScore(winner.getName());
         }
         socketHandler.write(ServerMessages.GAMEOVER.constructMessage(reason.toString(), name));

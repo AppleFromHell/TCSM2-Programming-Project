@@ -13,9 +13,11 @@ import java.net.UnknownHostException;
 
 /**
  * Handles all interaction with the user
- * @author Emiel Rous and Wouter Koning */
+ *
+ * @author Emiel Rous and Wouter Koning
+ */
 public class ClientTUI extends SimpleTUI implements ClientView {
-    private final boolean interrupted =false;
+    private final boolean interrupted = false;
     private final Client client;
 
     ClientTUI(Client client) {
@@ -25,6 +27,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
     /**
      * Enter the start flow. Port and ip are queried, after that username,
      * then normal operation starts
+     *
      * @requires {@link Client} to notify the thread to continue
      * @ensures the user can exit at any point in the flow
      */
@@ -58,7 +61,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             while (true) {
                 try {
                     String input = getString(); //Wait for user input
-                    if(input != null) {
+                    if (input != null) {
                         handleUserInput(input);
                     }
                 } catch (CommandException e) {
@@ -72,11 +75,12 @@ public class ClientTUI extends SimpleTUI implements ClientView {
 
     /**
      * Handles the raw user input. Parses the input and selects a {@link UserCmds}
-     * @requires the input should not be null
-     * @ensures an action is executed if the command is valid
+     *
      * @param input
      * @throws CommandException
      * @throws UserExit
+     * @requires the input should not be null
+     * @ensures an action is executed if the command is valid
      */
     private void handleUserInput(String input) throws CommandException, UserExit {
         try {
@@ -92,8 +96,8 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                     this.client.doEnterQueue();
                     break;
                 case MOVE:
-                    if(this.client.getState() == ClientStates.WAITOURMOVE) {
-                        if(this.client.getAi() == null) {
+                    if (this.client.getState() == ClientStates.WAITOURMOVE) {
+                        if (this.client.getAi() == null) {
                             this.client.doMove(this.client.createMove(arguments));
                         } else {
                             this.client.doAIMove();
@@ -101,7 +105,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                     }
                     break;
                 case HINT:
-                    if(this.client.getBoard() != null) {
+                    if (this.client.getBoard() != null) {
                         this.client.provideHint();
                     } else {
                         throw new CommandException("You're not in a game");
@@ -113,7 +117,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                 case CHAT:
                     String[] splitChat = input.split(UserCmds.separators, 2);
                     this.client.doSendChat(splitChat[1]);
-                    this.showMessage(client.getUserName()+":"+splitChat[1]);
+                    this.showMessage(client.getUserName() + ":" + splitChat[1]);
                     break;
                 case WHISPER:
                     String[] splitWhisper = input.split(UserCmds.separators, 3);
@@ -144,9 +148,10 @@ public class ClientTUI extends SimpleTUI implements ClientView {
 
     /**
      * Prompts the user to reconnect
+     *
      * @return if the user wants to reconnect
-     * @ensures the user can exit
      * @throws UserExit
+     * @ensures the user can exit
      */
     public boolean reconnect() throws UserExit {
         return getBoolean("Reconnect to server? (y/n)");
@@ -154,23 +159,24 @@ public class ClientTUI extends SimpleTUI implements ClientView {
 
     /**
      * Create a connection. If failed, prompt the user to try again
+     *
+     * @throws UserExit
      * @ensures the {@link Client} to create a new connection if the port an ip are valid
      * @ensures the user is prompted again if the ip and port are invalid
      * @ensures the user can exit
-     * @throws UserExit
      */
-    private void createConnection() throws UserExit{
-            while (true) {
-                try {
-                    client.createConnection();
-                    break;
-                } catch (Exception e) {
-                    this.showMessage("Server not availabe. Reason: " + e.getMessage());
-                    if (!getBoolean("Try again? (y/n)")) {
-                        throw new UserExit();
-                    }
+    private void createConnection() throws UserExit {
+        while (true) {
+            try {
+                client.createConnection();
+                break;
+            } catch (Exception e) {
+                this.showMessage("Server not availabe. Reason: " + e.getMessage());
+                if (!getBoolean("Try again? (y/n)")) {
+                    throw new UserExit();
                 }
             }
+        }
     }
 
     /**
@@ -184,12 +190,13 @@ public class ClientTUI extends SimpleTUI implements ClientView {
 
     /**
      * Parses the list into a pretty list and prints it
+     *
      * @param list
      */
     @Override
     public void displayList(String[] list) {
         this.showMessage("List of logged in users");
-        for(int i = 0; i < list.length; i++) {
+        for (int i = 0; i < list.length; i++) {
             this.showMessage(list[i]);
         }
     }
@@ -197,29 +204,30 @@ public class ClientTUI extends SimpleTUI implements ClientView {
 
     /**
      * Enter the AI selection flow
-     * @ensures a selection is made
-     * @ensures the user can exit
+     *
      * @return A new instance of an AI type. If the return value is null, the person has chosen for manual playing.
      * @throws UserExit if the user decides to exit the program.
+     * @ensures a selection is made
+     * @ensures the user can exit
      */
     public AITypes getClientAI() throws UserExit {
 
-            String question = "What AI difficulty would you like to use for this game? Choose from:"
-                    .concat(System.lineSeparator())
-                    .concat(AITypes.allToString());
+        String question = "What AI difficulty would you like to use for this game? Choose from:"
+                .concat(System.lineSeparator())
+                .concat(AITypes.allToString());
 
-            while(true) {
-                String aiString = getString(question);
-                try {
-                    AITypes ai = AITypes.valueOf(aiString.toUpperCase());
-                    this.showMessage(ai + " chosen");
-                    return ai;
-                } catch (IllegalArgumentException e) {
-                    getString(aiString + " is not a valid AI type. Choose one of the following AI Types: "
-                            .concat(System.lineSeparator())
-                            .concat(AITypes.allToString()));
-                }
+        while (true) {
+            String aiString = getString(question);
+            try {
+                AITypes ai = AITypes.valueOf(aiString.toUpperCase());
+                this.showMessage(ai + " chosen");
+                return ai;
+            } catch (IllegalArgumentException e) {
+                getString(aiString + " is not a valid AI type. Choose one of the following AI Types: "
+                        .concat(System.lineSeparator())
+                        .concat(AITypes.allToString()));
             }
+        }
     }
 
     @Override
@@ -252,10 +260,11 @@ public class ClientTUI extends SimpleTUI implements ClientView {
 
     /**
      * Requests the user for an IP address
-     * @ensures ip is not null
-     * @ensures the user can exit
+     *
      * @return
      * @throws UserExit
+     * @ensures ip is not null
+     * @ensures the user can exit
      */
     public InetAddress getIp() throws UserExit {
         try {

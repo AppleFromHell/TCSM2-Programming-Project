@@ -3,7 +3,8 @@ package dt.server;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Emiel Rous and Wouter Koning
+/**
+ * @author Emiel Rous and Wouter Koning
  * The manager that makes sure that people can join a queue and that games are created. Once a {@link Game} has been created,
  * that gama is entirely self sufficient.
  */
@@ -19,11 +20,12 @@ public class GameManager {
     /**
      * Add a {@link ClientHandler} to the queue. If then the queue size is larger than 1, start a game
      * using {@link GameManager#startGame()}.
+     *
      * @param clientHandler The {@link ClientHandler} to be added to the queue
      */
     public synchronized void addToQueue(ClientHandler clientHandler) {
         queue.add(clientHandler);
-        if(queue.size() > 1) startGame();
+        if (queue.size() > 1) startGame();
     }
 
     /**
@@ -46,14 +48,16 @@ public class GameManager {
 
     /**
      * Removes a game from the list of active games.
+     *
      * @param game The game to be removed from the list of active games.
      */
-    public synchronized void removeGame(Game game){
+    public synchronized void removeGame(Game game) {
         this.activeGames.remove(game);
     }
 
     /**
      * Removes a player from the queue.
+     *
      * @param clientHandler The player to be removed from the queue.
      */
     public void removePlayer(ClientHandler clientHandler) {

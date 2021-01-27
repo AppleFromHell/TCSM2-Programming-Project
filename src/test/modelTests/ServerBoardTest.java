@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 
 public class ServerBoardTest {
@@ -21,7 +21,7 @@ public class ServerBoardTest {
 
     @Test
     void testSetupBoardConsistency() {
-        for(int i = 0; i < 20000; i++) {
+        for (int i = 0; i < 20000; i++) {
             this.board.setupBoard();
             assertNotEquals(Collections.emptyList(), this.board.findValidMoves());
         }

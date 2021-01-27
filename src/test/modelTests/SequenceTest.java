@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SequenceTest {
 
@@ -39,7 +39,7 @@ class SequenceTest {
                 BallType.BLUE,
                 BallType.YELLOW,
                 BallType.EMPTY
-                ));
+        ));
         sequence.shiftRightOrdown();
         assertEquals(Arrays.asList(
                 BallType.EMPTY,
@@ -89,7 +89,7 @@ class SequenceTest {
                 BallType.BLUE,
                 BallType.BLUE,
                 BallType.BLUE
-                ), sequence.getBalls());
+        ), sequence.getBalls());
 
 
         sequence = new Sequence(Arrays.asList(
@@ -146,7 +146,7 @@ class SequenceTest {
                 BallType.BLUE,
                 BallType.YELLOW,
                 BallType.EMPTY
-                ), sequence.getBalls());
+        ), sequence.getBalls());
 
         sequence = new Sequence(Arrays.asList(
                 BallType.EMPTY,
@@ -156,7 +156,7 @@ class SequenceTest {
                 BallType.EMPTY,
                 BallType.EMPTY,
                 BallType.BLUE
-                ));
+        ));
         sequence.shiftLeftOrUp();
 
         assertEquals(Arrays.asList(

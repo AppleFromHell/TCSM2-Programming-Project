@@ -16,19 +16,12 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ServerClientIntegrationTest {
-    Client client = new Client();
     static String username = "TestClient";
     static ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-    private dt.collectoClient.ClientStates ClientStates;
+    Client client = new Client();
     PrintStream standardOut = System.out;
+    private dt.collectoClient.ClientStates ClientStates;
 
-
-    static class ServerRunner implements Runnable {
-
-        public void run() {
-            Server.main(new String[] {"888"});
-        }
-    }
     @BeforeAll
     static void setup() {
         ServerRunner runner = new ServerRunner();
@@ -47,7 +40,7 @@ public class ServerClientIntegrationTest {
     }
 
     @Test
-    void testDoHello(){
+    void testDoHello() {
         assertTrue(outContent.toString().contains("HELLO~"));
     }
 
@@ -99,7 +92,7 @@ public class ServerClientIntegrationTest {
         String client1Name = "client1";
         String client2Name = "client2";
 
-        Server server = Server.testMain((new String[] {String.valueOf(port)}));
+        Server server = Server.testMain((new String[]{String.valueOf(port)}));
         TimeUnit.MILLISECONDS.sleep(500); //Let it wait for a response from the server
         Client client1 = new Client();
         client1.setIp(ip);
@@ -141,6 +134,12 @@ public class ServerClientIntegrationTest {
         assertArrayEquals(serverBoardState, clientBoardState);
     }
 
+    static class ServerRunner implements Runnable {
+
+        public void run() {
+            Server.main(new String[]{"888"});
+        }
+    }
 
 
 }

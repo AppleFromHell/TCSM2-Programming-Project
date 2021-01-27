@@ -8,9 +8,12 @@ import java.util.Arrays;
 
 /**
  * The main user interface window
+ *
  * @author Wouter Koning and Emiel Rous
  */
-public class MainDisplay extends JPanel{
+public class MainDisplay extends JPanel {
+    private final ClientGUI view;
+    private final Client client;
     private JPanel mainPanel;
     private JPanel gameDisplay;
     private JTextPane userList;
@@ -29,10 +32,8 @@ public class MainDisplay extends JPanel{
     private JLabel turnLabel;
     private JButton hintButton;
     private JComboBox selectAi;
-    private final ClientGUI view;
     private String username;
     private String serverName;
-    private final Client client;
 
     public MainDisplay(ClientGUI view, Client client) {
         this.add(mainPanel);
@@ -42,7 +43,7 @@ public class MainDisplay extends JPanel{
         confirmButton.addActionListener(e -> makeMove());
         moveField.addActionListener(e -> makeMove());
         queueButton.addActionListener(e -> enterQueue());
-        hintButton.addActionListener(e ->  getHint());
+        hintButton.addActionListener(e -> getHint());
         this.client = client;
         selectAi.addActionListener(e -> setAi());
         Arrays.stream(AITypes.values()).map(AITypes::toString).forEach(selectAi::addItem);
@@ -50,25 +51,28 @@ public class MainDisplay extends JPanel{
     }
 
     private void setAi() {
-        this.view.setClientAI(AITypes.valueOf((String)selectAi.getSelectedItem()));
+        this.view.setClientAI(AITypes.valueOf((String) selectAi.getSelectedItem()));
     }
 
     private void getHint() {
         this.client.provideHint();
     }
+
     public void updateRankingList(String ranking) {
         userList.setText(ranking);
     }
+
     public void updateUserList(String[] list) {
         StringBuilder users = new StringBuilder();
-        for(String u : list) {
-           users.append(u).append('\n');
+        for (String u : list) {
+            users.append(u).append('\n');
         }
         userList.setText(users.toString());
     }
 
     /**
      * Make a move.
+     *
      * @ensures the textField is set empty again
      */
     private void makeMove() {
@@ -121,7 +125,7 @@ public class MainDisplay extends JPanel{
     }
 
     public void setOurTurn(boolean ourTurn) {
-        this.turnLabel.setText("Turn: " + (ourTurn? "Ours": "Theirs"));
+        this.turnLabel.setText("Turn: " + (ourTurn ? "Ours" : "Theirs"));
     }
 
     /**
@@ -130,7 +134,7 @@ public class MainDisplay extends JPanel{
     public void emptyBoard() {
         this.hintButton.setEnabled(false);
         this.turnLabel.setText("Turn: ");
-        ((GameDisplay)this.gameDisplay).setEmptyBoard();
-        ((GameDisplay)this.gameDisplay).paintComponent(this.gameDisplay.getGraphics());
+        ((GameDisplay) this.gameDisplay).setEmptyBoard();
+        ((GameDisplay) this.gameDisplay).paintComponent(this.gameDisplay.getGraphics());
     }
 }

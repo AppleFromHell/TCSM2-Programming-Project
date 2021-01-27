@@ -2,26 +2,24 @@ package clientTests;
 
 
 import dt.collectoClient.Client;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ClientTest {
-    Client client;
     static ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-
-    private dt.collectoClient.ClientStates ClientStates;
     private final String username = "testUser";
-
+    Client client;
     PrintStream standardOut = System.out;
+    private dt.collectoClient.ClientStates ClientStates;
+
     @BeforeEach
     void setup() throws IOException, InterruptedException {
         this.setOutContent();
@@ -31,6 +29,7 @@ public class ClientTest {
         this.client.setUsername(username);
         this.testLogin();
     }
+
     void setOutContent() {
         System.setOut(new PrintStream(outContent));
     }

@@ -3,20 +3,25 @@ package dt.util;
 import dt.collectoClient.UserCmds;
 import dt.exceptions.UserExit;
 
-import java.io.*;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 
-/** @author Emiel Rous and Wouter Koning */
+/**
+ * @author Emiel Rous and Wouter Koning
+ */
 public class SimpleTUI implements Runnable {
 
-    protected SimpleTUI(){}
     private final BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
     private final PrintWriter stdOut = new PrintWriter(System.out, true);
 
+    protected SimpleTUI() {
+    }
+
     /**
      * Asks the user a question, and then returns the input from the user.
+     *
      * @param question The question to ask the user.
      * @return The answer that the user has given.
      * @throws UserExit If the user types the exit command.
@@ -28,6 +33,7 @@ public class SimpleTUI implements Runnable {
 
     /**
      * Retrieves a String from the standard in that the user has put in.
+     *
      * @return A String representation of what the user has put in to the system.
      * @throws UserExit If the user types the exit command.
      */
@@ -35,7 +41,7 @@ public class SimpleTUI implements Runnable {
         String answer = null;
         try {
             answer = stdIn.readLine();
-            if(UserCmds.getUserCmd(answer) == UserCmds.EXIT) throw new UserExit();
+            if (UserCmds.getUserCmd(answer) == UserCmds.EXIT) throw new UserExit();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -49,10 +55,12 @@ public class SimpleTUI implements Runnable {
     /**
      * A method that is to be overwritten by other methods.
      */
-    public void start(){}
+    public void start() {
+    }
 
     /**
      * Show the user a message given as the parameter.
+     *
      * @param message The message to be shown to the user.
      */
     public void showMessage(String message) {
@@ -61,6 +69,7 @@ public class SimpleTUI implements Runnable {
 
     /**
      * Returns the port the TUI is using.
+     *
      * @return The port that the TUI is using
      * @throws UserExit If the user decides to exit the program.
      */
@@ -70,6 +79,7 @@ public class SimpleTUI implements Runnable {
 
     /**
      * Gets an int representation of what the user has put into the system.
+     *
      * @param question A question to ask the user.
      * @return An int representation of what the user has put into the system.
      * @throws UserExit If the user decides to exit the program.
@@ -89,6 +99,7 @@ public class SimpleTUI implements Runnable {
 
     /**
      * Gets a boolean representation of what the user has put into the system.
+     *
      * @param question A question to ask the user.
      * @return A boolean representation of what the user has put into the system.
      * @throws UserExit If the user decides to exit the program.
@@ -103,7 +114,7 @@ public class SimpleTUI implements Runnable {
                 return false;
             }
             System.out.println("Enter a valid yes/no answer.");
-        } while(true);
+        } while (true);
     }
 
     /**
