@@ -131,7 +131,6 @@ public class ClientGUI extends JFrame implements ClientView {
         this.display.updateRankingList(rank);
     }
 
-    @Override
     public void clearBoard() {
         this.display.emptyBoard();
     }

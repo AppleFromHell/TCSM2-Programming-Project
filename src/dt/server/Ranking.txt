@@ -20,7 +20,9 @@ minmmax 0
 player 0
 eafse 0
 emel 0
+Efwfaasef 0
 kasefjse 0
+REFERENCE_afsef 0
 REFERENCE_kaseflse 4
 efafwa 0
 keta 7

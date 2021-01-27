@@ -535,10 +535,15 @@ public class Client implements ClientProtocol, NetworkEntity {
                 break;
         }
 
-        this.clientView.clearBoard();
+        if(this.clientView instanceof ClientGUI) {
+            ClientGUI gui = (ClientGUI) clientView;
+            gui.gameOver(ret);
+            gui.clearBoard();
+        }
+
+
         this.board = null;
         this.state = ClientStates.GAMEOVER;
-        if(this.clientView instanceof ClientGUI) ((ClientGUI) clientView).gameOver(ret);
         if(debug) this.clientView.showMessage("gameOver(): " + this.state);
         return ret;
     }

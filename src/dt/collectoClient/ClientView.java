@@ -36,8 +36,6 @@ public interface ClientView extends Runnable {
 
     void setClientAI(AITypes type) throws UserExit;
 
-    void clearBoard();
-
     void showBoard(ClientBoard board);
 
     void showHint(String toString);

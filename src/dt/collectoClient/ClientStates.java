@@ -1,7 +1,9 @@
 package dt.collectoClient;
 
 
-/** @author Emiel Rous and Wouter Koning */
+/**
+ * These are the states the {@link Client} can be in
+ * @author Emiel Rous and Wouter Koning */
 public enum ClientStates {
     STARTINGUP,
     PENDINGHELLO,
