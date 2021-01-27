@@ -96,7 +96,12 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                     this.client.doGetList();
                     break;
                 case QUEUE:
-                    this.client.doEnterQueue();
+                    if (this.client.getState() == ClientStates.LOGGEDIN ||
+                    this.client.getState() == ClientStates.GAMEOVER) {
+                        this.client.doEnterQueue();
+                    } else {
+                        throw new CommandException("Youre already in game");
+                    }
                     break;
                 case MOVE:
                     if (this.client.getState() == ClientStates.WAITOURMOVE) {
