@@ -19,7 +19,7 @@ public class Sequence {
     public void shiftRightOrdown(){
         int emptyAmount = findEmptyBallAmount();
         while(emptyAmount != 0){
-            for(int i = balls.size() - 2; i > 0; i--){
+            for(int i = balls.size() - 2; i >= 0; i--){
                 if (balls.get(i + 1) == BallType.EMPTY) {
                     for(int j = i; j >= 0; j--) { //Shift all the balls after the one you're looking at as well
                         balls.set(j + 1, balls.get(j));

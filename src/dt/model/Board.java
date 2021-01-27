@@ -117,6 +117,7 @@ public class Board {
         if(move.isLegal()) {
             //calling isDoubleMove lowers complexity if it is a single move
             if (!move.isDoubleMove()) { //If it is a single move
+                List<Move> validSingleMoves = findValidSingleMoves();
                 validity = findValidSingleMoves().contains(move);
             } else if (move.isDoubleMove()) { //If it is a double move
                 if(!findValidSingleMoves().isEmpty())
@@ -243,7 +244,7 @@ public class Board {
                         for(int offset = 0; offset < sameBallsInARow; offset++) {
                             toBeRemovedBalls.putIfAbsent(calculateBallCoordinates(sequenceList, seq, element + offset), thisBall);
                         }
-                        element += sameBallsInARow; //Update the value of the iterator
+                        element += sameBallsInARow - 1; //Update the value of the iterator
 
                         //Save the ball and the amount of its neighbours to a HashMap for adding player score.
                     }

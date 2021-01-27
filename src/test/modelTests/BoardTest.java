@@ -128,12 +128,21 @@ class BoardTest {
 
     @Test
     void testParticularBoardState() throws InvalidMoveException {
-        board.fillBoard(new int[]{1, 4, 5, 4, 1, 2, 6, 6, 3, 4, 1, 6, 4, 2, 1, 2, 6, 4, 1, 2, 4, 5, 3, 4, 0, 6, 4, 5, 1, 2, 6, 5, 2, 1, 3, 2, 1, 3, 2, 5, 3, 5, 3, 6, 5, 6, 3, 5, 3});
-        board.makeMove(new Move(24));
-        board.makeMove(new Move(16));
-        board.makeMove(new Move(6));
-        board.makeMove(new Move(15));
-        board.makeMove(new Move(27));
+        board.fillBoard(new int[]{3, 6, 5, 6, 4, 5, 2, 1, 4, 1, 5, 3, 1, 6, 2, 3, 6, 4, 5, 3, 2, 1, 5, 2, 0, 2, 5, 4, 4, 2, 3, 6, 1, 6, 2, 1, 5, 1, 5, 3, 1, 3, 4, 3, 4, 6, 4, 6, 2});
+        board.makeMove(new Move(3));
+        board.makeMove(new Move(23));
+        board.makeMove(new Move(8));
+        board.makeMove(new Move(17));
+        board.makeMove(new Move(1));
+
+        board.makeMove(new Move(18));
+        board.makeMove(new Move(20));
+        board.makeMove(new Move(14));
+
+        board.makeMove(new Move(22));
+        System.out.println(board.getPrettyBoardState());
+
+
     }
 
     @Test
