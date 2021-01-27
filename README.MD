@@ -8,11 +8,7 @@ For this project Java version 11 is used.
 ##Execution
 To start game execute the client.jar and the server.jar file
  
-Assuming you have Java installed, these files can be executed without parameters like this:
-
-`java client.jar`
-
-`java server.jar`
+Assuming you have Java installed, these files can be executed without parameters by using intellij or eclipse to run the Client.java and Server.java class
 
 They can also be executed with parameters.
 
@@ -24,9 +20,9 @@ These parameters can either be:
 
 Examples are:
 
-`java client.jar 192.0.0.155 8855` to start a client which connects to a server at '192.0.0.155:8855'
+Client arguments:`192.0.0.155 8855` to start a client which connects to a server at '192.0.0.155:8855'
 
-`java server.jar 8855 debug` to start a server with debug mode at '8855'
+Server arguments:`8855 debug` to start a server with debug mode at '8855'
 
 If no parameters are given the client and the server will prompt the user for an ip and or a port
 
