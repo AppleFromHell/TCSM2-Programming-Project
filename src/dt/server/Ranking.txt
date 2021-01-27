@@ -1,4 +1,6 @@
+nn 0
 eawef 1
+no 0
 piemels 0
 eafw 0
 asefasef 4
@@ -20,6 +22,8 @@ minmmax 0
 player 0
 eafse 0
 emel 0
+yy 0
+yes 1
 kasefjse 0
 REFERENCE_kaseflse 4
 efafwa 0
@@ -27,5 +31,6 @@ keta 7
 skaefjse 1
 asfase 0
 Emiel 1
+w 0
 kaas 1
 asefe 2

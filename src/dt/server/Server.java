@@ -1,9 +1,7 @@
 package dt.server;
 
 
-import dt.collectoClient.GUI.ClientGUI;
 import dt.exceptions.UserExit;
-import dt.protocol.ServerMessages;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -12,9 +10,10 @@ import java.net.Socket;
 import java.util.*;
 import java.util.Map.Entry;
 
-/** @author Emiel Rous and Wouter Koning */
+/** @author Emiel Rous and Wouter Koning
+ * The class that runs the server.
+ */
 public class Server {
-    //TODO in de server zeggen wat er gebeurt
     private Integer port;
     private List<ClientHandler> connectedClients;
     private List<String> loggedinUsers;
@@ -87,7 +86,13 @@ public class Server {
             }
         }
     }
-    public static  HashMap<String, Integer> getRankAsHashmap() {
+
+    /**
+     * This method scans the file in which the rankings are stored, and then puts all of those names and rankings
+     * in a {@link HashMap} and returns that.
+     * @return A {@link HashMap} with all the players in it and their rankings.
+     */
+    public static HashMap<String, Integer> getRankAsHashMap() {
 
         HashMap<String, Integer> scores = new HashMap<>();
         try {
@@ -103,22 +108,36 @@ public class Server {
         }
         return scores;
     }
+
+    /**
+     * Adds a new player to the ranking system.
+     * @param username The username of the player to be added.
+     */
     public static void addNewPlayer(String username) {
-        HashMap<String, Integer> scores = getRankAsHashmap();
+        HashMap<String, Integer> scores = getRankAsHashMap();
         scores.putIfAbsent(username, 0);
         storeRanksInFile(scores);
     }
+
+    /**
+     * Increases the score of the player that has won
+     * @param username The winner of the game, whose ranking is now increased.
+     */
     public static void increaseScore(String username) {
-        HashMap<String, Integer> scores = getRankAsHashmap();
+        HashMap<String, Integer> scores = getRankAsHashMap();
         int wins = scores.get(username);
         scores.put(username, wins + 1);
         storeRanksInFile(scores);
     }
 
+    /**
+     * Writes all the scores of the ranking system to a file.
+     * @param scores A {@link HashMap} with all the usernames and their scores.
+     */
     private static void storeRanksInFile(HashMap<String, Integer> scores) {
         try {
             BufferedWriter writer = new BufferedWriter(new PrintWriter(rankFile));
-            for(Entry entry : scores.entrySet()) {
+            for(Entry<String, Integer> entry : scores.entrySet()) {
                 writer.write(entry.getKey() + " " + entry.getValue());
                 writer.newLine();
                 writer.flush();
