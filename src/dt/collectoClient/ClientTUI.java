@@ -52,7 +52,9 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if (client.getState() == ClientStates.LOGGEDIN) break;
+                if (client.getState() == ClientStates.LOGGEDIN) {
+                    break;
+                }
                 username = getUsername();
                 client.doLogin(username);
             }
@@ -86,8 +88,9 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         try {
             String[] arguments = input.split(UserCmds.separators);
             UserCmds cmd = UserCmds.getUserCmd(arguments[0]);
-            if (cmd == null)
+            if (cmd == null) {
                 throw new CommandException(String.format(UNKOWNCOMMAND, arguments[0]));
+            }
             switch (cmd) {
                 case LIST:
                     this.client.doGetList();
@@ -213,8 +216,8 @@ public class ClientTUI extends SimpleTUI implements ClientView {
     public AITypes getClientAI() throws UserExit {
 
         String question = "What AI difficulty would you like to use for this game? Choose from:"
-                .concat(System.lineSeparator())
-                .concat(AITypes.allToString());
+            .concat(System.lineSeparator())
+            .concat(AITypes.allToString());
 
         while (true) {
             String aiString = getString(question);
@@ -223,7 +226,8 @@ public class ClientTUI extends SimpleTUI implements ClientView {
                 this.showMessage(ai + " chosen");
                 return ai;
             } catch (IllegalArgumentException e) {
-                getString(aiString + " is not a valid AI type. Choose one of the following AI Types: "
+                getString(
+                    aiString + " is not a valid AI type. Choose one of the following AI Types: "
                         .concat(System.lineSeparator())
                         .concat(AITypes.allToString()));
             }
@@ -268,7 +272,8 @@ public class ClientTUI extends SimpleTUI implements ClientView {
      */
     public InetAddress getIp() throws UserExit {
         try {
-            return InetAddress.getByName(getString("What IP address is the server running on (format: x.x.x.x)"));
+            return InetAddress
+                .getByName(getString("What IP address is the server running on (format: x.x.x.x)"));
         } catch (UnknownHostException e) {
             showMessage("Invalid IP, try again. Format: x.x.x.x where x stands for 1-3 integers");
         }

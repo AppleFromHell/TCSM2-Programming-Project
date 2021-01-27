@@ -59,13 +59,13 @@ public class Board {
         this.rows.clear();
         this.columns.clear();
         List<List<BallType>> columns = Arrays.asList(
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>()
+            new ArrayList<>(),
+            new ArrayList<>(),
+            new ArrayList<>(),
+            new ArrayList<>(),
+            new ArrayList<>(),
+            new ArrayList<>(),
+            new ArrayList<>()
         );
 
         for (int r = 0; r < this.boardSize; r++) {
@@ -189,8 +189,10 @@ public class Board {
                 List<Move> validSingleMoves = findValidSingleMoves();
                 validity = validSingleMoves.contains(move);
             } else if (move.isDoubleMove()) { //If it is a double move
-                if (!findValidSingleMoves().isEmpty())
-                    throw new InvalidMoveException("You tried to make a double move, while a single move is still available.");
+                if (!findValidSingleMoves().isEmpty()) {
+                    throw new InvalidMoveException(
+                        "You tried to make a double move, while a single move is still available.");
+                }
                 validity = findValidDoubleMoves().contains(move);
             }
         } else {
@@ -230,7 +232,8 @@ public class Board {
             copyBoard.executeMove(move1.getMove1());
             List<Move> possibleSecondMoves = copyBoard.findValidSingleMoves();
             for (Move move2 : possibleSecondMoves) {
-                validDoubleMoves.add(new Move(move1.getMove1(), move2.getMove1())); //All of these bois are goin' to work, hell yea
+                validDoubleMoves.add(new Move(move1.getMove1(),
+                    move2.getMove1())); //All of these bois are goin' to work, hell yea
             }
         }
         return validDoubleMoves;
@@ -284,26 +287,28 @@ public class Board {
                     //Check the rows and columns for an empty square
                     //Check from ballindex to right of board -> left to right possible
                     if (rowBalls.subList(ballIndex, this.boardSize).contains(BallType.EMPTY) &&
-                            !possibleMoves.contains(move)) {
+                        !possibleMoves.contains(move)) {
                         possibleMoves.add(move);
                     }
                     //Check from left to ballindex -> right to left possible
                     move = new Move(rowIndex);
                     if (rowBalls.subList(0, ballIndex).contains(BallType.EMPTY) &&
-                            !possibleMoves.contains(move)) {
+                        !possibleMoves.contains(move)) {
                         possibleMoves.add(move);
                     }
 
                     //Check row index to bottom -> top to bottom possible
                     move = new Move(this.boardSize * 3 + ballIndex);
-                    if (this.columns.get(ballIndex).getBalls().subList(rowIndex, this.boardSize).contains(BallType.EMPTY) &&
-                            !possibleMoves.contains(move)) {
+                    if (this.columns.get(ballIndex).getBalls().subList(rowIndex, this.boardSize)
+                        .contains(BallType.EMPTY) &&
+                        !possibleMoves.contains(move)) {
                         possibleMoves.add(move);
                     }
                     //Check top to rowindex -> bottom to top possible
                     move = new Move(2 * this.boardSize + ballIndex);
-                    if (this.columns.get(ballIndex).getBalls().subList(0, rowIndex).contains(BallType.EMPTY) &&
-                            !possibleMoves.contains(move)) {
+                    if (this.columns.get(ballIndex).getBalls().subList(0, rowIndex)
+                        .contains(BallType.EMPTY) &&
+                        !possibleMoves.contains(move)) {
                         possibleMoves.add(move);
                     }
                 }
@@ -329,7 +334,8 @@ public class Board {
 
         for (List<Sequence> sequenceList : rowsAndColumns) { //rows and columns
             for (int seq = 0; seq < sequenceList.size(); seq++) { //sequences in the row/column
-                for (int element = 0; element < this.boardSize; element++) {  //elements in the sequence
+                for (int element = 0; element < this.boardSize;
+                     element++) {  //elements in the sequence
                     int sameBallsInARow = sameBallsInSequence(sequenceList.get(seq), element, 1);
                     if (sameBallsInARow > 1) { //Houston, we got a score.
 
@@ -337,7 +343,9 @@ public class Board {
 
                         //Store the coordinates of those feckers so they can be removed later
                         for (int offset = 0; offset < sameBallsInARow; offset++) {
-                            toBeRemovedBalls.putIfAbsent(calculateBallCoordinates(sequenceList, seq, element + offset), thisBall);
+                            toBeRemovedBalls.putIfAbsent(
+                                calculateBallCoordinates(sequenceList, seq, element + offset),
+                                thisBall);
                         }
                         element += sameBallsInARow - 1; //Update the value of the iterator
                     }
@@ -364,7 +372,8 @@ public class Board {
      * @param elementNum   The element index of the sequence.
      * @return the coordinates of the elementNum in sequenceNum, in the sequenceList.
      */
-    public int calculateBallCoordinates(List<Sequence> sequenceList, int sequenceNum, int elementNum) {
+    public int calculateBallCoordinates(List<Sequence> sequenceList, int sequenceNum,
+                                        int elementNum) {
         if (sequenceList == this.rows) {
             return sequenceNum * this.boardSize + elementNum;
         } else {
@@ -398,8 +407,11 @@ public class Board {
      * @requires The index given to the method to not be negative.
      * @ensures The board is not changed.
      */
-    public int sameBallsInSequence(Sequence sequence, int index, int ballSequence) { //first call index should be 0 or BOARDSIZE - 1
-        if (ballSequence == 0) ballSequence++; //count the first one
+    public int sameBallsInSequence(Sequence sequence, int index,
+                                   int ballSequence) { //first call index should be 0 or BOARDSIZE - 1
+        if (ballSequence == 0) {
+            ballSequence++; //count the first one
+        }
         if (index > sequence.getBalls().size() - 2) { //At the edge of the board.
             return ballSequence;
         }
@@ -407,7 +419,8 @@ public class Board {
         BallType nextBall = sequence.getBalls().get(index + 1);
         BallType thisBall = sequence.getBalls().get(index);
 
-        if (!nextBall.equals(BallType.EMPTY) && nextBall.equals(thisBall)) { // The next ball is the same ball
+        if (!nextBall.equals(BallType.EMPTY) &&
+            nextBall.equals(thisBall)) { // The next ball is the same ball
             ballSequence = sameBallsInSequence(sequence, index + 1, ballSequence + 1);
             return ballSequence;
         } else { //The next ball is not the same ball.
@@ -452,11 +465,12 @@ public class Board {
             board.append(row);
             if (i / 7 < this.boardSize - 1) {
                 board.append(System.lineSeparator())
-                        .append(rowSeparator)
-                        .append(System.lineSeparator());
+                    .append(rowSeparator)
+                    .append(System.lineSeparator());
             }
         }
-        return board.toString().replace("0", " "); //Make the empty places in the board an empty cell.
+        return board.toString()
+            .replace("0", " "); //Make the empty places in the board an empty cell.
 //        return board.toString();
     }
 

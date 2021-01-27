@@ -27,7 +27,8 @@ public class GameDisplay extends JPanel {
         this.BACKGROUND = Color.WHITE;
         this.setBackground(BACKGROUND);
         this.setSize(new Dimension(400, 400));
-        this.balls = Arrays.stream(BallType.values()).map(BallType::toString).toArray(String[]::new);
+        this.balls =
+            Arrays.stream(BallType.values()).map(BallType::toString).toArray(String[]::new);
         for (int i = 0; i < balls.length; i++) {
             try {
                 Field field = Class.forName("java.awt.Color").getField(balls[i]);
@@ -72,25 +73,30 @@ public class GameDisplay extends JPanel {
             for (int x = 0; x < this.BOARDSIZE; x++) {
                 int ballNumber = gameState[x + y * this.BOARDSIZE];
                 g.setColor(ballColors[ballNumber]);
-                g.fillOval(x * this.squareSize + offset / 2, y * this.squareSize + offset / 2, ballSize, ballSize);
+                g.fillOval(x * this.squareSize + offset / 2, y * this.squareSize + offset / 2,
+                    ballSize, ballSize);
             }
         }
         for (int i = 0; i < this.BOARDSIZE; i++) {
             g.setColor(Color.BLACK);
-            g.drawString(String.valueOf(3 * this.BOARDSIZE + i), squareSize * i + squareSize - offset / 2 - 3, offset / 2 - 3);
+            g.drawString(String.valueOf(3 * this.BOARDSIZE + i),
+                squareSize * i + squareSize - offset / 2 - 3, offset / 2 - 3);
         }
         for (int i = 0; i < this.BOARDSIZE; i++) {
             g.setColor(Color.BLACK);
-            g.drawString(String.valueOf(this.BOARDSIZE * 2 + i), squareSize * i + squareSize / 4 * 3, width + offset / 4 * 3);
+            g.drawString(String.valueOf(this.BOARDSIZE * 2 + i),
+                squareSize * i + squareSize / 4 * 3, width + offset / 4 * 3);
         }
 
         for (int i = 0; i < this.BOARDSIZE; i++) {
             g.setColor(Color.BLACK);
-            g.drawString(String.valueOf(i), width + offset / 2, squareSize * i + squareSize - offset / 2 + 3);
+            g.drawString(String.valueOf(i), width + offset / 2,
+                squareSize * i + squareSize - offset / 2 + 3);
         }
         for (int i = 0; i < this.BOARDSIZE; i++) {
             g.setColor(Color.BLACK);
-            g.drawString(String.valueOf(this.BOARDSIZE + i), offset / 20, squareSize * i + squareSize - offset / 2 + 3);
+            g.drawString(String.valueOf(this.BOARDSIZE + i), offset / 20,
+                squareSize * i + squareSize - offset / 2 + 3);
         }
 
         g.drawRect(offset / 2, offset / 2, width - offset / 4, width - offset / 4);

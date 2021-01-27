@@ -32,84 +32,84 @@ class SequenceTest {
         assertEquals(original.getBalls(), sequence.getBalls());
 
         Sequence sequence = new Sequence(Arrays.asList(
-                BallType.BLUE,
-                BallType.YELLOW,
-                BallType.BLUE,
-                BallType.YELLOW,
-                BallType.BLUE,
-                BallType.YELLOW,
-                BallType.EMPTY
+            BallType.BLUE,
+            BallType.YELLOW,
+            BallType.BLUE,
+            BallType.YELLOW,
+            BallType.BLUE,
+            BallType.YELLOW,
+            BallType.EMPTY
         ));
         sequence.shiftRightOrdown();
         assertEquals(Arrays.asList(
-                BallType.EMPTY,
-                BallType.BLUE,
-                BallType.YELLOW,
-                BallType.BLUE,
-                BallType.YELLOW,
-                BallType.BLUE,
-                BallType.YELLOW
+            BallType.EMPTY,
+            BallType.BLUE,
+            BallType.YELLOW,
+            BallType.BLUE,
+            BallType.YELLOW,
+            BallType.BLUE,
+            BallType.YELLOW
         ), sequence.getBalls());
 
         sequence = new Sequence(Arrays.asList(
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY));
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY));
         sequence.shiftRightOrdown();
 
         assertEquals(Arrays.asList(
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.BLUE
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.BLUE
         ), sequence.getBalls());
 
         sequence = new Sequence(Arrays.asList(
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.EMPTY));
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.EMPTY));
         sequence.shiftRightOrdown();
 
         assertEquals(Arrays.asList(
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.BLUE,
-                BallType.BLUE,
-                BallType.BLUE
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.BLUE,
+            BallType.BLUE,
+            BallType.BLUE
         ), sequence.getBalls());
 
 
         sequence = new Sequence(Arrays.asList(
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.BLUE));
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.BLUE));
         sequence.shiftRightOrdown();
 
         assertEquals(Arrays.asList(
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.BLUE,
-                BallType.BLUE
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.BLUE,
+            BallType.BLUE
         ), sequence.getBalls());
     }
 
@@ -129,85 +129,85 @@ class SequenceTest {
         assertEquals(original.getBalls(), sequence.getBalls());
 
         Sequence sequence = new Sequence(Arrays.asList(
-                BallType.EMPTY,
-                BallType.BLUE,
-                BallType.YELLOW,
-                BallType.BLUE,
-                BallType.YELLOW,
-                BallType.BLUE,
-                BallType.YELLOW
+            BallType.EMPTY,
+            BallType.BLUE,
+            BallType.YELLOW,
+            BallType.BLUE,
+            BallType.YELLOW,
+            BallType.BLUE,
+            BallType.YELLOW
         ));
         sequence.shiftLeftOrUp();
         assertEquals(Arrays.asList(
-                BallType.BLUE,
-                BallType.YELLOW,
-                BallType.BLUE,
-                BallType.YELLOW,
-                BallType.BLUE,
-                BallType.YELLOW,
-                BallType.EMPTY
+            BallType.BLUE,
+            BallType.YELLOW,
+            BallType.BLUE,
+            BallType.YELLOW,
+            BallType.BLUE,
+            BallType.YELLOW,
+            BallType.EMPTY
         ), sequence.getBalls());
 
         sequence = new Sequence(Arrays.asList(
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.BLUE
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.BLUE
         ));
         sequence.shiftLeftOrUp();
 
         assertEquals(Arrays.asList(
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY
         ), sequence.getBalls());
 
         sequence = new Sequence(Arrays.asList(
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.BLUE));
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.BLUE));
         sequence.shiftLeftOrUp();
 
         assertEquals(Arrays.asList(
-                BallType.BLUE,
-                BallType.BLUE,
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY
+            BallType.BLUE,
+            BallType.BLUE,
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY
         ), sequence.getBalls());
 
 
         sequence = new Sequence(Arrays.asList(
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.BLUE));
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.BLUE));
         sequence.shiftLeftOrUp();
 
         assertEquals(Arrays.asList(
-                BallType.BLUE,
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY
+            BallType.BLUE,
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY
         ), sequence.getBalls());
     }
 }

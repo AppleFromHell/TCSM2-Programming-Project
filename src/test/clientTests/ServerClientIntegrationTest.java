@@ -92,7 +92,7 @@ public class ServerClientIntegrationTest {
         String client1Name = "client1";
         String client2Name = "client2";
 
-        Server server = Server.testMain((new String[]{String.valueOf(port)}));
+        Server server = Server.testMain((new String[] {String.valueOf(port)}));
         TimeUnit.MILLISECONDS.sleep(500); //Let it wait for a response from the server
         Client client1 = new Client();
         client1.setIp(ip);
@@ -117,18 +117,20 @@ public class ServerClientIntegrationTest {
         client2.doEnterQueue();
         TimeUnit.MILLISECONDS.sleep(500); //Let it wait for a response from the server
 
-        TimeUnit.MILLISECONDS.sleep(1000); //Let it wait for the server to throw both clients into a game.
+        TimeUnit.MILLISECONDS
+            .sleep(1000); //Let it wait for the server to throw both clients into a game.
 
         System.out.println(client1.getState());
         System.out.println(client2.getState());
 
         assertTrue(client1.getState() == dt.collectoClient.ClientStates.WAITOURMOVE ||
-                client1.getState() == dt.collectoClient.ClientStates.WAITTHEIRMOVE);
+            client1.getState() == dt.collectoClient.ClientStates.WAITTHEIRMOVE);
 
         assertTrue(client2.getState() == dt.collectoClient.ClientStates.WAITOURMOVE ||
-                client2.getState() == dt.collectoClient.ClientStates.WAITTHEIRMOVE);
+            client2.getState() == dt.collectoClient.ClientStates.WAITTHEIRMOVE);
 
-        int[] serverBoardState = server.getClientHandler(client1Name).getGame().getBoard().getBoardState();
+        int[] serverBoardState =
+            server.getClientHandler(client1Name).getGame().getBoard().getBoardState();
         int[] clientBoardState = client1.getBoard().getBoardState();
 
         assertArrayEquals(serverBoardState, clientBoardState);
@@ -137,7 +139,7 @@ public class ServerClientIntegrationTest {
     static class ServerRunner implements Runnable {
 
         public void run() {
-            Server.main(new String[]{"888"});
+            Server.main(new String[] {"888"});
         }
     }
 

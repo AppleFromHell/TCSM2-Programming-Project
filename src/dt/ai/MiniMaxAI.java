@@ -55,18 +55,21 @@ public class MiniMaxAI implements AI {
         int boardYieldScore = nextBoard.getYield().values().stream().reduce(0, Integer::sum);
         score += boardYieldScore;
 
-        if (depth == 0) { //If you're out of your depth, just return the score that the opponent would get
+        if (depth ==
+            0) { //If you're out of your depth, just return the score that the opponent would get
             return score;
         }
 
         List<Move> validMoves = nextBoard.findValidMoves();
-        if (validMoves.isEmpty()) { //If there are no more valid moves, return a negative win score. AKA a loss score.
+        if (validMoves
+            .isEmpty()) { //If there are no more valid moves, return a negative win score. AKA a loss score.
             return score;
         }
 
         int minScore = Integer.MAX_VALUE;// Initialize to a value that is incredibly high.
         for (Move nextMove : validMoves) { //Loop through all the moves
-            int nextScore = this.maximizer(nextBoard, nextMove, depth - 1, score); //Find the next score of the board
+            int nextScore = this.maximizer(nextBoard, nextMove, depth - 1,
+                score); //Find the next score of the board
             if (nextScore < minScore) {
                 minScore = nextScore; //You have found a better score for this player! Damn nice!
             }
@@ -91,18 +94,21 @@ public class MiniMaxAI implements AI {
         int boardYieldScore = nextBoard.getYield().values().stream().reduce(0, Integer::sum);
         score -= boardYieldScore;
 
-        if (depth == 0) { //If you're out of your depth, just return the score that the opponent would get
+        if (depth ==
+            0) { //If you're out of your depth, just return the score that the opponent would get
             return score;
         }
 
         List<Move> validMoves = nextBoard.findValidMoves();
-        if (validMoves.isEmpty()) { //If there are no more valid moves, return a negative win score. AKA a loss score.
+        if (validMoves
+            .isEmpty()) { //If there are no more valid moves, return a negative win score. AKA a loss score.
             return score;
         }
 
         int maxScore = Integer.MIN_VALUE;// Initialize to a value that is incredibly high.
         for (Move nextMove : validMoves) { //Loop through all the moves
-            int nextScore = this.minimizer(nextBoard, nextMove, depth - 1, score); //Find the next score of the board
+            int nextScore = this.minimizer(nextBoard, nextMove, depth - 1,
+                score); //Find the next score of the board
             if (nextScore > maxScore) {
                 maxScore = nextScore; //You have found a better score for this player! Damn nice!
             }

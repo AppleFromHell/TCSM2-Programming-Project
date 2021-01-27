@@ -145,7 +145,8 @@ public class Client implements ClientProtocol, NetworkEntity {
                     if (this.state == ClientStates.PENDINGLOGIN) {
                         this.clientView.showMessage("Username already logged in, try again");
                         synchronized (clientView) {
-                            this.clientView.notifyAll();//THe clientView has to ask for username again
+                            this.clientView
+                                .notifyAll();//THe clientView has to ask for username again
                         }
                     } else {
                         throw new UnexpectedResponseException();
@@ -170,13 +171,16 @@ public class Client implements ClientProtocol, NetworkEntity {
                             this.moveConfirmed = true;
                             this.notify(); // Notify client that move was verified
                         } else {
-                            throw new ProtocolException("Our move could not be verfied. Our last move: " + this.ourLastMove + "server: " + this.createMove(arguments));
+                            throw new ProtocolException(
+                                "Our move could not be verfied. Our last move: " +
+                                    this.ourLastMove + "server: " + this.createMove(arguments));
                         }
                     } else if (this.state == ClientStates.WAITTHEIRMOVE) {
                         try {
                             this.makeTheirMove(this.createMove(arguments));
                         } catch (InvalidMoveException e) {
-                            throw new ProtocolException("Server move was invalid. Our board said: " + e.getMessage());
+                            throw new ProtocolException(
+                                "Server move was invalid. Our board said: " + e.getMessage());
                         }
                     } else {
                         throw new UnexpectedResponseException();
@@ -206,7 +210,8 @@ public class Client implements ClientProtocol, NetworkEntity {
                     break;
                 case WHISPER:
                     String[] splitWhisper = msg.split(ProtocolMessages.delimiter, 3);
-                    clientView.displayChatMessage(splitWhisper[1] + " whispers: " + splitWhisper[2]);
+                    clientView
+                        .displayChatMessage(splitWhisper[1] + " whispers: " + splitWhisper[2]);
                     break;
                 case CANNOTWHISPER:
                     throw new CommandException(arguments[1] + "Cannot receive whispers");
@@ -218,7 +223,9 @@ public class Client implements ClientProtocol, NetworkEntity {
             clientView.showMessage("Unexpected response: " + msg);
         } catch (NumberFormatException | ProtocolException e) {
             clientView.showMessage("Invalid response from server. Response: " + msg);
-            if (!e.getMessage().equals("")) clientView.showMessage("Reason: " + e.getMessage());
+            if (!e.getMessage().equals("")) {
+                clientView.showMessage("Reason: " + e.getMessage());
+            }
         } catch (IllegalArgumentException e) {
             clientView.showMessage("Unkown command from server. Response: " + msg);
         } catch (CommandException e) {
@@ -236,10 +243,18 @@ public class Client implements ClientProtocol, NetworkEntity {
     public void doHello() {
         List<String> extensions = new ArrayList<>();
         extensions.add(userName);
-        if (this.chatEnabled) extensions.add(ProtocolMessages.Messages.CHAT.name());
-        if (this.authEnabled) extensions.add(ProtocolMessages.Messages.AUTH.name());
-        if (this.cryptEnabled) extensions.add(ProtocolMessages.Messages.CRYPT.name());
-        if (this.rankEnabled) extensions.add(ProtocolMessages.Messages.RANK.name());
+        if (this.chatEnabled) {
+            extensions.add(ProtocolMessages.Messages.CHAT.name());
+        }
+        if (this.authEnabled) {
+            extensions.add(ProtocolMessages.Messages.AUTH.name());
+        }
+        if (this.cryptEnabled) {
+            extensions.add(ProtocolMessages.Messages.CRYPT.name());
+        }
+        if (this.rankEnabled) {
+            extensions.add(ProtocolMessages.Messages.RANK.name());
+        }
 
         socketHandler.write(ClientMessages.HELLO.constructMessage(extensions));
         this.state = ClientStates.PENDINGHELLO;
@@ -334,7 +349,9 @@ public class Client implements ClientProtocol, NetworkEntity {
      * @ensures the state to be changed to {@link ClientStates#HELLOED}
      */
     private void handleHello(String[] arguments) throws ProtocolException {
-        if (arguments.length == 1) throw new ProtocolException("Not enough arguments");
+        if (arguments.length == 1) {
+            throw new ProtocolException("Not enough arguments");
+        }
         for (int i = 1; i < arguments.length; i++) {
             String arg = arguments[i];
             chatEnabled = arg.equals(ProtocolMessages.Messages.CHAT.toString());
@@ -383,14 +400,20 @@ public class Client implements ClientProtocol, NetworkEntity {
         String player2 = arguments[arguments.length - 1];
         if (this.userName.equals(player1)) {
             this.state = ClientStates.WAITOURMOVE;
-            if (debug) this.clientView.showMessage("createNewBoard()/if: " + this.state);
+            if (debug) {
+                this.clientView.showMessage("createNewBoard()/if: " + this.state);
+            }
             this.myTurn = true;
             clientView.showMessage("Playing against: " + player2);
             clientView.showMessage("You start");
-            if (this.ai != null) clientView.showMessage("Type: m to start");
+            if (this.ai != null) {
+                clientView.showMessage("Type: m to start");
+            }
         } else {
             this.state = ClientStates.WAITTHEIRMOVE;
-            if (debug) this.clientView.showMessage("createNewBoard()/else: " + this.state);
+            if (debug) {
+                this.clientView.showMessage("createNewBoard()/else: " + this.state);
+            }
             this.myTurn = false;
             clientView.showMessage("Playing against: " + player1);
             clientView.showMessage("Waiting on their move");
@@ -407,7 +430,8 @@ public class Client implements ClientProtocol, NetworkEntity {
      * @throws ProtocolException
      * @requires the arguments to be the raw split arguments from the server
      */
-    public synchronized Move createMove(String[] arguments) throws NumberFormatException, ProtocolException {
+    public synchronized Move createMove(String[] arguments)
+        throws NumberFormatException, ProtocolException {
         Move move = null;
         switch (arguments.length) {
             case 1:
@@ -463,11 +487,15 @@ public class Client implements ClientProtocol, NetworkEntity {
      */
     @Override
     public synchronized void doMove(Move move) throws InvalidMoveException, ProtocolException {
-        if (!this.board.isValidMove(move)) throw new InvalidMoveException("Yer move invalid dipshit");
+        if (!this.board.isValidMove(move)) {
+            throw new InvalidMoveException("Yer move invalid dipshit");
+        }
         this.socketHandler.write(ClientMessages.MOVE.constructMessage(move));
         this.ourLastMove = move;
         this.state = ClientStates.WAITVERIFYMOVE;
-        if (debug) this.clientView.showMessage("doMove(): " + this.state);
+        if (debug) {
+            this.clientView.showMessage("doMove(): " + this.state);
+        }
         this.moveConfirmed = false;
 
         try {
@@ -481,12 +509,17 @@ public class Client implements ClientProtocol, NetworkEntity {
             clientView.showMessage("Your move on board was: " + move);
             this.myTurn = false;
             this.state = ClientStates.WAITTHEIRMOVE;
-            if (debug) this.clientView.showMessage("doMove()/if: " + this.state);
+            if (debug) {
+                this.clientView.showMessage("doMove()/if: " + this.state);
+            }
         } else {
             this.myTurn = true;
             this.state = ClientStates.WAITOURMOVE;
-            if (debug) this.clientView.showMessage("doMove()/else: " + this.state);
-            throw new ProtocolException("Our move could not be verified. Our move was: " + this.ourLastMove);
+            if (debug) {
+                this.clientView.showMessage("doMove()/else: " + this.state);
+            }
+            throw new ProtocolException(
+                "Our move could not be verified. Our move was: " + this.ourLastMove);
         }
     }
 
@@ -504,7 +537,9 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.clientView.showMessage("Their move on board was: " + move);
         this.clientView.showMessage("Your move: ");
         this.state = ClientStates.WAITOURMOVE;
-        if (debug) this.clientView.showMessage("makeTheirMove(): " + this.state);
+        if (debug) {
+            this.clientView.showMessage("makeTheirMove(): " + this.state);
+        }
         this.myTurn = true;
     }
 
@@ -532,23 +567,28 @@ public class Client implements ClientProtocol, NetworkEntity {
      * @ensures the board will be null
      * @ensures the state to be changed to {@link ClientStates#GAMEOVER}
      */
-    private synchronized String handleGameOver(String[] arguments) throws IllegalArgumentException, ProtocolException {
+    private synchronized String handleGameOver(String[] arguments)
+        throws IllegalArgumentException, ProtocolException {
         String ret = "The game is over. \nReason: ";
-        if (arguments.length != 3) throw new ProtocolException("Invalid number of arguments");
+        if (arguments.length != 3) {
+            throw new ProtocolException("Invalid number of arguments");
+        }
         switch (ServerMessages.GameOverReasons.valueOf(arguments[1])) {
             case VICTORY:
                 ret = ret.concat("VICTORY ");
                 if (arguments[2].equals(this.userName)) {
                     ret += "Congratulations YOU WON! :)";
                 } else {
-                    ret = ret.concat("You lost. You donkey. I will disown you. You are not worthy >:(");
+                    ret = ret.concat(
+                        "You lost. You donkey. I will disown you. You are not worthy >:(");
                 }
                 break;
             case DRAW:
                 ret = ret.concat("DRAW \nGood game though! :|");
                 break;
             case DISCONNECT:
-                ret = ret.concat("Your opponent left because he/she could not stand your face ;) (but you won so that's nice)");
+                ret = ret.concat(
+                    "Your opponent left because he/she could not stand your face ;) (but you won so that's nice)");
                 break;
         }
 
@@ -560,7 +600,9 @@ public class Client implements ClientProtocol, NetworkEntity {
 
         this.board = null;
         this.state = ClientStates.GAMEOVER;
-        if (debug) this.clientView.showMessage("gameOver(): " + this.state);
+        if (debug) {
+            this.clientView.showMessage("gameOver(): " + this.state);
+        }
         return ret;
     }
 
@@ -638,7 +680,9 @@ public class Client implements ClientProtocol, NetworkEntity {
     @Override
     public void shutDown() {
         clearConnection();
-        if (socketHandler != null) socketHandler.shutDown();
+        if (socketHandler != null) {
+            socketHandler.shutDown();
+        }
         clientView.showMessage("See you next time!");
         System.exit(69);
     }

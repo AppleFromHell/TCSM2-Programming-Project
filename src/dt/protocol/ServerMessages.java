@@ -14,10 +14,18 @@ public enum ServerMessages implements ProtocolMessages {
         public String constructMessage(Server server) {
             StringBuilder strB = new StringBuilder(HELLO.msg);
             strB.append(delimiter).append(server.getName());
-            if (server.chatIsEnabled()) strB.append(delimiter).append(Messages.CHAT);
-            if (server.rankIsEnabled()) strB.append(delimiter).append(Messages.RANK);
-            if (server.authIsEnabled()) strB.append(delimiter).append(Messages.AUTH);
-            if (server.cryptIsEnabled()) strB.append(delimiter).append(Messages.CRYPT);
+            if (server.chatIsEnabled()) {
+                strB.append(delimiter).append(Messages.CHAT);
+            }
+            if (server.rankIsEnabled()) {
+                strB.append(delimiter).append(Messages.RANK);
+            }
+            if (server.authIsEnabled()) {
+                strB.append(delimiter).append(Messages.AUTH);
+            }
+            if (server.cryptIsEnabled()) {
+                strB.append(delimiter).append(Messages.CRYPT);
+            }
             return strB.toString();
         }
     },
@@ -72,8 +80,8 @@ public enum ServerMessages implements ProtocolMessages {
     public String constructMessage(Move move) {
         StringBuilder msg = new StringBuilder(this.msg + delimiter);
         return move.isDoubleMove() ?
-                msg.append(move.getMove1()).append(delimiter).append(move.getMove2()).toString() :
-                msg.append(move.getMove1()).toString();
+            msg.append(move.getMove1()).append(delimiter).append(move.getMove2()).toString() :
+            msg.append(move.getMove1()).toString();
     }
 
     public String constructMessage(List<String> args) {

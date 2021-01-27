@@ -75,14 +75,16 @@ public class ServerBoard extends Board {
 
         int lastBallsIterator = 0;
 
-        for (int i = 0; i < this.boardSize * this.boardSize; i++) { //Iterate through the various postions on the board.
+        for (int i = 0; i < this.boardSize * this.boardSize;
+             i++) { //Iterate through the various postions on the board.
             int left = i - 1;
             int up = i - this.boardSize;
             BallType insertBall = null;
 
             if (i == middle) {
                 newBoard[i] = BallType.EMPTY;
-            } else if (i % this.boardSize != 0 && up >= 0) {   //If it's not on the left edge, and not at the top
+            } else if (i % this.boardSize != 0 &&
+                up >= 0) {   //If it's not on the left edge, and not at the top
                 insertBall = getRandomBallKeyFromMap(availableBalls, newBoard[left], newBoard[up]);
 
                 if (insertBall == null) { //shit hit the fan, we're gettin' out
@@ -93,7 +95,8 @@ public class ServerBoard extends Board {
 
                 newBoard[i] = insertBall;
 
-            } else if (i % this.boardSize != 0 && left >= 0) { //If it's not on the left edge, and at the top
+            } else if (i % this.boardSize != 0 &&
+                left >= 0) { //If it's not on the left edge, and at the top
                 insertBall = getRandomBallKeyFromMap(availableBalls, newBoard[left]);
 
                 if (insertBall == null) { //shit hit the fan, we're gettin' out
@@ -122,15 +125,18 @@ public class ServerBoard extends Board {
             }
         }
 
-        while (availableBalls.size() != 0) { //Shit hit the fan at iteration i, preparing the squad we're moving in
+        while (availableBalls.size() !=
+            0) { //Shit hit the fan at iteration i, preparing the squad we're moving in
             BallType insertBall = getRandomBallKeyFromMap(availableBalls);
 
             for (int i = 0; i < newBoard.length; i++) { // Loop through the board
 
                 if (isSwapable(newBoard, i, insertBall) &&
-                        isSwapable(newBoard, lastBallsIterator, newBoard[i])) { //If the element is swapable both ways, swap them.
+                    isSwapable(newBoard, lastBallsIterator,
+                        newBoard[i])) { //If the element is swapable both ways, swap them.
 
-                    if (i != middle) { //Tho don't try to swap out the middle ball, because that needs to be empty.
+                    if (i !=
+                        middle) { //Tho don't try to swap out the middle ball, because that needs to be empty.
                         newBoard[lastBallsIterator] = insertBall;
                         swap(newBoard, i, lastBallsIterator);
                         lastBallsIterator++;
@@ -151,8 +157,10 @@ public class ServerBoard extends Board {
      * @param availableBalls The {@link Map} of balls that are available and how many of them.
      * @param insertedBall   The {@link BallType} which has just been inserted.
      */
-    private void decrementAvailableBalls(Map<BallType, Integer> availableBalls, BallType insertedBall) {
-        availableBalls.replace(insertedBall, availableBalls.get(insertedBall) - 1); //removes 1 from the amount of balls removed from the available balls.
+    private void decrementAvailableBalls(Map<BallType, Integer> availableBalls,
+                                         BallType insertedBall) {
+        availableBalls.replace(insertedBall, availableBalls.get(insertedBall) -
+            1); //removes 1 from the amount of balls removed from the available balls.
         if (availableBalls.get(insertedBall) == 0) {
             availableBalls.remove(insertedBall);
         }
@@ -280,7 +288,8 @@ public class ServerBoard extends Board {
      * @return A random key that is not except1.
      */
     private BallType getRandomBallKeyFromMap(Map<BallType, Integer> map, BallType except1) {
-        List<BallType> availableBalls = new ArrayList<>(); //Create a list of what balls are available.
+        List<BallType> availableBalls =
+            new ArrayList<>(); //Create a list of what balls are available.
         for (BallType ball : map.keySet()) {
             if (ball != except1) {
                 availableBalls.add(ball);
@@ -303,7 +312,8 @@ public class ServerBoard extends Board {
      * @param except2 A value the method cannot return.
      * @return A random key that is not except1 or except2.
      */
-    private BallType getRandomBallKeyFromMap(Map<BallType, Integer> map, BallType except1, BallType except2) {
+    private BallType getRandomBallKeyFromMap(Map<BallType, Integer> map, BallType except1,
+                                             BallType except2) {
         List<BallType> availableBalls = new ArrayList<>();
         for (BallType ball : map.keySet()) {
             if (ball != except1 && ball != except2) {

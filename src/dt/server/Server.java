@@ -64,7 +64,9 @@ public class Server {
      */
     public static Server testMain(String[] args) {
         Server server = new Server();
-        if (args.length != 0) server.setPort(Integer.parseInt(args[0]));
+        if (args.length != 0) {
+            server.setPort(Integer.parseInt(args[0]));
+        }
         //new Thread(server).start();
         return server;
     }
@@ -147,7 +149,8 @@ public class Server {
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
-                ClientHandler handler = new ClientHandler(this, this.gameManager, this.view, clientSocket, this.debug);
+                ClientHandler handler =
+                    new ClientHandler(this, this.gameManager, this.view, clientSocket, this.debug);
                 this.connectedClients.add(handler);
                 view.showMessage("New client: [" + handler.getName() + "] connected!");
             } catch (IOException e) {
@@ -169,7 +172,9 @@ public class Server {
             try {
                 try {
                     synchronized (this) {
-                        if (this.port == null) this.wait();
+                        if (this.port == null) {
+                            this.wait();
+                        }
                     }
                     view.showMessage("Starting a server on port: " + this.port + "...");
                     serverSocket = new ServerSocket(port, 0, InetAddress.getByName("localhost"));

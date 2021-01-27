@@ -46,11 +46,13 @@ public class Game {
      * @throws InvalidMoveException           If the move that is attempted to be made is not valid.
      * @throws ClientHandlerNotFoundException If the client handler that is handed to this method is not found.
      */
-    public synchronized void makeMove(Move move, ClientHandler mover) throws InvalidMoveException, ClientHandlerNotFoundException {
+    public synchronized void makeMove(Move move, ClientHandler mover)
+        throws InvalidMoveException, ClientHandlerNotFoundException {
         Player player = findPlayer(mover);
 
         if (player == null) {
-            throw new ClientHandlerNotFoundException("Client could not be found while trying to make a move.");
+            throw new ClientHandlerNotFoundException(
+                "Client could not be found while trying to make a move.");
         }
 
         player.addBalls(this.board.makeMove(move));
@@ -131,7 +133,9 @@ public class Game {
     public synchronized void playerDisconnected(ClientHandler rageQuitter) {
         Player quitter = findPlayer(rageQuitter);
         for (Player player : this.players) {
-            if (player != quitter) sendGameOverWin(player);
+            if (player != quitter) {
+                sendGameOverWin(player);
+            }
         }
         this.players.remove(quitter);
     }
@@ -145,7 +149,8 @@ public class Game {
     private synchronized void sendGameOverWin(Player winner) {
         for (Player player : this.players) {
             if (player.getClientHandler() != null) {
-                player.getClientHandler().gameOver(ServerMessages.GameOverReasons.VICTORY, winner.getClientHandler());
+                player.getClientHandler()
+                    .gameOver(ServerMessages.GameOverReasons.VICTORY, winner.getClientHandler());
             }
         }
     }

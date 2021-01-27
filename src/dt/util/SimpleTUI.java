@@ -41,7 +41,9 @@ public class SimpleTUI implements Runnable {
         String answer = null;
         try {
             answer = stdIn.readLine();
-            if (UserCmds.getUserCmd(answer) == UserCmds.EXIT) throw new UserExit();
+            if (UserCmds.getUserCmd(answer) == UserCmds.EXIT) {
+                throw new UserExit();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

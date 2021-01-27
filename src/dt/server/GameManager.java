@@ -25,7 +25,9 @@ public class GameManager {
      */
     public synchronized void addToQueue(ClientHandler clientHandler) {
         queue.add(clientHandler);
-        if (queue.size() > 1) startGame();
+        if (queue.size() > 1) {
+            startGame();
+        }
     }
 
     /**

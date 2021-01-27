@@ -47,7 +47,9 @@ public class SocketHandler implements Runnable {
         try {
             while (!socket.isClosed() && socketIn != null) {
                 String msg = socketIn.readLine();
-                if (debug) System.out.println("[IN]:" + msg);
+                if (debug) {
+                    System.out.println("[IN]:" + msg);
+                }
                 if (msg == null) {
                     throw new IOException();
                 }
@@ -66,7 +68,9 @@ public class SocketHandler implements Runnable {
     public void write(String msg) {
         if (!socket.isClosed()) {
             try {
-                if (debug) System.out.println("[OUT]:" + msg);
+                if (debug) {
+                    System.out.println("[OUT]:" + msg);
+                }
                 socketOut.write(msg);
                 socketOut.newLine();
                 socketOut.flush();

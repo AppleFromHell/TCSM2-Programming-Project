@@ -93,11 +93,11 @@ public class ClientGUI extends JFrame implements ClientView {
      */
     public void showErrorPopup(String err) {
         JOptionPane.showConfirmDialog(
-                this,
-                err,
-                "ERROR",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.ERROR_MESSAGE);
+            this,
+            err,
+            "ERROR",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -107,11 +107,11 @@ public class ClientGUI extends JFrame implements ClientView {
      */
     public void showInfoPopup(String err) {
         JOptionPane.showConfirmDialog(
-                this,
-                err,
-                "INFO",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.INFORMATION_MESSAGE);
+            this,
+            err,
+            "INFO",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.INFORMATION_MESSAGE);
     }
 
     /**

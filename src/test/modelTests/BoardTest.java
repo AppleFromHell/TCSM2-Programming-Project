@@ -60,21 +60,21 @@ class BoardTest {
     void testIsSwapable() {
 //        if(swapfiets) yes;
         BallType[] testArray = {
-                BallType.ORANGE, //0
-                BallType.PINK,
-                BallType.ORANGE, //2
-                BallType.PINK,
-                BallType.ORANGE, //4
-                BallType.PINK,
-                BallType.ORANGE, //6
+            BallType.ORANGE, //0
+            BallType.PINK,
+            BallType.ORANGE, //2
+            BallType.PINK,
+            BallType.ORANGE, //4
+            BallType.PINK,
+            BallType.ORANGE, //6
 
-                BallType.BLUE, //7
-                BallType.RED,
-                BallType.BLUE, //9
-                BallType.RED,
-                BallType.BLUE, //11
-                BallType.RED,
-                BallType.BLUE}; //13
+            BallType.BLUE, //7
+            BallType.RED,
+            BallType.BLUE, //9
+            BallType.RED,
+            BallType.BLUE, //11
+            BallType.RED,
+            BallType.BLUE}; //13
 
         assertFalse(board.isSwapable(testArray, 2, BallType.PINK)); //Check left and right neighbour
         assertTrue(board.isSwapable(testArray, 2, BallType.RED));
@@ -126,8 +126,11 @@ class BoardTest {
     }
 
     @Test
-    void testParticularBoardState() throws InvalidMoveException { //These just be boardstates that crashed our game somehow
-        board.fillBoard(new int[]{3, 6, 5, 6, 4, 5, 2, 1, 4, 1, 5, 3, 1, 6, 2, 3, 6, 4, 5, 3, 2, 1, 5, 2, 0, 2, 5, 4, 4, 2, 3, 6, 1, 6, 2, 1, 5, 1, 5, 3, 1, 3, 4, 3, 4, 6, 4, 6, 2});
+    void testParticularBoardState()
+        throws InvalidMoveException { //These just be boardstates that crashed our game somehow
+        board.fillBoard(
+            new int[] {3, 6, 5, 6, 4, 5, 2, 1, 4, 1, 5, 3, 1, 6, 2, 3, 6, 4, 5, 3, 2, 1, 5, 2, 0, 2,
+                5, 4, 4, 2, 3, 6, 1, 6, 2, 1, 5, 1, 5, 3, 1, 3, 4, 3, 4, 6, 4, 6, 2});
         board.makeMove(new Move(3));
         board.makeMove(new Move(23));
         board.makeMove(new Move(8));
@@ -240,9 +243,9 @@ class BoardTest {
         possibleMoves = testBoard.findPossibleMoves();
 
         assertTrue(
-                possibleMoves.contains(new Move(21)) &&
-                        possibleMoves.contains(new Move(7)) &&
-                        possibleMoves.size() == 2
+            possibleMoves.contains(new Move(21)) &&
+                possibleMoves.contains(new Move(7)) &&
+                possibleMoves.size() == 2
 
         );
 
@@ -251,10 +254,10 @@ class BoardTest {
         testBoard.fillBoard(boardState);
         possibleMoves = testBoard.findPossibleMoves();
         assertTrue(
-                possibleMoves.contains(new Move(0)) &&
-                        possibleMoves.contains(new Move(7)) &&
-                        possibleMoves.contains(new Move(24)) &&
-                        possibleMoves.size() == 3
+            possibleMoves.contains(new Move(0)) &&
+                possibleMoves.contains(new Move(7)) &&
+                possibleMoves.contains(new Move(24)) &&
+                possibleMoves.size() == 3
         );
 
         boardState = emptyBoardState.clone();
@@ -262,11 +265,11 @@ class BoardTest {
         testBoard.fillBoard(boardState);
         possibleMoves = testBoard.findPossibleMoves();
         assertTrue(
-                possibleMoves.contains(new Move(3)) &&
-                        possibleMoves.contains(new Move(17)) &&
-                        possibleMoves.contains(new Move(24)) &&
-                        possibleMoves.contains(new Move(10)) &&
-                        possibleMoves.size() == 4
+            possibleMoves.contains(new Move(3)) &&
+                possibleMoves.contains(new Move(17)) &&
+                possibleMoves.contains(new Move(24)) &&
+                possibleMoves.contains(new Move(10)) &&
+                possibleMoves.size() == 4
         );
 
         boardState = emptyBoardState.clone();
@@ -274,9 +277,9 @@ class BoardTest {
         testBoard.fillBoard(boardState);
         possibleMoves = testBoard.findPossibleMoves();
         assertTrue(
-                possibleMoves.contains(new Move(6)) &&
-                        possibleMoves.contains(new Move(20)) &&
-                        possibleMoves.size() == 2
+            possibleMoves.contains(new Move(6)) &&
+                possibleMoves.contains(new Move(20)) &&
+                possibleMoves.size() == 2
         );
     }
 
@@ -290,9 +293,9 @@ class BoardTest {
         validSingleMoves = testBoard.findValidSingleMoves();
 
         assertTrue(
-                validSingleMoves.contains(new Move(0)) &&
-                        validSingleMoves.contains(new Move(7)) &&
-                        validSingleMoves.size() == 2
+            validSingleMoves.contains(new Move(0)) &&
+                validSingleMoves.contains(new Move(7)) &&
+                validSingleMoves.size() == 2
         );
 
         boardState = emptyBoardState.clone();
@@ -304,9 +307,9 @@ class BoardTest {
         validSingleMoves = testBoard.findValidSingleMoves();
 
         assertTrue(
-                validSingleMoves.contains(new Move(27)) &&
-                        validSingleMoves.contains(new Move(20)) &&
-                        validSingleMoves.size() == 2
+            validSingleMoves.contains(new Move(27)) &&
+                validSingleMoves.contains(new Move(20)) &&
+                validSingleMoves.size() == 2
         );
 
         boardState = emptyBoardState.clone();
@@ -326,27 +329,27 @@ class BoardTest {
         assertEquals(Collections.emptyList(), testBoard.findValidSingleMoves());
         List<Move> validDoubleMoves = testBoard.findValidDoubleMoves();
         assertTrue(
-                validDoubleMoves.contains(new Move(7, 27)) &&
-                        validDoubleMoves.contains(new Move(7, 20)) &&
-                        validDoubleMoves.contains(new Move(21, 13)) &&
-                        validDoubleMoves.contains(new Move(21, 6)) &&
-                        validDoubleMoves.contains(new Move(6, 14)) &&
-                        validDoubleMoves.contains(new Move(6, 21)) &&
-                        validDoubleMoves.contains(new Move(20, 0)) &&
-                        validDoubleMoves.contains(new Move(20, 7)) &&
-                        validDoubleMoves.size() == 8);
+            validDoubleMoves.contains(new Move(7, 27)) &&
+                validDoubleMoves.contains(new Move(7, 20)) &&
+                validDoubleMoves.contains(new Move(21, 13)) &&
+                validDoubleMoves.contains(new Move(21, 6)) &&
+                validDoubleMoves.contains(new Move(6, 14)) &&
+                validDoubleMoves.contains(new Move(6, 21)) &&
+                validDoubleMoves.contains(new Move(20, 0)) &&
+                validDoubleMoves.contains(new Move(20, 7)) &&
+                validDoubleMoves.size() == 8);
         boardState[6] = 2;
         testBoard.fillBoard(boardState);
         assertEquals(Collections.emptyList(), testBoard.findValidSingleMoves());
         validDoubleMoves = testBoard.findValidDoubleMoves();
         assertTrue(
-                validDoubleMoves.contains(new Move(21, 13)) &&
-                        validDoubleMoves.contains(new Move(21, 6)) &&
-                        validDoubleMoves.contains(new Move(6, 14)) &&
-                        validDoubleMoves.contains(new Move(6, 21)) &&
-                        validDoubleMoves.contains(new Move(7, 26)) &&
-                        validDoubleMoves.contains(new Move(20, 1)) &&
-                        validDoubleMoves.size() == 6
+            validDoubleMoves.contains(new Move(21, 13)) &&
+                validDoubleMoves.contains(new Move(21, 6)) &&
+                validDoubleMoves.contains(new Move(6, 14)) &&
+                validDoubleMoves.contains(new Move(6, 21)) &&
+                validDoubleMoves.contains(new Move(7, 26)) &&
+                validDoubleMoves.contains(new Move(20, 1)) &&
+                validDoubleMoves.size() == 6
         );
 
     }
@@ -354,23 +357,23 @@ class BoardTest {
     @Test
     void testSameBallInSequence() {
         Sequence sequence = new Sequence(Arrays.asList(
-                BallType.BLUE,
-                BallType.BLUE,
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY));
+            BallType.BLUE,
+            BallType.BLUE,
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY));
         assertEquals(3, testBoard.sameBallsInSequence(sequence, 0, 0));
 
         sequence = new Sequence(Arrays.asList(
-                BallType.EMPTY,
-                BallType.BLUE,
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.BLUE));
+            BallType.EMPTY,
+            BallType.BLUE,
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.BLUE));
         assertEquals(2, testBoard.sameBallsInSequence(sequence, 1, 0));
     }
 
@@ -443,57 +446,57 @@ class BoardTest {
         boardState[16] = 1;
         testBoard.fillBoard(boardState);
         Sequence firstRow = new Sequence(Arrays.asList(
-                BallType.BLUE,
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY
+            BallType.BLUE,
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY
         ));
         assertEquals(firstRow.getBalls(), testBoard.getRows().get(0).getBalls());
 
         Sequence thirdRow = new Sequence(Arrays.asList(
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY
         ));
         assertEquals(thirdRow.getBalls(), testBoard.getRows().get(2).getBalls());
 
         Sequence firstColumn = new Sequence(Arrays.asList(
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY
         ));
         assertEquals(firstColumn.getBalls(), testBoard.getColumns().get(0).getBalls());
 
         Sequence secondColumn = new Sequence(Arrays.asList(
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY
         ));
         assertEquals(secondColumn.getBalls(), testBoard.getColumns().get(1).getBalls());
 
         Sequence thirdColumn = new Sequence(Arrays.asList(
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY
         ));
         assertEquals(thirdColumn.getBalls(), testBoard.getColumns().get(2).getBalls());
     }
@@ -538,42 +541,42 @@ class BoardTest {
         boardState[0] = 1;
         testBoard.fillBoard(boardState);
         testBoard.getRows().set(0, new Sequence(Arrays.asList(
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.BLUE
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.BLUE
         )));
         testBoard.synchronize(testBoard.getRows(), testBoard.getColumns());
         assertEquals(new Sequence(Arrays.asList(
-                BallType.BLUE,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY
+            BallType.BLUE,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY
         )).getBalls(), testBoard.getColumns().get(boardSize - 1).getBalls());
         testBoard.getColumns().set(boardSize - 1, new Sequence(Arrays.asList(
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.BLUE
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.BLUE
         )));
         testBoard.synchronize(testBoard.getColumns(), testBoard.getRows());
         assertEquals(new Sequence(Arrays.asList(
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.EMPTY,
-                BallType.BLUE
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.EMPTY,
+            BallType.BLUE
         )).getBalls(), testBoard.getRows().get(boardSize - 1).getBalls());
 
     }
