@@ -11,7 +11,9 @@ import java.net.InetAddress;
 import java.net.ProtocolException;
 import java.net.UnknownHostException;
 
-/** @author Emiel Rous and Wouter Koning */
+/**
+ * Handles all interaction with the user
+ * @author Emiel Rous and Wouter Koning */
 public class ClientTUI extends SimpleTUI implements ClientView {
     private boolean interrupted =false;
     private Client client;
@@ -20,6 +22,12 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         this.client = client;
     }
 
+    /**
+     * Enter the start flow. Port and ip are queried, after that username,
+     * then normal operation starts
+     * @requires {@link Client} to notify the thread to continue
+     * @ensures the user can exit at any point in the flow
+     */
     @Override
     public void start() {
         try {
@@ -49,8 +57,7 @@ public class ClientTUI extends SimpleTUI implements ClientView {
 
             while (true) {
                 try {
-                    String input = "";
-                    input = getString(); //Wait for user input
+                    String input = getString(); //Wait for user input
                     if(input != null) {
                         handleUserInput(input);
                     }
@@ -63,6 +70,14 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         }
     }
 
+    /**
+     * Handles the raw user input. Parses the input and selects a {@link UserCmds}
+     * @requires the input should not be null
+     * @ensures an action is executed if the command is valid
+     * @param input
+     * @throws CommandException
+     * @throws UserExit
+     */
     private void handleUserInput(String input) throws CommandException, UserExit {
         try {
             String[] arguments = input.split(UserCmds.separators);
@@ -127,10 +142,23 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         return getString("What username would you like to have?");
     }
 
+    /**
+     * Prompts the user to reconnect
+     * @return if the user wants to reconnect
+     * @ensures the user can exit
+     * @throws UserExit
+     */
     public boolean reconnect() throws UserExit {
         return getBoolean("Reconnect to server? (y/n)");
     }
 
+    /**
+     * Create a connection. If failed, prompt the user to try again
+     * @ensures the {@link Client} to create a new connection if the port an ip are valid
+     * @ensures the user is prompted again if the ip and port are invalid
+     * @ensures the user can exit
+     * @throws UserExit
+     */
     private void createConnection() throws UserExit{
             while (true) {
                 try {
@@ -145,12 +173,20 @@ public class ClientTUI extends SimpleTUI implements ClientView {
             }
     }
 
+    /**
+     * Prints a help menu with all available commands
+     */
     private void printHelpMenu() {
         String ret = "Here is the list of commands:\n";
         ret += UserCmds.getPrettyCommands();
         this.showMessage(ret);
     }
 
+    /**
+     * Parses the list into a pretty list and prints it
+     * @param list
+     */
+    @Override
     public void displayList(String[] list) {
         this.showMessage("List of logged in users");
         for(int i = 0; i < list.length; i++) {
@@ -160,7 +196,9 @@ public class ClientTUI extends SimpleTUI implements ClientView {
 
 
     /**
-     *
+     * Enter the AI selection flow
+     * @ensures a selection is made
+     * @ensures the user can exit
      * @return A new instance of an AI type. If the return value is null, the person has chosen for manual playing.
      * @throws UserExit if the user decides to exit the program.
      */
@@ -189,10 +227,6 @@ public class ClientTUI extends SimpleTUI implements ClientView {
         this.client.setAI(type);
     }
 
-    @Override
-    public void clearBoard(){
-
-    }
 
     @Override
     public void showRank(String rank) {
@@ -215,6 +249,14 @@ public class ClientTUI extends SimpleTUI implements ClientView {
     public void displayChatMessage(String msg) {
         showMessage(msg);
     }
+
+    /**
+     * Requests the user for an IP address
+     * @ensures ip is not null
+     * @ensures the user can exit
+     * @return
+     * @throws UserExit
+     */
     public InetAddress getIp() throws UserExit {
         try {
             return InetAddress.getByName(getString("What IP address is the server running on (format: x.x.x.x)"));

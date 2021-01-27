@@ -6,6 +6,10 @@ import dt.collectoClient.Client;
 import javax.swing.*;
 import java.util.Arrays;
 
+/**
+ * The main user interface window
+ * @author Wouter Koning and Emiel Rous
+ */
 public class MainDisplay extends JPanel{
     private JPanel mainPanel;
     private JPanel gameDisplay;
@@ -63,6 +67,10 @@ public class MainDisplay extends JPanel{
         userList.setText(users.toString());
     }
 
+    /**
+     * Make a move.
+     * @ensures the textField is set empty again
+     */
     private void makeMove() {
         try {
             view.makeMove(moveField.getText());
@@ -81,14 +89,6 @@ public class MainDisplay extends JPanel{
         chatField.setText("");
     }
 
-    public static void main(String[] args) {
-        MainDisplay display = new MainDisplay(null, new Client());
-        JFrame frame = new JFrame("HI");
-        frame.setContentPane(display);
-        frame.pack();
-        frame.setVisible(true);
-
-    }
     private void enterQueue() {
         this.queueButton.setEnabled(false);
         view.enterQueue();
@@ -98,6 +98,9 @@ public class MainDisplay extends JPanel{
         this.queueButton.setEnabled(true);
     }
 
+    /**
+     * Create custom GameDisplay component
+     */
     private void createUIComponents() {
         this.gameDisplay = new GameDisplay();
     }
@@ -121,6 +124,9 @@ public class MainDisplay extends JPanel{
         this.turnLabel.setText("Turn: " + (ourTurn? "Ours": "Theirs"));
     }
 
+    /**
+     * Set the board state emtpy and fix the turn display
+     */
     public void emptyBoard() {
         this.hintButton.setEnabled(false);
         this.turnLabel.setText("Turn: ");

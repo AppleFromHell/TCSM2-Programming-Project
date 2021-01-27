@@ -14,8 +14,10 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.net.ProtocolException;
-//TODO hint doen
-/** @author Emiel Rous and Wouter Koning */
+
+/**
+ * The gui interface for the client
+ * @author Emiel Rous and Wouter Koning */
 public class ClientGUI extends JFrame implements ClientView {
     private final Client client;
     private MainDisplay display;
@@ -24,11 +26,15 @@ public class ClientGUI extends JFrame implements ClientView {
         this.client = client;
     }
 
-
+    /**
+     * Start the main flow. First ip and port are prompted. Then username, once verified start main display
+     * @ensures the client is connected if ip and port are valid
+     * @ensures the user can exit
+     */
     public void start() {
 
         while(true) {
-            new Server_prompt(this.client);
+            new Server_prompt(this.client); //Prompt the user for an ip and port
             try {
                 this.client.createConnection();
                 break;
@@ -46,7 +52,7 @@ public class ClientGUI extends JFrame implements ClientView {
                 this.client.doLogin(userName);
                 this.client.setUsername(userName);
                 synchronized (this) {
-                    this.wait();
+                    this.wait(); //Wait for the client to verify login name
                 }
                 if (this.client.getState() == ClientStates.PENDINGLOGIN) {
                     showErrorPopup("Username already logged in, try again");
@@ -57,7 +63,7 @@ public class ClientGUI extends JFrame implements ClientView {
                 showErrorPopup("Something went wrong, try again");
             }
         }
-        display = new MainDisplay(this, this.client);
+        display = new MainDisplay(this, this.client); //Start main display
         display.setUsername('\n'+client.getUserName());
         display.setServerName('\n'+client.getServerName());
         this.setContentPane(display);
@@ -65,10 +71,18 @@ public class ClientGUI extends JFrame implements ClientView {
         this.setVisible(true);
     }
 
+    /**
+     * Show a popup with a username field
+     * @return the username the user inputs
+     */
     private String userNamePrompt() {
         return JOptionPane.showInputDialog("Connection Successful!\nEnter Username to login");
     }
 
+    /**
+     * Display an error popup
+     * @param err
+     */
     public void showErrorPopup(String err) {
         JOptionPane.showConfirmDialog(
                 this,
@@ -78,11 +92,30 @@ public class ClientGUI extends JFrame implements ClientView {
                 JOptionPane.ERROR_MESSAGE);
     }
 
+    /**
+     * Display an info popup
+     * @param err
+     */
+    public void showInfoPopup(String err) {
+        JOptionPane.showConfirmDialog(
+                this,
+                err,
+                "INFO",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /**
+     * Starts gui thread.
+     * A timer is added so that the list is updated every 5 seconds. Sets window closing action.
+     * Sets main theme of GUI
+     * @ensures the list is updated every 5 seconds
+     */
     public void run() {
         int delay = 5000; //milliseconds
         ActionListener taskPerformer = evt -> {
             if(this.display != null) {
-                client.doGetList();
+                client.doGetList(); //Update the list every 5 seconds
             }
         };
         new Timer(delay, taskPerformer).start();
@@ -100,8 +133,15 @@ public class ClientGUI extends JFrame implements ClientView {
         }
         start();
     }
+
+    /**
+     * Handle a game over
+     * @ensures the queue button is enabled again
+     * @ensures the board is empty
+     * @param msg
+     */
     public void gameOver(String msg) {
-        showErrorPopup(msg);
+        showInfoPopup(msg);
         this.display.enableQueue();
         this.display.emptyBoard();
     }
@@ -110,20 +150,31 @@ public class ClientGUI extends JFrame implements ClientView {
         System.out.println(msg);
     }
 
+    /**
+     * Updates the list on the main display
+     * @param list
+     */
     @Override
     public void displayList(String[] list) {
         this.display.updateUserList(list);
     }
 
-
+    /**
+     * Prompt the user for a reconnect
+     * @ensures the user can exit
+     * @return
+     * @throws UserExit
+     */
     @Override
     public boolean reconnect() throws UserExit {
         showErrorPopup("Server Disconnected");
         return true;
     }
+
+
     @Override
     public void showHint(String hint) {
-        showErrorPopup("Hint: " + hint);
+        showInfoPopup("Hint: " + hint);
     }
 
     @Override
@@ -131,17 +182,20 @@ public class ClientGUI extends JFrame implements ClientView {
         this.display.updateRankingList(rank);
     }
 
-    @Override
-    public void clearBoard() {
-        this.display.emptyBoard();
-    }
-
+    /**
+     * Updates the board state in the GUI
+     * @param board
+     */
     @Override
     public void showBoard(ClientBoard board) {
         this.display.setOurTurn(client.isOurTurn());
         this.display.showBoard(board.getBoardState());
     }
 
+    /**
+     * Add a new chatmessage to the chat window
+     * @param msg
+     */
     @Override
     public void displayChatMessage(String msg) {
         if(this.display != null) {
@@ -154,7 +208,10 @@ public class ClientGUI extends JFrame implements ClientView {
         this.client.setAI(types);
     }
 
-
+    /**
+     * Makes a move. If the client is not AI, the move arguments are checked
+     * @param move
+     */
     public void makeMove(String move) {
         String[] arguments = move.split(UserCmds.separators);
 
@@ -171,6 +228,10 @@ public class ClientGUI extends JFrame implements ClientView {
         }
     }
 
+    /**
+     * Send a message to the client and display it in the chatbox
+     * @param text
+     */
     public void sendMessage(String text) {
         this.displayChatMessage(this.client.getUserName()+ ": " +text);
         client.doSendChat(text);

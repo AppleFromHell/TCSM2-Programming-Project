@@ -6,7 +6,9 @@ import dt.exceptions.UserExit;
 import dt.model.ClientBoard;
 import dt.util.Move;
 
-/** @author Emiel Rous and Wouter Koning */
+/**
+ * Interface used by both GUI and TUI
+ * @author Emiel Rous and Wouter Koning */
 public interface ClientView extends Runnable {
 
     String UNKOWNCOMMAND = "Unkown command: '%s' For a list of valid commands type h";
@@ -16,14 +18,31 @@ public interface ClientView extends Runnable {
 
     void run();
 
+    /**
+     * Show a message in the console
+     * @param msg
+     */
     void showMessage(String msg);
 
     void displayList(String[] list);
 
+    /**
+     * Prompt the user to reconnect
+     * @return
+     * @throws UserExit
+     */
     boolean reconnect() throws UserExit;
 
     void displayChatMessage(String msg);
 
+
+    /**
+     * Parse the arguments into a move
+     * @requires the arguments to be integers and valid moves given the boardsize
+     * @param arguments
+     * @return
+     * @throws CommandException
+     */
     default Move parseMove(String[] arguments) throws CommandException {
         if (arguments.length == 2) {
             return new Move(Integer.parseInt(arguments[1]));
@@ -35,8 +54,6 @@ public interface ClientView extends Runnable {
     }
 
     void setClientAI(AITypes type) throws UserExit;
-
-    void clearBoard();
 
     void showBoard(ClientBoard board);
 

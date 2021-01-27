@@ -1,7 +1,6 @@
 package clientTests;
 
 import dt.collectoClient.Client;
-import dt.exceptions.ServerUnavailableException;
 import dt.server.Server;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +37,7 @@ public class ServerClientIntegrationTest {
     }
 
     @BeforeEach
-    void startup() throws IOException, ServerUnavailableException {
+    void startup() throws IOException {
 
         client.setIp(InetAddress.getByName("localhost"));
         client.setPort(6969);

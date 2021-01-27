@@ -11,9 +11,12 @@ public interface ClientProtocol {
     void doHello();
     void doLogin(String username);
     void doGetList();
-
     void doGetRanking();
-
     void doMove(Move move) throws InvalidMoveException, ProtocolException;
+
+    void doSendChat(String message);
+
+    void doSendWhisper(String recipient, String message);
+
     void doEnterQueue();
 }

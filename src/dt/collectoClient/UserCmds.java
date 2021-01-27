@@ -1,13 +1,9 @@
 package dt.collectoClient;
 
-import dt.protocol.ClientMessages;
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
-/** @author Emiel Rous and Wouter Koning */
+/**
+ * A list of all possible commands
+ * @author Emiel Rous and Wouter Koning */
 public enum UserCmds {
     LIST(new String[]{"l", "list"}, "Get a list of players on the server"),
     MOVE(new String[]{"m", "move"}, "Make a move. Seperate by any of these: '~', '-', '=', '|'"),
@@ -21,15 +17,21 @@ public enum UserCmds {
     RANK(new String[]{"rank", "pikorde"}, "Request the server for a ranking");
 
 
-    private String[]  cmds;
-    private String description;
-    public static String separators = "[ ~+=|-]";
+    private String[]  cmds; //Acceptable user inputs
+    private String description; //Descrpition of the command
+
+    public static String separators = "[ ~+=|-]"; //Possible seperators. All and any can be used
 
     UserCmds(String[] strings, String str) {
         this.cmds = strings;
         this.description = str;
     }
 
+    /**
+     * Check for each {@link UserCmds} if the str is part of their acceptable cmds
+     * @param str
+     * @return
+     */
     public boolean isValid(String str) {
         for(String cmd : cmds) {
             if(cmd.equals(str.toLowerCase())) return true;
@@ -37,6 +39,12 @@ public enum UserCmds {
         return false;
     }
 
+    /**
+     * Return a {@link UserCmds} based on a user input
+     * @ensures either null or a {@link UserCmds} is retured
+     * @param userCmd
+     * @return
+     */
     public static UserCmds getUserCmd(String userCmd) {
         for(UserCmds cmd : UserCmds.values()) {
             if(cmd.isValid(userCmd)) return cmd;
@@ -44,6 +52,10 @@ public enum UserCmds {
         return null;
     }
 
+    /**
+     * Create a list of commands
+     * @return the commands with their description in a 'pretty' format
+     */
     public static String getPrettyCommands() {
         StringBuilder strB = new StringBuilder();
         for (UserCmds cmd : UserCmds.values()) {

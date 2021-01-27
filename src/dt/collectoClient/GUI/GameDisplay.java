@@ -7,6 +7,10 @@ import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
+/**
+ * The actual board with all the balls
+ * @author Emiel Rous and Wouter Koning
+ */
 public class GameDisplay extends JPanel {
     private int[] gameState;
     private String[] balls;
@@ -47,6 +51,11 @@ public class GameDisplay extends JPanel {
     }
 
 
+    /**
+     * Draw the board.
+     * @requires g to not be null
+     * @param g
+     */
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -84,19 +93,10 @@ public class GameDisplay extends JPanel {
         g.drawRect(offset/2, offset/2, width-offset/4, width-offset/4);
 
     }
-    public static void main(String[] args) {
-        JFrame win = new JFrame("Mandelbrot Set");
-        win.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        int[] bord = new int[49];
-        for(int i = 0; i < 7*7; i++) {
-            bord[i] = i % 7;
-        }
-        GameDisplay gameDisplay = new GameDisplay(bord);
-        win.setSize(400, 440);
-        win.setContentPane(gameDisplay);
-        win.setVisible(true);
-    }
 
+    /**
+     * Set the board to an empty state
+     */
     public void setEmptyBoard() {
         this.gameState = new int[BOARDSIZE*BOARDSIZE];
         for(int i =0; i < BOARDSIZE * BOARDSIZE; i++) {
