@@ -26,7 +26,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/** @author Emiel Rous and Wouter Koning */
+/**
+ * This class handles the interaction with the {@link ClientBoard}, the {@link ClientView} and the {@link SocketHandler}.
+ * It is an endpoint for the messages from the server.
+ * The view is also started from this class.
+ * This class is passive; it waits for input from either the {@link SocketHandler} or the {@link ClientView}
+ * @author Emiel Rous and Wouter Koning */
 public class Client implements ClientProtocol, NetworkEntity {
 
     private Socket serverSocket;
@@ -64,6 +69,10 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.debug = true;
     }
 
+    /**
+     *
+     * @param args can be: ( ip + port) (+ gui) (+debug)
+     */
     public static void main(String[] args) {
         Client client = new Client();
         if(args.length > 1) {
@@ -80,26 +89,29 @@ public class Client implements ClientProtocol, NetworkEntity {
                 e.printStackTrace();
             }
         }
-        if(args.length > 2) {
-
-        }
         client.start();
     }
 
-
+    /**
+     * Starts the view in a new {@link Thread}.
+     * The actions initiated from the main thread stop here.
+     * The rest is handeld by the {@link SocketHandler} and the {@link ClientView} {@link Thread}.
+     *
+     * @requires   {@link ClientView} should be initiated
+     * @ensures  {@link ClientView} is started in a separate thread
+     */
     public void start() {
         this.state = ClientStates.STARTINGUP;
         new Thread(clientView).start();
     }
 
-    public void setDebug(Boolean state){
-        this.debug = state;
-    }
-
-    public void writeMessage(String msg) {
-        socketHandler.write(msg);
-    }
-
+    /**
+     * This is the main endpoint for the {@link SocketHandler}. Any message from the server passes through this method.
+     * From here methods from the {@link ClientView} and the {@link ClientBoard} are called
+     * @requires message should not be null
+     * @ensures The state is changed for the following {@link ServerMessages},{@link ServerMessages#HELLO},{@link ServerMessages#LOGIN},{@link ServerMessages#NEWGAME},{@link ServerMessages#MOVE},{@link ServerMessages#GAMEOVER}
+     * @param msg the raw message from the server
+     */
     @Override
     public synchronized void handleMessage(String msg) {
         String[] arguments = msg.split(ProtocolMessages.delimiter);
@@ -110,7 +122,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                     if (this.state == ClientStates.PENDINGHELLO) {
                         this.handleHello(arguments);
                         synchronized (clientView) {
-                            this.clientView.notify();
+                            this.clientView.notify(); //The clientView can prompt username
                         }
                     } else {
                         throw new UnexpectedResponseException();
@@ -120,9 +132,9 @@ public class Client implements ClientProtocol, NetworkEntity {
                     if (this.state == ClientStates.PENDINGLOGIN) {
                         this.state = ClientStates.LOGGEDIN;
                         this.clientView.showMessage("Successfully logged in!");
-                        this.clientView.showMessage("Mane menu. Enter a command.");
+                        this.clientView.showMessage("Main menu. Enter a command.");
                         synchronized (clientView) {
-                            this.clientView.notifyAll();
+                            this.clientView.notifyAll();//The ClientView can continue to main menu
                         }
                     } else {
                         throw new UnexpectedResponseException();
@@ -132,7 +144,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                     if (this.state == ClientStates.PENDINGLOGIN) {
                         this.clientView.showMessage("Username already logged in, try again");
                         synchronized (clientView) {
-                            this.clientView.notifyAll();
+                            this.clientView.notifyAll();//THe clientView has to ask for username again
                         }
                     }else {
                         throw new UnexpectedResponseException();
@@ -171,7 +183,7 @@ public class Client implements ClientProtocol, NetworkEntity {
                     break;
                 case GAMEOVER:
                     this.clientView.showMessage(this.handleGameOver(arguments));
-                    this.clientView.showMessage("Mane menu. Enter a command.");
+                    this.clientView.showMessage("Main menu. Enter a command.");
                     break;
                 case ERROR:
                     clientView.showMessage("Server threw error: " + msg);
@@ -213,7 +225,11 @@ public class Client implements ClientProtocol, NetworkEntity {
         }
     }
 
-    //Outgoing messages. Updates state
+    /**
+     * Sends a hello to the server.
+     * @requires the state to be {@link ClientStates#STARTINGUP}
+     * @ensures the state to become {@link ClientStates#PENDINGHELLO}
+     */
     @Override
     public void doHello() {
         List<String> extensions = new ArrayList<>();
@@ -227,25 +243,51 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.state = ClientStates.PENDINGHELLO;
     }
 
-
+    /**
+     * Sends a login request to the server
+     * @requires the state to be {@link ClientStates#HELLOED}
+     * @requires username should not be null
+     * @ensures the state to become {@link ClientStates#PENDINGLOGIN}
+     * @param username
+     */
     @Override
     public void doLogin(String username) {
         socketHandler.write(ClientMessages.LOGIN.constructMessage(username));
         this.state = ClientStates.PENDINGLOGIN;
     }
 
+    /**
+     * Request a list of users from the server
+     */
     @Override
     public void doGetList() {
         socketHandler.write(ClientMessages.LIST.constructMessage());
     }
 
+    /**
+     * Send a chat message to the server
+     * @param message
+     */
+    @Override
     public void doSendChat(String message){
         socketHandler.write(ClientMessages.CHAT.constructMessage(message));
     }
 
+    /**
+     * Send a whisper to a player in the server
+     * @param recipient
+     * @param message
+     */
+    @Override
     public void doSendWhisper(String recipient, String message){
         socketHandler.write(ClientMessages.WHISPER.constructMessage(recipient, message));
     }
+
+    /**
+     * Enter the server queue
+     * @requires the user should be in the main menu
+     * @ensures the state is changed to {@link ClientStates#INQUEUE}
+     */
     @Override
     public void doEnterQueue()  {
         socketHandler.write(ClientMessages.QUEUE.constructMessage());
@@ -253,11 +295,20 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.state = ClientStates.INQUEUE;
     }
 
+    /**
+     * Request a ranking from the server
+     */
     @Override
     public void doGetRanking() {
         socketHandler.write(ClientMessages.RANK.constructMessage());
     }
 
+    /**
+     * Handle the response of the ranking. Parses the ranking to a string and passes it to the {@link ClientView}
+     * @param arguments split message from the server
+     * @requires the arguments to be the raw split response from the server
+     * @throws ArrayIndexOutOfBoundsException when the arguments length is 0, which is an invalid response from the server
+     */
     public void handleRanking(String[] arguments) throws ArrayIndexOutOfBoundsException{
         StringBuilder rank = new StringBuilder("Ranking: \nName:            Score:\n");
         for(int i = 1; i < arguments.length; i++) {
@@ -267,8 +318,13 @@ public class Client implements ClientProtocol, NetworkEntity {
         clientView.showRank(rank.toString());
     }
 
-    //Parsing response
-    //HELLO
+    /**
+     * Handles the {@link ServerMessages#HELLO} from the server.
+     * @requires the arguments to be the raw split arguments from the server
+     * @ensures the state to be changed to {@link ClientStates#HELLOED}
+     * @param arguments
+     * @throws ProtocolException
+     */
     private void handleHello(String[] arguments) throws ProtocolException {
         if(arguments.length == 1) throw new ProtocolException("Not enough arguments");
         for(int i = 1; i < arguments.length; i++) {
@@ -283,7 +339,13 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.state = ClientStates.HELLOED;
     }
 
-    //LIST
+    /**
+     * Parses the {@link ServerMessages#LIST} returned by the server to a list without the {@link ServerMessages}
+     * @requires the arguments to be the raw split arguments from the server
+     * @ensures that the list only contains the arguments from the server
+     * @param arguments
+     * @return
+     */
     private String[] parseListResponse(String[] arguments) {
         String[] ret = new String[arguments.length-1];
         if (arguments.length - 1 >= 0) {
@@ -292,7 +354,16 @@ public class Client implements ClientProtocol, NetworkEntity {
         return ret;
     }
 
-    //NEWGAME
+    /**
+     * Creates a new board based on arguments and sets the turn of the right player
+     * @requires the arguments to be a valid boardState
+     * @requires the arguments to be the raw split arguments from the server
+     * @ensures the {@link ClientBoard} is filled correctly
+     * @ensures the state to be {@link ClientStates#WAITOURMOVE} if we start
+     * @ensures the state to be {@link ClientStates#WAITTHEIRMOVE} if they start
+     * @param arguments
+     * @throws NumberFormatException
+     */
     private synchronized void createNewBoard(String[] arguments) throws NumberFormatException {
         int[] boardState = new int[arguments.length-3];
         for(int i = 1; i < arguments.length-2; i++) {
@@ -317,6 +388,14 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.board = new ClientBoard(boardState);
     }
 
+    /**
+     * Parses the raw arguments from the server into a {@link Move}
+     * @requires the arguments to be the raw split arguments from the server
+     * @param arguments
+     * @return A move based on the arguments
+     * @throws NumberFormatException
+     * @throws ProtocolException
+     */
     public synchronized Move createMove(String[] arguments) throws NumberFormatException, ProtocolException {
         Move move = null;
         switch (arguments.length) {
@@ -334,14 +413,40 @@ public class Client implements ClientProtocol, NetworkEntity {
         return move;
     }
 
+    /**
+     * Checks if the move returned by the server is the same as our last {@link Move}
+     * @requires Our last {@link Move} should not be null
+     * @param move
+     * @return
+     */
     public synchronized boolean verifyOurMove(Move move) {
         return this.ourLastMove.equals(move);
     }
 
+    /**
+     * Finds a move and plays it on the board
+     * @requires ai should not be null
+     * @throws InvalidMoveException
+     * @throws ProtocolException
+     */
     public synchronized void doAIMove() throws InvalidMoveException, ProtocolException {
         this.doMove(this.ai.findBestMove(this.board));
     }
 
+    /**
+     * Send a {@link Move} to the server.
+     * Wait for a response, then place it on the board
+     * @requires {@link Move} to be valid
+     * @requires the server to respond with a move at some point
+     * @ensures the state to stay the same if the move is invalid
+     * @ensures the state to be changed to {@link ClientStates#WAITTHEIRMOVE} if the move is confirmed
+     * @ensures the state to be changed to {@link ClientStates#WAITOURMOVE} if the move could not be confirmed
+     * @ensures the {@link} to be played on the board if it is valid and it's verified and myTurn to be true
+     * @ensures myTurn to be true if the move could not be confirmed
+     * @param move
+     * @throws InvalidMoveException
+     * @throws ProtocolException
+     */
     @Override
     public synchronized void doMove(Move move) throws InvalidMoveException, ProtocolException {
         if(!this.board.isValidMove(move)) throw new InvalidMoveException("Yer move invalid dipshit");
@@ -371,6 +476,14 @@ public class Client implements ClientProtocol, NetworkEntity {
         }
     }
 
+    /**
+     * Make the {@link Move} that the opponnent reponsds with
+     * @requires {@link Move} their move to be valid
+     * @ensures  the state to be changed to {@link ClientStates#WAITOURMOVE}
+     * @ensures myTurn to be true
+     * @param move
+     * @throws InvalidMoveException
+     */
     public synchronized void makeTheirMove(Move move) throws InvalidMoveException {
         this.makeMove(move);
         this.clientView.showMessage("Their move on board was: "+ move);
@@ -380,12 +493,28 @@ public class Client implements ClientProtocol, NetworkEntity {
         this.myTurn = true;
     }
 
+    /**
+     * Do a move on the board
+     * @requires {@link Move} should be valid
+     * @param move
+     * @throws InvalidMoveException
+     */
     private synchronized void makeMove(Move move) throws InvalidMoveException {
         board.makeMove(move);
-        this.clientView.showMessage(Arrays.toString(this.board.getBoardState()));
         this.clientView.showBoard(this.board);
     }
 
+    /**
+     * Handles a {@link ServerMessages#GAMEOVER} response from the server
+     * @requires the arguments to be the raw split response from the server
+     * @ensures the game board is cleared
+     * @ensures the board will be null
+     * @ensures the state to be changed to {@link ClientStates#GAMEOVER}
+     * @param arguments
+     * @return
+     * @throws IllegalArgumentException
+     * @throws ProtocolException
+     */
     private synchronized String handleGameOver(String[] arguments) throws IllegalArgumentException, ProtocolException {
         String ret = "The game is over. \nReason: ";
         if(arguments.length != 3) throw new ProtocolException("Invalid number of arguments");
@@ -414,17 +543,31 @@ public class Client implements ClientProtocol, NetworkEntity {
         return ret;
     }
 
+    /**
+     * Show a hint in the {@link ClientView} based on a random hint provied by the {@link ClientBoard}
+     */
     public void provideHint() {
         clientView.showHint(this.board.getAHint().toString());
     }
 
 
-
+    /**
+     * Public create connection method
+     * @requires ip and port should not be null
+     */
     public void createConnection() throws IOException {
-        createConnection(this.ip, this.port, this.userName);
+        createConnection(this.ip, this.port);
     }
 
-    private void createConnection(InetAddress ip, Integer port, String userName) throws IOException {
+    /**
+     * Create a connection to a server given the arguments.
+     * @requires ip and port should not be null
+     * @ensures a connection is made if the ip and port are valid
+     * @param ip
+     * @param port
+     * @throws IOException thrown if the port or ip is invalid
+     */
+    private void createConnection(InetAddress ip, Integer port) throws IOException {
         clearConnection();
 
         while (serverSocket == null) {
@@ -441,6 +584,12 @@ public class Client implements ClientProtocol, NetworkEntity {
         doHello();
     }
 
+
+    /**
+     * Handles the shutdown if the connection between the client and the server is disconnected
+     * @ensures the user can get back into the beginning flow of starting a connection
+     * @param clientShutdown is true the disconnect happened on our side
+     */
     @Override
     public void handlePeerShutdown(boolean clientShutdown) {
         if(!clientShutdown) {
@@ -459,6 +608,9 @@ public class Client implements ClientProtocol, NetworkEntity {
         }
     }
 
+    /**
+     * Shutdown the client neatly
+     */
     @Override
     public void shutDown() {
         clearConnection();
@@ -467,6 +619,9 @@ public class Client implements ClientProtocol, NetworkEntity {
         System.exit(69);
     }
 
+    /**
+     * Clears the connection
+     */
     public void clearConnection() {
         serverSocket = null;
     }
@@ -499,6 +654,9 @@ public class Client implements ClientProtocol, NetworkEntity {
     }
     public boolean isOurTurn() {
         return this.myTurn;
+    }
+    public void setDebug(Boolean state){
+        this.debug = state;
     }
 
     public AI getAi() {
