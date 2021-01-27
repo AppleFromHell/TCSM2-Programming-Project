@@ -190,7 +190,7 @@ public class Board {
                     Move move = new Move(this.boardSize + rowIndex);
                     //Check the rows and columns for an empty square
                     //Check from ballindex to right of board -> left to right possible
-                    if(rowBalls.subList(ballIndex, this.boardSize-1).contains(BallType.EMPTY) &&
+                    if(rowBalls.subList(ballIndex, this.boardSize).contains(BallType.EMPTY) &&
                         !possibleMoves.contains(move)) {
                         possibleMoves.add(move);
                     }
@@ -203,7 +203,7 @@ public class Board {
 
                     //Check row index to bottom -> top to bottom possible
                     move = new Move(this.boardSize * 3 + ballIndex);
-                    if(this.columns.get(ballIndex).getBalls().subList(rowIndex, this.boardSize-1).contains(BallType.EMPTY) &&
+                    if(this.columns.get(ballIndex).getBalls().subList(rowIndex, this.boardSize).contains(BallType.EMPTY) &&
                         !possibleMoves.contains(move)) {
                         possibleMoves.add(move);
                     }
@@ -346,7 +346,8 @@ public class Board {
                 board.append(System.lineSeparator()).append(rowSeperator).append(System.lineSeparator());
             }
         }
-        return board.toString();
+        return board.toString().replace("0", " ");
+//        return board.toString();
     }
 
     public boolean isGameOver() {

@@ -23,14 +23,6 @@ public class ServerBoard extends Board{
         } while(findValidSingleMoves().isEmpty());
     }
 
-    public void setupBoardTest(){
-        do{
-            int[] newBoard = createBoard();
-            this.boardToClient = newBoard;
-            super.fillBoard(newBoard);
-        } while(findValidSingleMoves().isEmpty());
-    }
-
     private int randomBall(){
         return randomNumber(1, BallType.values().length - 1);
     }
@@ -64,6 +56,7 @@ public class ServerBoard extends Board{
             }
         }
         return availableNumbers.get(randomNumber(0, availableNumbers.size() - 1));
+
     }
 
     public int[] createBoard(){
