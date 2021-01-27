@@ -2,61 +2,20 @@ package dt.model;
 
 import java.util.*;
 
-/** @author Emiel Rous and Wouter Koning */
+/** @author Emiel Rous and Wouter Koning
+ *
+ */
 public class ServerBoard extends Board{
-
-    private int[] boardToClient;
 
     public ServerBoard(){
         super();
     }
 
-    public ServerBoard(int boardSize) {
-        super(boardSize);
-    }
-
     public void setupBoard(){
         do {
             int[] newBoard = createBoard();
-            this.boardToClient = newBoard;
             super.fillBoard(newBoard);
         } while(findValidSingleMoves().isEmpty());
-    }
-
-    private int randomBall(){
-        return randomNumber(1, BallType.values().length - 1);
-    }
-
-    private int randomBall(int except1){
-        ArrayList<Integer> availableNumbers = new ArrayList<>();
-        for(int i = 1; i < this.boardSize; i++){
-            if(i != except1){
-                availableNumbers.add(i);
-            }
-        }
-        return availableNumbers.get(randomNumber(0, availableNumbers.size() - 1));
-    }
-
-    private int randomBall(int except1, int except2){
-        ArrayList<Integer> availableNumbers = new ArrayList<>();
-//        Collections.addAll(availableNumbers, 1, 2, 3, 4, 5, 6);
-        for(int i = 1; i < this.boardSize; i++){
-            if(i != except1 && i != except2){
-                availableNumbers.add(i);
-            }
-        }
-        return availableNumbers.get(randomNumber(0, availableNumbers.size() - 1));
-    }
-
-    private int randomBall(List<Integer> exceptions){
-        List<Integer> availableNumbers = new ArrayList<>();
-        for(int i = 1; i < this.boardSize; i++){
-            if(!exceptions.contains(i)){
-                availableNumbers.add(i);
-            }
-        }
-        return availableNumbers.get(randomNumber(0, availableNumbers.size() - 1));
-
     }
 
     public int[] createBoard(){
@@ -238,45 +197,10 @@ public class ServerBoard extends Board{
         return true;
     }
 
-    private void swap(int[] array, int i1, int i2){
-        int temp = array[i2];
-        array[i2] = array[i1];
-        array[i1] = temp;
-    }
-
     public void swap(BallType[] array, int b1, int b2){
         BallType temp = array[b2];
         array[b2] = array[b1];
         array[b1] = temp;
-    }
-
-    public int[] createRandomBoard(){
-        int[] newBoard = new int[this.boardSize * this.boardSize];
-        int middle = (this.boardSize * this.boardSize - 1) / 2;
-        List<BallType> ballList = List.of(BallType.values());
-        Map<BallType, Integer> ballCount = new HashMap<>();
-
-        for(BallType ball : ballList){
-            ballCount.put(ball, 8);
-        }
-        ballCount.remove(BallType.EMPTY);
-
-//        List<BallType> newBoard = new ArrayList<>();
-        for(int i = 0; i < this.boardSize * this.boardSize; i++){
-            if(i != middle) {
-                int randomNr = randomNumber(0, ballCount.keySet().size() - 1);
-                BallType randomKey = getFromSet(ballCount.keySet(), randomNr);
-                ballCount.put(randomKey, ballCount.get(randomKey) - 1);
-                if (ballCount.get(randomKey) == 0) {
-                    ballCount.remove(randomKey);
-                }
-                assert randomKey != null;
-                newBoard[i] = randomKey.ordinal();
-            } else {
-                newBoard[i] = 0;
-            }
-        }
-        return newBoard;
     }
 
     private BallType getRandomBallKeyFromMap(Map<BallType, Integer> map){
